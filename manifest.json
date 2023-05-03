@@ -1,0 +1,28 @@
+{
+  "name": "形码盒子",
+  "version": "0.0.0.1",
+  "manifest_version": 3,
+  "author": "yyb1rd",
+  "default_locale":"zh-CN",
+  "description": "汉字形码输入方案的制作分析工具。",
+  "icons": {
+    "16": "img/logo16.png",
+    "48": "img/logo48.png",
+    "128": "img/logo128.png",
+    "256": "img/logo256.png"
+  },
+  "homepage_url": "https://github.com/yyb1rd/schema-lab",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "img/logo16.png",
+      "48": "img/logo48.png",
+      "128": "img/logo128.png",
+      "256": "img/logo256.png"
+    }
+  },
+  "permissions":[
+    "clipboardRead",
+    "clipboardWrite"
+  ]
+}
