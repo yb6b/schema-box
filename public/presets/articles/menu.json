@@ -1,0 +1,9 @@
+[
+    {"name":"常用字 1~500","file":"common1-500.txt","length":500},
+    {"name":"常用字 500~1000","file":"common501-1000.txt","length":500},
+    {"name":"常用字 1000~1500","file":"common1001-1500.txt","length":500},
+    {"name":"常用字 1~1500","file":"common1-1500.txt","length":1500},
+    {"name":"冰灯","file":"bingdeng.txt","length":1066},
+    {"name":"心的出口","file":"xindechukou.txt","length":839},
+    {"name":"心情决定事情","file":"xinqingjdsq.txt","length":97387}
+]

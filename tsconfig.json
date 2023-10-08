@@ -1,0 +1,13 @@
+{
+  "extends": "@quasar/app-webpack/tsconfig-preset",
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": "./",
+    "module": "ESNext",
+    "paths": {
+      "libs/*": [
+        "src/libs/*"
+      ]
+    }
+  }
+}

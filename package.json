@@ -1,0 +1,50 @@
+{
+  "name": "schema-box",
+  "version": "0.0.1",
+  "private": true,
+  "description": "分析制作汉字形码方案。",
+  "productName": "形码盒子",
+  "author": "yb6b <seetxx@qq.com>",
+  "license": "GPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yb6b/schema-box"
+  },
+  "engines": {
+    "node": "^18",
+    "pnpm": "^8"
+  },
+  "scripts": {
+    "dev": "quasar dev",
+    "build": "quasar build -m spa",
+    "test": "vitest ./src/libs/*"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.7",
+    "@vueuse/core": "^10.4.1",
+    "core-js": "^3.33.0",
+    "pinia": "^2.1.6",
+    "quasar": "^2.12.7",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "1.0.0-beta.21",
+    "@quasar/app-webpack": "^3.11.2",
+    "@types/node": "^20.8.3",
+    "eslint": "^8.51.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
+  },
+  "browserslist": [
+    "Edge >= 93",
+    "Chrome >= 93",
+    "Android >= 93",
+    "ChromeAndroid >= 93",
+    "Firefox >= 92",
+    "FirefoxAndroid >= 92",
+    "iOS >=15.4",
+    "Safari >= 15.4",
+    "Opera >= 79"
+  ]
+}
