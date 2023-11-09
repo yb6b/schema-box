@@ -60,7 +60,7 @@ export function segmentGreedily(src: string, tree: UniqueTrieTree): SegValue[] {
       const ei = endIndex
       const bi = beginIndex
       const d = dict
-      const tmpResult: string[] = new Array(ei - bi)
+      const tmpResult: string[] = Array(ei - bi)
       for (let i = bi; i < ei; i++)
         tmpResult[i - bi] = d[src[i]]
       return tmpResult.join('')
@@ -254,7 +254,7 @@ export function* generateSegmentGreedily(src: string, tree: UniqueTrieTree) {
       const ei = endIndex
       const bi = beginIndex
       const d = dict
-      const tmpResult: string[] = new Array(ei - bi)
+      const tmpResult: string[] = Array(ei - bi)
       for (let i = bi; i < ei; i++)
         tmpResult[i - bi] = d[src[i]]
       return tmpResult.join('')

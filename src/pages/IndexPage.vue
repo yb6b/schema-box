@@ -9,9 +9,9 @@ setTitle('形码盒子', '')
     class="column items-center justify-evenly bg-grey-7"
     style="height:100vh;letter-spacing: 2px;"
   >
-    <q-btn push glossy to="racer" color="primary" size="xl" class="q-px-lg" rounded>
+    <QBtn push glossy to="racer" color="primary" size="xl" class="q-px-lg" rounded>
       赛码器
-    </q-btn>
+    </QBtn>
     <p>
       形码盒子是开源、非盈利的个人项目，由
       <a href="https://github.com/yb6b" target="_blank">yb6b</a>

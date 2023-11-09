@@ -8,8 +8,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js
 
+const path = require('node:path')
 const { configure } = require('quasar/wrappers')
-const path = require('path')
+
 const resolve = p => path.resolve(__dirname, p)
 
 module.exports = configure((ctx) => {
@@ -90,7 +91,8 @@ module.exports = configure((ctx) => {
       config: {},
 
       iconSet: 'svg-mdi-v7',
-      lang: 'zh-CN', 
+      lang: 'zh-CN',
+      autoImportComponentCase: 'pascal',
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -102,9 +104,9 @@ module.exports = configure((ctx) => {
       // Quasar plugins
       plugins: [],
     },
-    
+
     vendor: {
-     disable: true,
+      disable: true,
     },
 
     // animations: 'all', // --- includes all animations

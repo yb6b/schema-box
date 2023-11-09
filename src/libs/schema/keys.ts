@@ -1,4 +1,4 @@
-// 编码只用到主键盘区里用不到shift的字母，数字，符号。还包括 空格键_ 和 shift 引导键，删除键
+// 编码只用到主键盘区里用不到shift的字母，数字，符号。还包括 空格键_ 和 shift 引导键, Backspace, Tab, Return
 export const ALL_KEYS = '1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-[\'=]\\_↑←→↩'
 
 interface PunctuationsData {
@@ -144,7 +144,7 @@ export const PUNCTUATIONS: PunctuationsData = {
  * @param code 待验证的编码
  * @returns 能否成功
  */
-export function validate(code: string) {
+export function validateCodes(code: string) {
   const ALL_KEYS_SET = new Set(ALL_KEYS)
   for (let i = 0; i < code.length; i++) {
     if (!ALL_KEYS_SET.has(code[i]))
@@ -155,4 +155,21 @@ export function validate(code: string) {
       return false
   }
   return true
+}
+
+/**
+ * 读取并返回一个方案编码字符串
+ * @throws 不合规的编码报错
+ */
+export function checkCodes(code: string) {
+  const ALL_KEYS_SET = new Set(ALL_KEYS)
+  for (let i = 0; i < code.length; i++) {
+    if (!ALL_KEYS_SET.has(code[i]))
+      throw new TypeError(`${code} 中的第 ${i + 1} 个字母不是合规的编码。`)
+
+    // 不能连续两个shift
+    if (code[i] === '↑' && code[i + 1] === '↑')
+      throw new TypeError(`${code} 中的第 ${i + 1} 处不能含有两个shift键。`)
+  }
+  return code
 }

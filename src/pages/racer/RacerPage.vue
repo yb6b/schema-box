@@ -6,24 +6,24 @@ setTitle('测评工具')
 </script>
 
 <template>
-  <q-layout view="hHh lpR fFf">
-    <q-header class="bg-primary text-white">
-      <q-toolbar>
-        <q-toolbar-title>
-          <q-btn to="/" flat square title="形码盒子主页">
-            <q-avatar square>
+  <QLayout view="hHh lpR fFf">
+    <QHeader class="bg-primary text-white">
+      <QToolbar>
+        <QToolbarTitle>
+          <QBtn to="/" flat square title="形码盒子主页">
+            <QAvatar square>
               <img src="~assets/icon.png">
-            </q-avatar>
-          </q-btn>
+            </QAvatar>
+          </QBtn>
           测评工具
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
+        </QToolbarTitle>
+      </QToolbar>
+    </QHeader>
 
-    <q-page-container>
+    <QPageContainer>
       <div class="row justify-center">
         <LoadFiles />
       </div>
-    </q-page-container>
-  </q-layout>
+    </QPageContainer>
+  </QLayout>
 </template>

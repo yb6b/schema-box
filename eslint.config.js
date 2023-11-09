@@ -1,7 +1,7 @@
-const antfu = require('@antfu/eslint-config').default({}, {
+const antfu = require('@antfu/eslint-config').default
+
+module.exports = antfu({}, {
   rules: {
-    'n/prefer-global/process': ['always'],
+    'n/prefer-global/process': ['off'],
   },
 })
-
-module.exports = antfu

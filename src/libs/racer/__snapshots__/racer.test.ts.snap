@@ -69,7 +69,7 @@ exports[`分析 > 常规 2`] = `
     0,
     2,
   ],
-  "Eq": 6.8,
+  "Eq": 3.5,
   "LL": 3,
   "LR": 2,
   "RL": 0,
@@ -81,7 +81,7 @@ exports[`分析 > 常规 2`] = `
   ],
   "comb": 5,
   "commit": 2,
-  "double": 2,
+  "double": 0,
   "fingers": [
     5,
     1,

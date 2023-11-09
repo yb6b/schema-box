@@ -13,7 +13,7 @@
         Oops. Nothing here...
       </div>
 
-      <q-btn
+      <QBtn
         class="q-mt-xl"
         color="white"
         text-color="blue"

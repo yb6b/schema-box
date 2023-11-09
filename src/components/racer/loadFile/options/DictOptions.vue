@@ -1,12 +1,22 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, toValue, watch, watchEffect } from 'vue'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
 import JisuPng from './assets/jisu.png'
 import RimePng from './assets/rime.png'
 import YongPng from './assets/yong.png'
 
+const e = defineEmits<{
+  value: [v: ResultOptions]
+}>()
+
 type AllDictFormats = 'jisu' | 'rime' | 'yong'
+
+export interface ResultOptions {
+  name: string
+  format: AllDictFormats
+  cl: number
+}
 
 const dictFormats: { label: string; value: AllDictFormats;icon: string }[] = [
   {
@@ -25,27 +35,29 @@ const dictFormats: { label: string; value: AllDictFormats;icon: string }[] = [
     icon: YongPng,
   },
 ]
+const tmpFormat = ref(dictFormats[0])
 
-const dictOptions = reactive({
+const dictOptions = reactive<ResultOptions>({
   name: '',
   format: '',
   cl: 4,
-  color: 'plum',
 })
 
-const tmpFormat = ref(dictFormats[0])
+watchEffect(() => {
+  e('value', { ...dictOptions })
+})
 </script>
 
 <template>
   <div class="column q-gutter-md">
-    <q-input
+    <QInput
       v-model="dictOptions.name"
       class="col"
       label="码表名称"
       stack-label
       placeholder="请输入名称"
     />
-    <q-select
+    <QSelect
       class="col"
       label="码表格式"
       stack-label
@@ -58,19 +70,19 @@ const tmpFormat = ref(dictFormats[0])
       }"
     >
       <template #option="scope">
-        <q-item v-bind="scope.itemProps">
-          <q-item-section avatar>
-            <q-icon size="xs" :name="`img:${scope.opt.icon}`" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>
+        <QItem v-bind="scope.itemProps">
+          <QItemSection avatar>
+            <QIcon size="xs" :name="`img:${scope.opt.icon}`" />
+          </QItemSection>
+          <QItemSection>
+            <QItemLabel>
               {{ scope.opt.label }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
+            </QItemLabel>
+          </QItemSection>
+        </QItem>
       </template>
-    </q-select>
-    <q-input
+    </QSelect>
+    <QInput
       v-model.number="dictOptions.cl"
       class="col"
       type="number"
