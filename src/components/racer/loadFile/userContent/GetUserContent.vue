@@ -1,60 +1,58 @@
 <script setup lang="ts">
 import { inject, ref, watch } from 'vue'
 
+import type RawFile from 'libs/platforms/rawFile'
 import Upload from './Upload.vue'
 import Clipboard from './Clipboard.vue'
 import Textarea from './Textarea.vue'
 import { selectOptions } from './source'
 
 const e = defineEmits<{
-  (e: 'value', content: string): void
+  (e: 'value', content: RawFile): void
 }>()
 
 const dictMode = inject('dictMode')
 
 const selectSource = ref(selectOptions[0])
-const content = ref('')
+const content = ref<RawFile>()
 
 watch(selectSource, () => {
   // 切换类型后，清空内容。避免textarea卡顿
-  content.value = ''
+  content.value = undefined
 })
 
 watch([content], () => {
   // 内容改动后，立即触发emit
-  e('value', content.value)
+  if (content.value)
+    e('value', content.value)
 })
 </script>
 
 <template>
   <div>
-    <div class="coloumn q-gutter-sm q-mb-lg">
-      <div class="col">
-        {{ dictMode ? '码表' : '文章' }}数据来源
-      </div>
+    <QSelect
+      v-model="selectSource"
+      class="q-mb-lg"
+      :options="selectOptions"
+      square
+      filled
+      :label="`${dictMode ? '码表' : '文章'}数据来源`"
+    >
+      <template #option="scope">
+        <QItem v-bind="scope.itemProps">
+          <QItemSection avatar>
+            <QIcon :name="scope.opt.icon" />
+          </QItemSection>
+          <QItemSection>
+            <QItemLabel>{{ scope.opt.label }}</QItemLabel>
+            <QItemLabel caption>
+              {{ scope.opt.dsc }}
+            </QItemLabel>
+          </QItemSection>
+        </QItem>
+      </template>
+    </QSelect>
 
-      <QSelect
-        v-model="selectSource"
-        class="col"
-        :options="selectOptions"
-        outlined
-        dense
-      >
-        <template #option="scope">
-          <QItem v-bind="scope.itemProps">
-            <QItemSection avatar>
-              <QIcon :name="scope.opt.icon" />
-            </QItemSection>
-            <QItemSection>
-              <QItemLabel>{{ scope.opt.label }}</QItemLabel>
-              <QItemLabel caption>
-                {{ scope.opt.dsc }}
-              </QItemLabel>
-            </QItemSection>
-          </QItem>
-        </template>
-      </QSelect>
-    </div>
     <div v-if="selectSource.value === 'upload'">
       <Upload @value="v => content = v" />
     </div>
@@ -64,7 +62,7 @@ watch([content], () => {
     </div>
 
     <div v-else-if="selectSource.value === 'textarea'" class="col">
-      <Textarea v-model="content" />
+      <Textarea @value="v => content = v" />
     </div>
 
     <!-- <div v-else-if="selectSource.value === 'preset'">

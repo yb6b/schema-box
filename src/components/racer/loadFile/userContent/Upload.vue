@@ -1,13 +1,35 @@
 <script setup>
 import { mdiFolderOpen } from '@quasar/extras/mdi-v7'
-import { ref, watchEffect } from 'vue'
+import { ref, watch, watchEffect } from 'vue'
+import RawFile from 'libs/platforms/rawFile'
 
 const e = defineEmits(['value'])
 const fileRef = ref()
-watchEffect(async () => {
+const hintRef = ref('可以拖动文件到这里')
+
+const fileEncodings = [
+  'UTF-8',
+  'UTF-16LE',
+  'GB18030',
+  'BIG5',
+]
+const encodingRef = ref(fileEncodings[0])
+
+watch(fileRef, async () => {
+  const rawData = new RawFile(fileRef.value)
+  const t = await rawData.getText()
+  hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
+  encodingRef.value = rawData.encoding
+  e('value', rawData)
+})
+
+watch(encodingRef, async () => {
   if (fileRef.value) {
-    const text = await fileRef.value.text()
-    e('value', text)
+    const rawData = new RawFile(fileRef.value)
+    rawData.encoding = encodingRef.value
+    const t = await rawData.getText()
+    hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
+    e('value', rawData)
   }
 })
 </script>
@@ -16,16 +38,21 @@ watchEffect(async () => {
   <QFile
     v-model="fileRef"
     filled
-    dense
-    class="col"
+    square
+    class="col q-mb-md"
     label="打开本地文件"
-    bottom-slots
+    :hint="hintRef"
   >
     <template #before>
       <QIcon :name="mdiFolderOpen" />
     </template>
   </QFile>
-  <p class="text-primary">
-    只支持 utf-8 编码的文本文件。
-  </p>
+
+  <QSelect
+    v-model="encodingRef"
+    class="q-mt-lg"
+    :options="fileEncodings"
+    options-dense
+    label="文件编码"
+  />
 </template>

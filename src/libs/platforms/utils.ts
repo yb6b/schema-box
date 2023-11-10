@@ -1,17 +1,5 @@
 export { checkCodes } from '../schema/keys'
 
-// export function handleEachLine(src: string, handler: (eachLine: string) => void) {
-//   const lineBreakerPattern = /\r?\n|\r/g
-//   let last = 0
-//   let match = lineBreakerPattern.exec(src)
-//   while (match) {
-//     handler(src.slice(last, match.index))
-//     last = match.index + match[0].length
-//     match = lineBreakerPattern.exec(src)
-//   }
-//   handler(src.slice(last))
-// }
-
 export function* genEachLine(src: string) {
   const lineBreakerPattern = /\r?\n|\r/g
   let last = 0

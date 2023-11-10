@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { mdiClipboardOutline } from '@quasar/extras/mdi-v7'
+import RawFile from 'libs/platforms/rawFile'
+import { nanoid6 } from 'libs/utils'
 
 const e = defineEmits(['value'])
 const contentRef = ref('')
@@ -8,7 +10,7 @@ function readClipboard() {
   (async () => {
     const text = await navigator.clipboard.readText()
     contentRef.value = text
-    e('value', text)
+    e('value', new RawFile(text, `剪切板文本_${nanoid6()}`))
   })()
 }
 </script>

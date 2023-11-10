@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { provide, ref, watch } from 'vue'
+import type { SchemaConfig } from 'libs/schema'
+import type RawFile from 'libs/platforms/rawFile'
 import GetUserContent from './userContent/GetUserContent.vue'
-import type { ResultOptions } from './options/DictOptions.vue'
 import DictOptions from './options/DictOptions.vue'
+import ArticleOptions from './options/ArticleOptions.vue'
 
 const p = defineProps({
   dialog: {
@@ -23,10 +25,12 @@ const e = defineEmits<{
 }>()
 
 interface Result {
-  content: string
-  options: ResultOptions
+  content: RawFile
+  options: SchemaConfig
 }
-const result: Result = { content: '', options: {} }
+
+const contentRef = ref<RawFile>()
+const optionsRef = ref<SchemaConfig>({ name: '', plat: 'rime', cmLen: 4 })
 
 provide('dictMode', p.dictMode)
 
@@ -49,7 +53,10 @@ function handlePrimaryBtn() {
   }
   else { // 最后一页
     openDialogRef.value = false // 关闭对话框
-    e('value', result) // 触发返回
+    e('value', {
+      content: contentRef.value,
+      options: optionsRef.value,
+    } as Result) // 触发返回
   }
 }
 </script>
@@ -57,12 +64,13 @@ function handlePrimaryBtn() {
 <template>
   <QDialog v-model="openDialogRef">
     <QCard style="min-width: min(85vw, 24rem);">
-      <QStepper v-model="stepPageRef" animated keep-alive flat>
+      <QStepper v-model="stepPageRef" animated keep-alive flat dense>
         <QStep :name="1" title="获取" :done="stepPageRef > 1">
-          <GetUserContent style="min-height:12rem;" @value="c => result.content = c" />
+          <GetUserContent style="min-height:12rem;" @value="c => contentRef = c" />
         </QStep>
         <QStep :name="2" title="配置" :done="stepPageRef > 2">
-          <DictOptions @value="v => result.options = v" />
+          <DictOptions v-if="p.dictMode" :filename="contentRef?.name" @value="v => optionsRef = v" />
+          <ArticleOptions v-else :filename="contentRef?.name" @value="v => optionsRef = v" />
         </QStep>
       </QStepper>
 

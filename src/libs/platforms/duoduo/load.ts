@@ -24,7 +24,7 @@ export const loadDuoduoDict: LoadSchema = async (src) => {
     if (lineSplit.length !== 2)
       throw new FormatError(`码表第${lineno}行，不是两列。`)
     const codeParsed = parseDuoduoCodes(lineSplit[1])
-    result.pushMainDict({
+    result.pushFirstDict({
       code: codeParsed.codes,
       words: lineSplit[0],
       line: lineno,

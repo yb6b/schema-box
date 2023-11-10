@@ -1,5 +1,5 @@
 // 编码只用到主键盘区里用不到shift的字母，数字，符号。还包括 空格键_ 和 shift 引导键, Backspace, Tab, Return
-export const ALL_KEYS = '1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-[\'=]\\_↑←→↩'
+export const ALL_KEYS = '1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-[\'=]\\_`↑←→↩'
 
 interface PunctuationsData {
   uni: Record<string, string>

@@ -1,24 +1,32 @@
 <script setup lang="ts">
-import { reactive, ref, toValue, watch, watchEffect } from 'vue'
+import { reactive, ref, watchEffect } from 'vue'
+import { nanoid6 } from 'libs/utils'
+import type { SchemaConfig } from 'libs/schema'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
+
+// @ts-expect-error picture
 import JisuPng from './assets/jisu.png'
+
+// @ts-expect-error picture
 import RimePng from './assets/rime.png'
+
+// @ts-expect-error picture
 import YongPng from './assets/yong.png'
 
+const p = defineProps<{
+  filename?: string
+}>()
 const e = defineEmits<{
-  value: [v: ResultOptions]
+  value: [v: SchemaConfig]
 }>()
 
-type AllDictFormats = 'jisu' | 'rime' | 'yong'
-
-export interface ResultOptions {
-  name: string
-  format: AllDictFormats
-  cl: number
+interface DictFormat {
+  label: string
+  value: string
+  icon: string
 }
-
-const dictFormats: { label: string; value: AllDictFormats;icon: string }[] = [
+const dictFormats: DictFormat[] = [
   {
     label: '极速赛码表',
     value: 'jisu',
@@ -35,21 +43,26 @@ const dictFormats: { label: string; value: AllDictFormats;icon: string }[] = [
     icon: YongPng,
   },
 ]
-const tmpFormat = ref(dictFormats[0])
+const tmpFormat = ref(dictFormats[1])
 
-const dictOptions = reactive<ResultOptions>({
-  name: '',
-  format: '',
-  cl: 4,
+const dictOptions = reactive<SchemaConfig>({
+  name: `码表_${nanoid6()}`,
+  plat: 'rime',
+  cmLen: 4,
 })
 
 watchEffect(() => {
-  e('value', { ...dictOptions })
+  if (p.filename)
+    dictOptions.name = p.filename
+})
+
+watchEffect(() => {
+  e('value', { ...dictOptions } as SchemaConfig)
 })
 </script>
 
 <template>
-  <div class="column q-gutter-md">
+  <div class="column q-gutter-sm">
     <QInput
       v-model="dictOptions.name"
       class="col"
@@ -65,7 +78,7 @@ watchEffect(() => {
       options-dense
       :model-value="tmpFormat"
       @update:model-value="v => {
-        dictOptions.format = v.value;
+        dictOptions.plat = v.value;
         tmpFormat = v
       }"
     >
@@ -83,7 +96,7 @@ watchEffect(() => {
       </template>
     </QSelect>
     <QInput
-      v-model.number="dictOptions.cl"
+      v-model.number="dictOptions.cmLen"
       class="col"
       type="number"
       label="顶屏码长"

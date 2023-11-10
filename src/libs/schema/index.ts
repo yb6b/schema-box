@@ -1,4 +1,4 @@
-import type { RawFileData } from '../platforms/platformTypes'
+import type RawFile from '../platforms/rawFile'
 
 /**
  * 字词型的输入法方案，包含多个码表对象和一些公共配置。
@@ -10,28 +10,40 @@ import type { RawFileData } from '../platforms/platformTypes'
 export class Schema {
   constructor() {
     this.dicts = [new SchemaDict()]
-    this.mainDict = this.dicts[0]
   }
 
   dicts: SchemaDict[]
+  cfg: SchemaConfig = {}
+  /** 平台相关的其他信息 */
+  meta?: Record<string, unknown>
+
+  pushFirstDict(item: SchemaDictItem) {
+    return this.dicts[0].items.push(item)
+  }
+
+  dictsItemsCount() {
+    let r = 0
+    for (const i of this.dicts)
+      r += i.items.length
+    return r
+  }
+}
+
+export interface SchemaConfig {
   /** 配置文件的原始文件 */
-  raw?: RawFileData
+  raw?: RawFile
   /** 方案的名称 */
   name?: string
+  /** 方案作者 */
   author?: string
+  /** 方案简介 */
   description?: string
   /** 选重键 */
   selectKeys?: string
   /** 上屏码长 */
-  commitLength?: number
-  /** 平台相关的其他信息 */
-  meta?: Record<string, unknown>
-
-  /** 默认码表 */
-  mainDict: SchemaDict
-  pushMainDict(item: SchemaDictItem) {
-    return this.mainDict.items.push(item)
-  }
+  cmLen?: number
+  /** 原文件平台 */
+  plat?: string
 }
 
 export class SchemaDict {
@@ -39,7 +51,7 @@ export class SchemaDict {
   /** 按码表顺序的每个词条 */
   items: SchemaDictItem[] = []
   /** 码表的原始文件 */
-  raw?: RawFileData
+  raw?: RawFile
   /**
    * 编码 - 候选词语的列表
    * 修改items后，清空它
