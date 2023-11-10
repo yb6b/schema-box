@@ -1,5 +1,7 @@
 import { customAlphabet } from 'nanoid'
+import { useTitle } from '@vueuse/core'
 
+export const titleRef = useTitle('主页', { titleTemplate: '%s · 形码盒子' })
 export const nanoid6 = customAlphabet('346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz', 6)
 async function customFetch<T>(url: string, handler: (f: Response) => Promise<T>) {
   const f = await fetch(url)
@@ -25,35 +27,6 @@ export async function fetchJson(url: string) {
 }
 
 /**
- * 预览文章的内容
- */
-export function previewArticle(article: string): string {
-  if (article.length < 120)
-    return article
-
-  const r = article.match(/^(.{30}).*(.{10})$/su)
-  if (r)
-    return `${r[1]}\n……\n${r[2]}`
-
-  return article
-}
-
-/**
- * 处理字符串里的每行
- */
-export function handleEachLine(src: string, handler: (eachLine: string) => void) {
-  const lineBreakerPattern = /\r?\n|\r/g
-  let last = 0
-  let match = lineBreakerPattern.exec(src)
-  while (match) {
-    handler(src.slice(last, match.index))
-    last = match.index + match[0].length
-    match = lineBreakerPattern.exec(src)
-  }
-  handler(src.slice(last))
-}
-
-/**
  * 生成反向索引
  * @param i 可迭代的流数据，元素必须是数字或字符串
  * @returns 元素到索引的Map
@@ -71,8 +44,4 @@ export function Cache(name: string, value: any) {
   if (!_cacheStore.has(name))
     _cacheStore.set(name, value)
   return value
-}
-
-export function setTitle(title: string, suffix = ' · 形码盒子') {
-  document.title = `${title}${suffix}`
 }

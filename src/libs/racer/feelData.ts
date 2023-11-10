@@ -88,10 +88,13 @@ export const keyToFinger: Record<string, Fingers> = {
   ']': 10,
   '\\': 10,
   '←': 10,
+  '`': 1,
+  '↩': 10,
+  '↑': 1,
 }
 
 export function isLeftHand(keyIndex: Fingers) {
-  return keyIndex < 4
+  return keyIndex < 6
 }
 
 export type KeyPairMagicNumber = number

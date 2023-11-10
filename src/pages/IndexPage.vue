@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { setTitle } from 'libs/utils'
+import { titleRef } from 'libs/utils'
 
-setTitle('形码盒子', '')
+titleRef.value = '主页'
 </script>
 
 <template>

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import LoadFiles from 'components/racer/LoadFiles.vue'
-import { setTitle } from 'src/libs/utils'
+import { titleRef } from 'src/libs/utils'
 
-setTitle('测评工具')
+titleRef.value = '测评工具'
 </script>
 
 <template>

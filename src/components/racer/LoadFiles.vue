@@ -4,8 +4,8 @@ import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
 import type { SchemaDict } from 'libs/schema'
 import { Schema } from 'libs/schema'
 import { loadDuoduoDict } from 'libs/platforms/duoduo/load'
-import { UniqueTrieTree } from 'libs/racer/uniqueTrieTree'
 import LoadFileDialog from './loadFile/LoadFileDialog.vue'
+import VisualizeDialog from './visualize/VisualizeDialog.vue'
 
 const openArticle = ref(false)
 const articleData = reactive({
@@ -15,6 +15,8 @@ const articleData = reactive({
 
 const openSchema = ref(false)
 const schemaData = ref(new Schema())
+
+const openVisualize = ref(false)
 
 function displayDict(d: SchemaDict): string {
   let r = ''
@@ -52,7 +54,7 @@ function displayDict(d: SchemaDict): string {
               :label="`${articleData.content.length} 字`"
             />
           </QItemLabel>
-          <QItemLabel caption style="white-space: nowrap;overflow: auto;text-overflow: ellipsis;">
+          <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
             {{ articleData.content.slice(0, 50) }}
           </QItemLabel>
         </QItemSection>
@@ -82,7 +84,7 @@ function displayDict(d: SchemaDict): string {
               :label="`${schemaData.dictsItemsCount()} 行`"
             />
           </QItemLabel>
-          <QItemLabel caption style="white-space: nowrap;overflow: auto;text-overflow: ellipsis;">
+          <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
             {{ displayDict(schemaData.dicts[0]) }}
           </QItemLabel>
         </QItemSection>
@@ -111,8 +113,16 @@ function displayDict(d: SchemaDict): string {
       }"
     />
 
+    <VisualizeDialog
+      v-if="openVisualize"
+      v-model:dialog="openVisualize"
+      :article="articleData"
+      :dict="schemaData"
+    />
+
     <div class="col row flex-center">
       <QBtn
+        :disable="!articleData.name || !schemaData.cfg.name"
         label="计 算"
         color="primary"
         rounded
@@ -120,7 +130,7 @@ function displayDict(d: SchemaDict): string {
         class="col-6 q-mt-lg"
         @click="
           () => {
-            const tree = new UniqueTrieTree()
+            openVisualize = true
           }"
       />
     </div>

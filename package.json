@@ -22,6 +22,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.7",
     "@vueuse/core": "^10.5.0",
+    "chart.js": "^4.4.0",
     "core-js": "^3.33.1",
     "detect-file-encoding-and-language": "^2.4.0",
     "iconv-lite": "^0.6.3",
@@ -29,6 +30,7 @@
     "pinia": "^2.1.7",
     "quasar": "^2.13.0",
     "vue": "^3.3.8",
+    "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {

@@ -7,10 +7,17 @@
  * 字典树中，每个词语的值。
  */
 export interface TrieTreeValue {
-  code: string // 编码。当编码为空，意味着是空穴前缀词
-  collision: number // 重码数
-  line: number // 码表文件行数
-  prefixeeLen: number // 以该词为前缀的词条的最短字数
+  /** 编码。当编码为空，意味着是空穴前缀词 */
+  code: string
+  /** 重码数 */
+  collision: number
+  /** 码表文件行数 */
+  line: number
+  /**
+   * 以该词为前缀的词条的最短字数，这是 `UniqueTrieTree` 维护的
+   * 构建时手动设置为0
+   */
+  prefixeeLen: number
 }
 
 /**
@@ -149,14 +156,9 @@ export class CollisionCalculator {
    */
   public add(code: string) {
     const oldCollision = this.usedCodes.get(code)
-    if (oldCollision) {
-      this.usedCodes.set(code, oldCollision + 1)
-      return oldCollision + 1
-    }
-    else {
-      this.usedCodes.set(code, 1)
-      return 1
-    }
+    const newCollision = oldCollision ? oldCollision + 1 : 1
+    this.usedCodes.set(code, newCollision)
+    return newCollision
   }
 
   /**

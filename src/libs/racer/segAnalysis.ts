@@ -2,6 +2,8 @@
  * @file 分析分词的结果
  * @author yb6b
  */
+import { mdiImageFilterFrames } from '@quasar/extras/mdi-v7'
+import { isDifferentHand } from './feelData'
 import type { SegValue } from './segmentation'
 
 const feel = await import('./feelData')
@@ -45,6 +47,7 @@ export interface RacerResult {
   LR: number// 左手到右手
   RR: number// 右手到右手
   RL: number// 右手到左手
+  magicLR: [LL: number, LR: number, RL: number, RR: number]
 }
 
 /**
@@ -82,12 +85,13 @@ export function createEmptyRacerResult(): RacerResult {
     littleFingerDisturb: 0, // 小指干扰
 
     sameFingers: 0, // 同指组合
-    fingers: Array(9).fill(0),
+    fingers: Array(11).fill(0),
 
     LL: 0, // 左手到左手
     LR: 0, // 左手到右手
     RR: 0, // 右手到右手
     RL: 0, // 右手到左手
+    magicLR: [0, 0, 0, 0],
   }
 }
 
@@ -112,7 +116,7 @@ function autoIncreaseArrayElement(arr: number[], index: number) {
  * @param o 要添加的对象
  * @param k 修改位置的索引
  */
-function autoIncreaseObjectElement(o: { [key: string]: number }, k: string) {
+function autoIncreaseObjectElement(o: Record<string, number>, k: string) {
   if (k in o)
     o[k]++
   else
@@ -182,7 +186,8 @@ export class SegmentAnalyser {
             result.collision++
             result.collisionChar += wordsLength
           }
-          autoIncreaseArrayElement(result.collisionDist, tmpCollision - 1)
+          if (tmpCollision > 0)
+            autoIncreaseArrayElement(result.collisionDist, tmpCollision - 1)
         }
         else {
           thisCode = eachValue.code.replace('↑', '')
@@ -205,6 +210,12 @@ export class SegmentAnalyser {
         const comb = expandCode[i - 1] + expandCode[i]
         const feelMagic = feel.keyPairData[comb]
         result.Eq += feel.getEquivalent(feelMagic)
+        result.double += feelMagic & 0x40
+        result.singleSpan += feelMagic & 0x100
+        result.multiSpan += feelMagic & 0x400
+        result.longFingerDisturb += feelMagic & 0x200
+        result.littleFingerDisturb += feelMagic & 0x80
+        /*
         if (feel.isDoubleHit(feelMagic))
           result.double++
         if (feel.isSingleSpan(feelMagic))
@@ -215,26 +226,17 @@ export class SegmentAnalyser {
           result.longFingerDisturb++
         if (feel.isLittleFinersDisturb(feelMagic))
           result.littleFingerDisturb++
+        */
 
         const firstFinger = feel.keyToFinger[expandCode[i - 1]]
         const secondFinger = feel.keyToFinger[expandCode[i]]
         if (firstFinger === secondFinger)
           result.sameFingers++
 
-        const isFirstHandLeft = feel.isLeftHand(firstFinger)
-        const isSecondHandLeft = feel.isLeftHand(secondFinger)
-        if (isFirstHandLeft) {
-          if (isSecondHandLeft)
-            result.LL++
-          else
-            result.LR++
-        }
-        else {
-          if (isSecondHandLeft)
-            result.RL++
-          else
-            result.RR++
-        }
+        const isFirstHandRight = firstFinger > 5
+        const isSecondHandRight = secondFinger > 5
+        // @ts-expect-error black-magic
+        result.magicLR[isFirstHandRight << 1 | isSecondHandRight]++
       }
 
       const expandCode2 = lastCode2 + expandCode
@@ -254,6 +256,11 @@ export class SegmentAnalyser {
    */
   get result() {
     this._result.Eq /= 10
+    const m = this._result.magicLR
+    this._result.RR = m[3]
+    this._result.RL = m[2]
+    this._result.LR = m[1]
+    this._result.LL = m[0]
     return this._result
   }
 }
