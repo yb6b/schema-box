@@ -7,6 +7,6 @@ import { createTextBlob } from '../utils'
 export const dumpDuoduo: DumpSchema = (src) => {
   let result = ''
   for (const item of src.dicts[0].items)
-    result += `${item.words}\t${item.code}\n`
+    result += `${item[0]}\t${item[1]}\n`
   return createTextBlob(result)
 }

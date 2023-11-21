@@ -8,6 +8,7 @@
       "libs/*": [
         "src/libs/*"
       ]
-    }
+    },
+    "types": ["vitest/globals"]
   }
 }

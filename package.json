@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "quasar dev",
     "build": "quasar build -m spa",
-    "test": "vitest "
+    "test": "vitest --globals"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.7",

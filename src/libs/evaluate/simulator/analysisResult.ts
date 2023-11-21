@@ -6,7 +6,7 @@ type Dist = number[]
 /**
  * 赛码器运行结束后的结果
  */
-export default class AnalysisResult {
+export class AnalysisResult {
   /**
    * 为了性能,需要提供几个最大值用于初始化,
    *
@@ -194,13 +194,13 @@ export default class AnalysisResult {
 
   /** 处理字典树匹配到的情况 */
   private hTT(value: Segment) {
-    let code = value.ttv!.i!.code
+    let code = value.ttv!.i![1]
     const collision = value.ttv!.c
     // 要加选重键的情况
     if (code.length < this.commitLength || collision !== 1)
       code += this.collisionKeys[collision - 1]
     this._t = code
-    const wordsLen = [...value.ttv!.i!.words].length
+    const wordsLen = [...value.ttv!.i![0]].length
     this.hanzi += wordsLen
     this.commit++
     this.wordsDist[wordsLen - 1]++

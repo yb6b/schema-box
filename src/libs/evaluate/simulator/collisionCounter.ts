@@ -15,6 +15,9 @@ export class CollisionCounter {
     return this.usedCodes.get(code) ?? 0
   }
 
+  /** 统计到的最大选重数 */
+  public max = 0
+
   /**
    * 向数据库里添加一条编码
    * @param code 新的编码
@@ -24,6 +27,8 @@ export class CollisionCounter {
     const oldCollision = this.usedCodes.get(code)
     const newCollision = oldCollision ? oldCollision + 1 : 1
     this.usedCodes.set(code, newCollision)
+    if (newCollision > this.max)
+      this.max = newCollision
     return newCollision
   }
 
@@ -34,15 +39,26 @@ export class CollisionCounter {
    */
   public delete(code: string) {
     const oldCollision = this.usedCodes.get(code)
-    if (oldCollision) {
-      if (oldCollision === 1) {
-        this.usedCodes.delete(code)
-        return 0
-      }
+
+    if (!oldCollision)
+      return 0
+
+    if (oldCollision === 1)
+      this.usedCodes.delete(code)
+    else
       this.usedCodes.set(code, oldCollision - 1)
-      return oldCollision - 1
+    this.remax()
+    return oldCollision - 1
+  }
+
+  /** 重新计算max值 */
+  private remax() {
+    let m = 0
+    for (const c of this.usedCodes.values()) {
+      if (c > m)
+        m = c
     }
-    return 0
+    this.max = m
   }
 }
 

@@ -41,7 +41,7 @@ export class Segment {
 
     // 是不是字典树里的
     if (this.mTT(i))
-      return this.index += this.ttv!.i!.words.length
+      return this.index += this.ttv!.i![0].length
 
     if (this.mPunc(i) // 是不是中文标点符号
       || this.mBD(i, PUNCTUATIONS.en) // 是不是英文标点符号
@@ -107,7 +107,7 @@ export class Segment {
         this.ttv = ttvalue
         alreadyHadResult = true
         i = index + ttvalue.p
-        wd = ttvalue.i.words
+        wd = ttvalue.i[0]
         continue
       }
       // 是空穴，不可能

@@ -23,6 +23,11 @@ export interface TrieTreeValue {
 /** 这种字典树里每个词条只保留一个编码 */
 export type UniqueTrieTree = Map<string, TrieTreeValue>
 
+/** 新建字典树 */
+export function createUniqueTrieTree(): UniqueTrieTree {
+  return new Map()
+}
+
 /**
  * 获取字典树的值
  * 空穴词,或没有缺失的词,返回undefined
@@ -40,75 +45,37 @@ export function treeGet(tree: UniqueTrieTree, words: string) {
  * @param tree 添加到哪个字典树里？
  * @param item 添加哪个词条？
  * @param collision 这个词条的重码是几重？
+ * @param shortest 如果一词多码，是否只保留最短的编码？
  * @return 是否正常添加进字典树
  */
-export function treeAddShortest(tree: UniqueTrieTree, item: SchemaDictItem, collision: number): boolean {
-  const words = item.words
+export function treeAdd(tree: UniqueTrieTree, item: SchemaDictItem, collision: number, shortest = true): boolean {
+  const words = item[0]
   const oldValue = tree.get(words)
   // 词条已经存在
-  if (oldValue && oldValue.i) {
-    if (oldValue.i.code.length <= item.code.length)
-      // 码长更长则跳过
+  if (oldValue) {
+    // 非空穴且码长更长，要跳过
+    if (shortest && oldValue.i && oldValue.i[1].length <= item[1].length)
       return false
     oldValue.i = item
     oldValue.c = collision
     return true
   }
   // 词条不存在, 先添加其中
-  tree.set(words, { i: item, c: collision, p: 0 })
   // 添加前缀
-  const wordsLength = words.length
-  for (let i = 1; i < wordsLength; i++) {
-    const prefixWords = words.slice(0, -i)
+  const wordsLen = words.length
+  tree.set(words, { i: item, c: collision, p: wordsLen })
+  for (let a = wordsLen - 1; a > 0; a--) {
+    const prefixWords = words.slice(0, a)
     const prefixValue = tree.get(prefixWords)
     // 前缀存在，修改其 prefixeeLen 值(变得更小)
     if (prefixValue) {
-      prefixValue.p = wordsLength
+      prefixValue.p = wordsLen
       if (prefixValue.i)
         return true
     }
     // 前缀不存在，该前缀一定是空穴
     else {
-      tree.set(prefixWords, { i: null, c: 0, p: wordsLength })
-    }
-  }
-  return true
-}
-
-/**
- * 加入一条词,请确保数据有效.
- * 词条冲突时, 只保留后添加的. 通常也是行号靠后的
- * @param tree 添加到哪个字典树里？
- * @param item 添加哪个词条？
- * @param collision 这个词条的重码是几重？
- * @return 是否正常添加进字典树
- */
-export function treeAddLatest(tree: UniqueTrieTree, item: SchemaDictItem, collision: number): boolean {
-  const words = item.words
-  const oldValue = tree.get(words)
-  // 词条已经存在, 也不是空穴
-  if (oldValue && oldValue.i) {
-    // 不管如何,直接添加
-    oldValue.i = item
-    oldValue.c = collision
-    return true
-  }
-  // 词条不存在, 先添加其中
-  tree.set(words, { i: item, c: collision, p: 0 })
-  // 添加前缀
-  const wordsLength = words.length
-  for (let i = 1; i < wordsLength; i++) {
-    const prefixWords = words.slice(0, -i)
-    const prefixValue = tree.get(prefixWords)
-    // 前缀存在，修改其 prefixeeLen 值(变得更小)
-    if (prefixValue) {
-      prefixValue.p = wordsLength
-      if (prefixValue.i)
-        return true
-    }
-    // 前缀不存在，该前缀一定是空穴
-    else {
-      tree.set(prefixWords, { i: null, c: 0, p: wordsLength })
+      tree.set(prefixWords, { i: null, c: 0, p: wordsLen })
     }
   }
   return true
@@ -128,15 +95,17 @@ export function treeDelete(tree: UniqueTrieTree, words: string): boolean {
     if (oldValue.p > words.length) {
       // ① 当前词设为空穴
       oldValue.i = null
+      oldValue.c = 0
       // ② 修改短词中的 最短前缀长
-      const newPrefixeeLen = oldValue.p
-      for (let i = 1; i < words.length; i++) {
-        const prefixWords = words.slice(0, -i)
+      const oldValuePrefixeeLen = oldValue.p
+      const wordsLen = words.length
+      for (let a = wordsLen; a > 0; a--) {
+        const prefixWords = words.slice(0, a)
         // 因为前缀词必然存在，所以关闭ts检查
         const prefixValue = tree.get(prefixWords)
         if (!prefixValue)
           continue
-        prefixValue.p = newPrefixeeLen
+        prefixValue.p = oldValuePrefixeeLen
         // 直到非空穴词才结束
         if (prefixValue.i)
           return true
