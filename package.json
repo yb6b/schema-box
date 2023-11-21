@@ -11,8 +11,8 @@
     "url": "https://github.com/yb6b/schema-box"
   },
   "engines": {
-    "node": "^18",
-    "pnpm": "^8"
+    "node": ">=18",
+    "pnpm": ">=8"
   },
   "scripts": {
     "dev": "quasar dev",

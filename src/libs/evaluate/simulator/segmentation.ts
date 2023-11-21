@@ -15,7 +15,7 @@ export class Segment {
     public article: string,
   ) { }
 
-  /** 把结果转换成对象，在在matchNext之后执行 */
+  /** 把结果转换成对象，在在matchNext之后执行，不会检查有没有全部分析完 */
   collect(): SegValue {
     switch (this.type) {
       case 1:
@@ -40,14 +40,27 @@ export class Segment {
       return -1
 
     // 是不是字典树里的
-    if (this.mTT(i))
+    if (this.mTT(i)) {
+      this.type = 1
       return this.index += this.ttv!.i![0].length
+    }
 
-    if (this.mPunc(i) // 是不是中文标点符号
-      || this.mBD(i, PUNCTUATIONS.en) // 是不是英文标点符号
-      || this.mBD(i, PUNCTUATIONS.uni) // 是不是中英文通用的标点符号
-    )
+    // 是不是中文标点符号
+    if (this.mPunc(i)) {
+      this.type = 2
       return this.index += this.bw!.length
+    }
+    // 是不是英文标点符号
+    if (this.mBD(i, PUNCTUATIONS.en)) {
+      this.type = 3
+      return this.index += this.bw!.length
+    }
+
+    // 是不是中英文通用的标点符号
+    if (this.mBD(i, PUNCTUATIONS.uni)) {
+      this.type = 4
+      return this.index += this.bw!.length
+    }
 
     // 都不是，那只能是缺字
     this.bw = String.fromCodePoint(this.article.codePointAt(i)!) // 要考虑双字的unicode
@@ -84,8 +97,9 @@ export class Segment {
    * @return 能否匹配到
    */
   private mTT(index: number): boolean {
-    const maxIndex = this.article.length
-    let wd = this.article[index]
+    const article = this.article
+    const maxIndex = article.length
+    let wd = article[index]
     let alreadyHadResult = false
 
     for (let i = index; i < maxIndex;) {
@@ -104,10 +118,10 @@ export class Segment {
       }
       // 不是最长的,继续探索更长的
       if (ttvalue.i) {
-        this.ttv = ttvalue
         alreadyHadResult = true
+        this.ttv = ttvalue
         i = index + ttvalue.p
-        wd = ttvalue.i[0]
+        wd = article.slice(index, i)
         continue
       }
       // 是空穴，不可能
@@ -150,7 +164,7 @@ export class Segment {
    * @return 能不能匹配到
    */
   private mBD(index: number, dict: Record<string, string>) {
-    const alreadyHadResult = false
+    let alreadyHadResult = false
     const len = this.article.length
     let c = ''
     let w = ''
@@ -159,6 +173,7 @@ export class Segment {
       const code = dict[wd]
       if (!code)
         return alreadyHadResult
+      alreadyHadResult = true
       c += code
       w += wd
       this.bc = c
