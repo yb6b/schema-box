@@ -57,8 +57,6 @@ export class SchemaDict {
    * 修改items后，清空它
    */
   c2w?: Record<string, SchemaDictItem[]>
-  /** 平台相关的其他信息 */
-  meta?: Record<string, unknown>
 
   getC2w() {
     // check cached
@@ -81,5 +79,4 @@ export interface SchemaDictItem {
   words: string
   code: string
   line: number
-  meta?: Record<string, unknown>
 }

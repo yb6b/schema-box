@@ -1,7 +1,7 @@
 import type { Schema } from '../schema'
-import { CollisionCalculator, UniqueTrieTree } from './uniqueTrieTree'
-import { generateSegmentGreedily } from './segmentation'
-import { SegmentAnalyser } from './segAnalysis'
+import { CollisionCalculator, UniqueTrieTree } from './simulator/uniqueTrieTree'
+import { generateSegmentGreedily } from './simulator/segmentation'
+import { SegmentAnalyser } from './simulator/segAnalysis'
 
 /**
  * 根据一个方案和文章开始赛码。

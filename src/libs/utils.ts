@@ -45,3 +45,12 @@ export function Cache(name: string, value: any) {
     _cacheStore.set(name, value)
   return value
 }
+
+/** 给定函数的函数代码，常用于new Function的特殊性能优化之中 */
+export function functionBody(fn: Function) {
+  const str = fn.toString()
+  return str.slice(
+    str.indexOf('{') + 1,
+    str.lastIndexOf('}'),
+  )
+}

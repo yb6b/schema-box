@@ -1,10 +1,12 @@
-/* eslint-disable eslint-comments/no-unlimited-disable */
-/* eslint-disable */
+/* eslint-disable no-console */
 
-let fs = require("fs");
-let { ALL_KEYS } = require("../schema/keys")
-const keys = [...ALL_KEYS.substring(0, 40)]
+const fs = require('node:fs')
+const { KEYS_NO_SHIFT } = require('../../constants')
 
+// 只考虑40个键，不考虑-=[]'\` 和 大写的按键
+const keys = [...KEYS_NO_SHIFT.substring(0, 40)]
+
+/** 注意，数值都乘了10，为了转整数，好储存。 */
 const eq = `
 ''	14
 ',	21
@@ -1770,50 +1772,59 @@ zw	21
 zx	15
 zy	14
 zz	13
-`;
-const singleSpan =
-  "qa za fb gb vb dc cd ed de bf gf rf tf vf bg fg rg tg vg jh mh nh uh yh ki hj mj nj uj yj ik ol hm jm nm hn jn mn lo ;p aq fr gr tr ws xs ft gt rt hu ju yu bv fv gv sw sx hy jy uy az k, ;/ p; /;";
-const multiSpan =
-  "br bt ce ec mu my nu ny p/ qz rb rv tb tv um un vr vt wx xw ym yn zq ,i /p";
-const longFingerDisturb =
-  "ct ,y tc y, cr ,u rc u, cw ,o wc o, qc ,p cq p, qx p. xq .p xe .i ex i. xr .u rx u. xt .y tx y.";
-const littleFingerDisturb =
-  "aa ac ad ae aq as aw ax az ca cq cz da dq dz ea eq ez ip i/ i; kp k/ k; lp l/ l; op o/ o; pi pk pl po pp p; qa qc qd qe qq qs qw qx sa sq sz wa wq wz xa xq xz za zc zd ze zs zw zx zz ,p ,/ ,; /i /k /l /o // /; ;i ;k ;l ;o ;p ;/ ;;";
-
-const left = new Set("12345qwertasdfgzxcvb");
-const right = new Set("67890-=yuiop[]\\hjkl;'nm,./");
-
-const isDifferentHand = (k) => {
-  return (
-    (left.has(k[0]) && right.has(k[1])) || (left.has(k[1]) && right.has(k[0]))
-  );
-};
-
-const createSet = (srcStr) => {
-  return new Set(srcStr.split(" "));
-};
-
-const ssSet = createSet(singleSpan);
-const msSet = createSet(multiSpan);
-const lfdSet = createSet(longFingerDisturb);
-const sfdSet = createSet(littleFingerDisturb);
+`
 
 const dlMap = new Map(eq.split('\n').map(v => v.trimEnd().split('\t')))
 
-const result = new Array(40).fill(new Array(40).fill(0))
+const singleSpan
+  = 'qa za fb gb vb dc cd ed de bf gf rf tf vf bg fg rg tg vg jh mh nh uh yh ki hj mj nj uj yj ik ol hm jm nm hn jn mn lo ;p aq fr gr tr ws xs ft gt rt hu ju yu bv fv gv sw sx hy jy uy az k, ;/ p; /;'
+const multiSpan
+  = 'br bt ce ec mu my nu ny p/ qz rb rv tb tv um un vr vt wx xw ym yn zq ,i /p'
+const longFingerDisturb
+  = 'ct ,y tc y, cr ,u rc u, cw ,o wc o, qc ,p cq p, qx p. xq .p xe .i ex i. xr .u rx u. xt .y tx y.'
+const littleFingerDisturb
+  = 'aa ac ad ae aq as aw ax az ca cq cz da dq dz ea eq ez ip i/ i; kp k/ k; lp l/ l; op o/ o; pi pk pl po pp p; qa qc qd qe qq qs qw qx sa sq sz wa wq wz xa xq xz za zc zd ze zs zw zx zz ,p ,/ ,; /i /k /l /o // /; ;i ;k ;l ;o ;p ;/ ;;'
 
+const ssSet = str2set(singleSpan)
+const msSet = str2set(multiSpan)
+const lfdSet = str2set(longFingerDisturb)
+const sfdSet = str2set(littleFingerDisturb)
+
+const left = new Set('12345qwertasdfgzxcvb')
+const right = new Set('67890-=yuiop[]\\hjkl;\'nm,./')
+
+// 创建 40*40 的空二维数组
+const result = Array.from({ length: 40 }).fill(Array.from({ length: 40 }).fill(0))
+
+// 为了体积最小，如下设计了各个位的意义
+let max = 0
 keys.forEach((v1, i) => {
   keys.forEach((v2, j) => {
     const pair = v1 + v2
-    result[i][j] =
-      ((msSet.has(pair) | 0) << 10) | // 同指大跨排
-      ((lfdSet.has(pair) | 0) << 9) | // 错手
-      ((ssSet.has(pair) | 0) << 8) | // 同指小跨排
-      ((sfdSet.has(pair) | 0) << 7) | // 小指干扰
-      ((pair[0] === pair[1] | 0) << 6) | // 双连击
-      ((isDifferentHand(pair) | 0) << 5) | // 左右互击
-      (parseInt(dlMap.get(pair) ?? 0) << 0); // 当量 空间是 0 ~ 0x1F
+    const r
+      = ((msSet.has(pair) | 0) << 10) // 同指大跨排
+      | ((lfdSet.has(pair) | 0) << 9) // 错手
+      | ((ssSet.has(pair) | 0) << 8) // 同指小跨排
+      | ((sfdSet.has(pair) | 0) << 7) // 小指干扰
+      | ((pair[0] === pair[1] | 0) << 6) // 双连击
+      | ((isDifferentHand(pair) | 0) << 5) // 左右互击
+      | (Number.parseInt(dlMap.get(pair) ?? 0) << 0) // 当量 空间是 0 ~ 0x1F
+    max = r > max ? r : max
+    result[i][j] = r
   })
 })
 
-fs.writeFileSync("keyData.json", JSON.stringify(result, null, 2));
+console.log('最大数字是：', max)
+
+const resultJson = JSON.stringify(result)
+fs.writeFileSync('comboFeelData.js', `export default "${resultJson}"`)
+
+function str2set(srcStr) {
+  return new Set(srcStr.split(' '))
+}
+
+function isDifferentHand(k) {
+  return (
+    (left.has(k[0]) && right.has(k[1])) || (left.has(k[1]) && right.has(k[0]))
+  )
+}
