@@ -79,7 +79,7 @@ function handlePrimaryBtn() {
           v-show="stepPageRef > 1"
           flat
           label="上一步"
-          @click="stepPageRef -= 1"
+          @click="() => stepPageRef -= 1"
         />
         <QBtn
           color="primary"

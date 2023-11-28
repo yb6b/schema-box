@@ -1,14 +1,32 @@
 {
-  "extends": "@quasar/app-webpack/tsconfig-preset",
   "compilerOptions": {
     "target": "ESNext",
+    "jsx": "preserve",
     "baseUrl": "./",
     "module": "ESNext",
+    "moduleResolution": "node",
     "paths": {
-      "libs/*": [
-        "src/libs/*"
-      ]
+      "src/*": ["src/*"],
+      "app/*": ["*"],
+      "libs/*": ["src/libs/*"],
+      "components/*": ["src/components/*"],
+      "layouts/*": ["src/layouts/*"],
+      "pages/*": ["src/pages/*"],
+      "assets/*": ["src/assets/*"],
+      "boot/*": ["src/boot/*"],
+      "stores/*": ["src/stores/*"]
     },
-    "types": ["vitest/globals"]
-  }
+    "resolveJsonModule": true,
+    "types": ["vitest/globals"],
+    "allowJs": true,
+    "strict": true,
+    "noEmit": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    // Avoid cross-os errors due to inconsistent file casing
+    "forceConsistentCasingInFileNames": true
+  },
+  // Avoid files copied into 'dist' folder (eg. a `.d.ts` file inside `src-ssr` folder)
+  // to be evaluated by TS when their original files has been updated
+  "exclude": ["dist", ".quasar", "node_modules"]
 }
