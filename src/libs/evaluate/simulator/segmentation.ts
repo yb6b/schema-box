@@ -32,7 +32,7 @@ export class Segment {
    * 匹配下一个。如果要重新开始，手动设置 this.index=0
    * @returns 如果是-1 则全文匹配结束
    */
-  matchNext() {
+  next() {
     const i = this.index
 
     // 已经结尾了，跳过
@@ -124,8 +124,8 @@ export class Segment {
         wd = article.slice(index, i)
         continue
       }
-      // 是空穴，不可能
-      throw new Error(`不可能的空穴${index} ${JSON.stringify(ttvalue)}`)
+      // 是空穴，只可能的情况：第一个字匹配到了空穴，之后却找不到更长的词。
+      return false
     }
     // 到了最后,却不是最长匹配
     return alreadyHadResult

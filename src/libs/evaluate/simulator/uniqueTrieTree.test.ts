@@ -1,5 +1,5 @@
 import type { SchemaDictItem } from 'libs/schema'
-import { createUniqueTrieTree, treeAdd, treeDelete, treeGet } from './uniqueTrieTree'
+import { createTree, treeAdd, treeDelete, treeGet } from './uniqueTrieTree'
 
 const ttvs: SchemaDictItem[] = [
   ['不', 'aa', 1],
@@ -11,12 +11,12 @@ const ttvs: SchemaDictItem[] = [
 
 describe('添加字典树', () => {
   it('treeGet', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
     expect(treeGet(tree, '不')).toBe(undefined)
   })
 
   it('添加最短', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
 
     treeAdd(tree, ttvs[0], 1)
     expect(tree.get('不')).toStrictEqual({ i: ttvs[0], p: 1, c: 1 })
@@ -30,7 +30,7 @@ describe('添加字典树', () => {
   })
 
   it('添加最新', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
     treeAdd(tree, ttvs[1], 1, false)
     treeAdd(tree, ttvs[2], 1, false)
     // 两个是，应该是后一个
@@ -38,7 +38,7 @@ describe('添加字典树', () => {
   })
 
   it('空穴', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
     treeAdd(tree, ttvs[4], 1)
     expect(tree.get('是')).toStrictEqual({ i: null, p: 3, c: 0 })
     expect(tree.get('是不')).toStrictEqual({ i: null, p: 3, c: 0 })
@@ -46,7 +46,7 @@ describe('添加字典树', () => {
   })
 
   it('居中的空穴', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
     treeAdd(tree, ttvs[4], 3)
     expect(tree.get('是')).toStrictEqual({ i: null, p: 3, c: 0 })
     treeAdd(tree, ttvs[1], 2)
@@ -59,7 +59,7 @@ describe('添加字典树', () => {
 
 describe('删除字典树', () => {
   it('删除唯一个', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
     treeAdd(tree, ttvs[0], 1)
     expect(treeDelete(tree, '是')).toBe(false)
     expect(treeDelete(tree, '不')).toBe(true)
@@ -67,7 +67,7 @@ describe('删除字典树', () => {
   })
 
   it('删除短的', () => {
-    const tree = createUniqueTrieTree()
+    const tree = createTree()
     treeAdd(tree, ttvs[4], 3)
     treeAdd(tree, ttvs[1], 2)
     expect(treeDelete(tree, '是')).toBe(true)

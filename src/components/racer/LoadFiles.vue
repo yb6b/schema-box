@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
 import type { SchemaDict } from 'libs/schema'
-import { Schema } from 'libs/schema'
 import { loadDuoduoDict } from 'libs/platforms/duoduo/load'
+import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
+import { countDictItems, createEmptySchema } from 'libs/schema/schemaUtils'
 import LoadFileDialog from './loadFile/LoadFileDialog.vue'
 import VisualizeDialog from './visualize/VisualizeDialog.vue'
 
@@ -14,7 +14,7 @@ const articleData = reactive({
 })
 
 const openSchema = ref(false)
-const schemaData = ref(new Schema())
+const schemaData = ref(createEmptySchema())
 
 const openVisualize = ref(false)
 
@@ -23,7 +23,7 @@ function displayDict(d: SchemaDict): string {
   let count = 0
   // 最多前10条
   for (const i of d.items) {
-    r += `${i.code} ${i.words} `
+    r += `${i[1]} ${i[0]} `
     if (++count >= 10)
       break
   }
@@ -68,7 +68,7 @@ function displayDict(d: SchemaDict): string {
         码表
       </QItemLabel>
       <QItem clickable @click="openSchema = true">
-        <QItemSection v-if="schemaData.dictsItemsCount() === 0">
+        <QItemSection v-if="countDictItems(schemaData) === 0">
           <QItemLabel>
             <div class="text-subtitle1 text-primary">
               点击载入码表
@@ -77,11 +77,11 @@ function displayDict(d: SchemaDict): string {
         </QItemSection>
         <QItemSection v-else>
           <QItemLabel>
-            {{ schemaData.cfg.name || "" }}
+            {{ schemaData?.cfg?.name || "" }}
             <QBadge
               rounded
               color="blue-grey-5"
-              :label="`${schemaData.dictsItemsCount()} 行`"
+              :label="`${countDictItems(schemaData)} 行`"
             />
           </QItemLabel>
           <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
@@ -122,7 +122,7 @@ function displayDict(d: SchemaDict): string {
 
     <div class="col row flex-center">
       <QBtn
-        :disable="!articleData.name || !schemaData.cfg.name"
+        :disable="!articleData.name || !schemaData?.cfg?.name"
         label="计 算"
         color="primary"
         rounded

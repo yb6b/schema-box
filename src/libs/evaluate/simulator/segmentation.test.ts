@@ -1,6 +1,6 @@
 import type { SchemaDictItem } from 'libs/schema'
 import { Segment } from './segmentation'
-import { createUniqueTrieTree, treeAdd } from './uniqueTrieTree'
+import { createTree, treeAdd } from './uniqueTrieTree'
 
 const v: SchemaDictItem[] = [
   ['不', 'aa', 1],
@@ -11,7 +11,7 @@ const v: SchemaDictItem[] = [
   ['\n', 's', 5],
 ]
 
-const tree = createUniqueTrieTree()
+const tree = createTree()
 v.forEach(v => treeAdd(tree, v, 1))
 
 describe('分词', () => {
@@ -26,9 +26,9 @@ describe('分词', () => {
   it('缺词', () => {
     const s = new Segment(tree, '不会')
     exNextAndCollectTT(s, 1, '不')
-    expect(s.matchNext()).toBe(2)
+    expect(s.next()).toBe(2)
     expect(s.collect()).toStrictEqual({ type: 5, words: '会' })
-    expect(s.matchNext()).toBe(-1)
+    expect(s.next()).toBe(-1)
   })
 
   it('码表里的标点', () => {
@@ -40,19 +40,19 @@ describe('分词', () => {
 
   it('各种标点符号', () => {
     const s = new Segment(tree, ',.\t，。')
-    expect(s.matchNext()).toBe(2)
+    expect(s.next()).toBe(2)
     expect(s.collect()).toStrictEqual({ type: 3, words: ',.', code: ',.' })
-    expect(s.matchNext()).toBe(3)
+    expect(s.next()).toBe(3)
     expect(s.collect()).toStrictEqual({ type: 4, words: '\t', code: '→' })
-    expect(s.matchNext()).toBe(4)
+    expect(s.next()).toBe(4)
     expect(s.collect()).toStrictEqual({ type: 2, words: '，', code: ',' })
-    expect(s.matchNext()).toBe(5)
+    expect(s.next()).toBe(5)
     expect(s.collect()).toStrictEqual({ type: 2, words: '。', code: '.' })
-    expect(s.matchNext()).toBe(-1)
+    expect(s.next()).toBe(-1)
   })
 })
 
 function exNextAndCollectTT(s: Segment, nextIndex: number, tobe: string) {
-  expect(s.matchNext()).toBe(nextIndex)
+  expect(s.next()).toBe(nextIndex)
   expect(s.collect()).toStrictEqual({ type: 1, value: tree.get(tobe) })
 }

@@ -3,7 +3,7 @@ import type { Schema } from 'libs/schema'
 import { onMounted, ref, watch } from 'vue'
 import { mdiClose } from '@quasar/extras/mdi-v7'
 import { titleRef } from 'libs/utils'
-import { calcSchema } from 'libs/racer'
+import { simulateSchema } from 'libs/evaluate/simulator'
 
 const p = defineProps<{
   dialog: boolean
@@ -33,9 +33,13 @@ watch(openDialogRef, (d) => {
 
 const resultRef = ref()
 onMounted(() => {
-  console.time('calc')
-  resultRef.value = calcSchema(p.dict, p.article.content)
-  console.timeEnd('calc')
+  if (process.env.DEV)
+    console.time(`计算方案${p.dict.cfg?.name}用时`)
+
+  resultRef.value = simulateSchema(p.dict, p.article.content)
+
+  if (process.env.DEV)
+    console.timeEnd(`计算方案${p.dict.cfg?.name}用时`)
 })
 </script>
 

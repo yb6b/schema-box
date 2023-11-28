@@ -12,7 +12,9 @@ export function simulateSchema(aSchema: Schema, article: string): AnalysisResult
   const dict = aSchema.dicts[0]
   const dictItems = dict.items
   for (const i of dictItems)
-    treeAdd(tree, i, collisionCounter.add(i.c))
+    treeAdd(tree, i, collisionCounter.add(i[1]))
+  if (process.env.DEV)
+    console.log(`collision counter max is:${collisionCounter.max}`)
 
   const maxCL = dict.maxCodeLen || maxCodeLen(dictItems)
   const maxWL = dict.maxWordsLen || maxWordsLen(dictItems)
@@ -24,10 +26,10 @@ export function simulateSchema(aSchema: Schema, article: string): AnalysisResult
     result.commitLength = aSchema.cfg.cmLen
 
   const segment = new Segment(tree, article)
-  let n = segment.matchNext()
+  let n = segment.next()
   while (n !== -1) {
     result.add(segment)
-    n = segment.matchNext()
+    n = segment.next()
   }
   result.reform()
   return result

@@ -1,4 +1,4 @@
-import type { SchemaDictItem } from '../../schema/index'
+import type { SchemaDictItem } from 'libs/schema'
 
 /**
  * 字典树中，每个词语的值。
@@ -24,7 +24,7 @@ export interface TrieTreeValue {
 export type UniqueTrieTree = Map<string, TrieTreeValue>
 
 /** 新建字典树 */
-export function createUniqueTrieTree(): UniqueTrieTree {
+export function createTree(): UniqueTrieTree {
   return new Map()
 }
 

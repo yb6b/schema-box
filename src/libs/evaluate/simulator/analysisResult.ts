@@ -126,7 +126,7 @@ export class AnalysisResult {
       const finger = magic >> 2
       this.fingersDist[finger] += count
       // 补全键盘排号
-      const row = magic & 0xFF
+      const row = magic & 0x3
       this.kbdRowDist[row] += count
     }
 
@@ -150,15 +150,6 @@ export class AnalysisResult {
     this.codeLengthDist.forEach((v, i) => {
       this.codeLength += v * (i + 1)
     })
-
-    // 总击键数
-    for (const k in this.keysDist) {
-      const v = this.keysDist[k]
-      this.keys += v
-      const m = keyFeelData[k]
-      this.fingersDist[m >> 2] += v
-      this.kbdRowDist[m & 3] += v
-    }
   }
 
   /**

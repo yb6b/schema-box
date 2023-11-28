@@ -1,4 +1,4 @@
-import type { Schema, SchemaDictItem } from './schema'
+import type { Schema, SchemaDictItem } from './schemaTypes'
 
 export function createEmptySchema(): Schema {
   return { dicts: [{ items: [] }] }

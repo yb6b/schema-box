@@ -2,6 +2,7 @@ const antfu = require('@antfu/eslint-config').default
 
 module.exports = antfu({}, {
   rules: {
-    'n/prefer-global/process': ['off'],
+    'node/prefer-global/process': ['off'],
+    'no-console': ['warn'],
   },
 })

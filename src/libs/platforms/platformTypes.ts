@@ -1,6 +1,4 @@
-import DetectFileEncoding from 'detect-file-encoding-and-language'
 import type { Schema } from '../schema'
-import { createTextBlob } from './utils'
 import type RawFile from './rawFile'
 
 export * from '../schema'
