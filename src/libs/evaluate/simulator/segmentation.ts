@@ -102,30 +102,34 @@ export class Segment {
     let wd = article[index]
     let alreadyHadResult = false
 
-    for (let i = index; i < maxIndex;) {
+    for (let i = index; i <= maxIndex;) {
       const ttvalue = this.tree.get(wd)
-
       // 未收录
       if (!ttvalue)
         return alreadyHadResult
 
-      // 收录了
-
-      // 正好最长匹配
-      if (wd.length === ttvalue.p) {
-        this.ttv = ttvalue
-        return true
-      }
-      // 不是最长的,继续探索更长的
-      if (ttvalue.i) {
-        alreadyHadResult = true
-        this.ttv = ttvalue
+      // 收录了空穴，唯一的可能：第一个字是空穴。
+      if (!ttvalue.i) {
         i = index + ttvalue.p
         wd = article.slice(index, i)
         continue
       }
-      // 是空穴，只可能的情况：第一个字匹配到了空穴，之后却找不到更长的词。
-      return false
+
+      // 收录的不是这个词
+      if (ttvalue.i[0] !== wd)
+        return alreadyHadResult
+
+      // 是这个词，而且正好最长匹配
+      if (wd.length === ttvalue.p) {
+        this.ttv = ttvalue
+        return true
+      }
+
+      // 是这个词，但提示还有更长的。
+      alreadyHadResult = true
+      this.ttv = ttvalue
+      i = index + ttvalue.p
+      wd = article.slice(index, i)
     }
     // 到了最后,却不是最长匹配
     return alreadyHadResult

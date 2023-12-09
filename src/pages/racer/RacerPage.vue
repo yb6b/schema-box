@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import type { SchemaDict } from 'libs/schema'
+import type { Schema, SchemaDict } from 'libs/schema'
 
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref, shallowRef } from 'vue'
 import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
 import { countDictItems, createEmptySchema } from 'libs/schema/schemaUtils'
 import { loadDuoduoDict } from 'libs/platforms/duoduo/load'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
 import LoadFileDialog from 'components/loadFile/LoadFileDialog.vue'
-import VisualizeDialog from './visualize/VisualizeDialog.vue'
+import moc_article from 'app/dist/xinqing_jueding.js'
+import moc_schema from 'app/dist/qqwb.js'
+import RawFile from 'src/libs/platforms/rawFile'
+import Visualize from './visualize/Visualize.vue'
 
 const openArticle = ref(false)
 const articleData = reactive({
@@ -17,9 +20,20 @@ const articleData = reactive({
 })
 
 const openSchema = ref(false)
-const schemaData = ref(createEmptySchema())
+const schemaData = shallowRef(createEmptySchema())
 
 const openVisualize = ref(false)
+
+// 开发模式下，直接提供一些方案
+if (process.env.DEV) {
+  onMounted(async () => {
+    articleData.name = '心情决定事情'
+    articleData.content = moc_article
+    const raw = await loadDuoduoDict(new RawFile(moc_schema))
+    schemaData.value = raw
+    schemaData.value.cfg = { name: 'QQ五笔', cmLen: 4, raw: moc_schema, plat: 'duoduo' }
+  })
+}
 
 function displayDict(d: SchemaDict): string {
   let r = ''
@@ -41,7 +55,7 @@ function displayDict(d: SchemaDict): string {
         <QItemLabel header>
           赛文
         </QItemLabel>
-        <QItem clickable @click="openArticle = true">
+        <QItem clickable @click="() => openArticle = true">
           <QItemSection v-if="articleData.content === ''">
             <QItemLabel>
               <div class="text-subtitle1 text-primary">
@@ -116,13 +130,14 @@ function displayDict(d: SchemaDict): string {
           articleData.name = v.options.name!
         }"
       />
-
-      <VisualizeDialog
-        v-if="openVisualize"
-        v-model:dialog="openVisualize"
-        :article="articleData"
-        :dict="schemaData"
-      />
+      <QDialog v-model="openVisualize" maximized>
+        <Visualize
+          v-if="openVisualize"
+          v-model:dialog="openVisualize"
+          :article="articleData"
+          :schema="schemaData"
+        />
+      </QDialog>
 
       <div class="col row flex-center">
         <QBtn

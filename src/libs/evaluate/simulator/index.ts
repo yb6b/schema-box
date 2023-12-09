@@ -13,12 +13,10 @@ export function simulateSchema(aSchema: Schema, article: string): AnalysisResult
   const dictItems = dict.items
   for (const i of dictItems)
     treeAdd(tree, i, collisionCounter.add(i[1]))
-  if (process.env.DEV)
-    console.log(`collision counter max is:${collisionCounter.max}`)
 
   const maxCL = dict.maxCodeLen || maxCodeLen(dictItems)
   const maxWL = dict.maxWordsLen || maxWordsLen(dictItems)
-  const result = new AnalysisResult(collisionCounter.max, maxCL, maxWL)
+  const result = new AnalysisResult(collisionCounter.max, maxWL, maxCL)
 
   if (aSchema.cfg?.selectKeys)
     result.collisionKeys = aSchema.cfg.selectKeys

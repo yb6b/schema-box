@@ -30,7 +30,7 @@ module.exports = configure((ctx) => {
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
     css: [
-      'app.scss',
+      'app.css',
     ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
@@ -51,7 +51,7 @@ module.exports = configure((ctx) => {
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
-      transpile: ctx.prod,
+      transpile: false, // ctx.prod,
       chainWebpack(chain) {
         chain.resolve.alias.set('libs', resolve('./src/libs'))
       },
@@ -64,10 +64,10 @@ module.exports = configure((ctx) => {
       // transpileDependencies: [],
 
       // rtl: true, // https://quasar.dev/options/rtl-support
-      // preloadChunks: true,
+      preloadChunks: true,
       // showProgress: false,
       // gzip: true,
-      // analyze: true,
+      analyze: true,
 
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
@@ -106,7 +106,7 @@ module.exports = configure((ctx) => {
     },
 
     vendor: {
-      disable: true,
+      remove: ['.*vueuse.*', '@quasar'],
     },
 
     // animations: 'all', // --- includes all animations

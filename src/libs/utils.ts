@@ -1,7 +1,5 @@
 import { customAlphabet } from 'nanoid'
-import { useTitle } from '@vueuse/core'
 
-export const titleRef = useTitle('主页', { titleTemplate: '%s · 形码盒子' })
 export const nanoid6 = customAlphabet('346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz', 6)
 async function customFetch<T>(url: string, handler: (f: Response) => Promise<T>) {
   const f = await fetch(url)

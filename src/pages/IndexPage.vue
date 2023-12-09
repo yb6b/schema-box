@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { titleRef } from 'libs/utils'
+import { useSetTitle } from 'libs/hooks'
 
-titleRef.value = '主页'
+useSetTitle('赛码器')
 </script>
 
 <template>

@@ -15,7 +15,7 @@ export class AnalysisResult {
   constructor(maxCollision: number, maxWords: number, maxCodeLength: number) {
     this.collisionDist = Array(maxCollision).fill(0)
     this.wordsDist = Array(maxWords).fill(0)
-    this.codeLengthDist = Array(maxCodeLength + 1).fill(0)
+    this.codeLengthDist = Array(maxCodeLength).fill(0)
     for (const k in keyFeelData)
       this.keysDist[k] = 0
   }
@@ -187,6 +187,8 @@ export class AnalysisResult {
   private hTT(value: Segment) {
     let code = value.ttv!.i![1]
     const collision = value.ttv!.c
+    // 码长不能加选重键
+    this.codeLengthDist[code.length - 1]++
     // 要加选重键的情况
     if (code.length < this.commitLength || collision !== 1)
       code += this.collisionKeys[collision - 1]
@@ -195,7 +197,6 @@ export class AnalysisResult {
     this.hanzi += wordsLen
     this.commit++
     this.wordsDist[wordsLen - 1]++
-    this.codeLengthDist[code.length - 1]++
     this.collisionChar += wordsLen
     this.collisionDist[collision - 1]++
   }

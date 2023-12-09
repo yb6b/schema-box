@@ -1,15 +1,14 @@
 <script lang="ts" setup>
-import LoadFiles from 'components/racer/LoadFiles.vue'
-import { titleRef } from 'src/libs/utils'
+import { useSetTitle } from 'libs/hooks'
 
-const p = defineProps({
+defineProps({
   title: {
     type: String,
     default: '',
   },
 })
 
-titleRef.value = p.title
+useSetTitle()
 </script>
 
 <template>
