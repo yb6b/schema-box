@@ -24,13 +24,19 @@ export const loadDuoduoDict: LoadSchema = async (src) => {
     const lineSplit = i.split('\t')
     if (lineSplit.length !== 2)
       throw new FormatError(`码表第${lineno}行，不是两列。`)
-    const codeParsed = parseDuoduoCodes(lineSplit[1])
-    pushFirstDict(result, [
-      lineSplit[0],
-      codeParsed.codes,
-      lineno,
-      codeParsed.meta,
-    ])
+    try {
+      const codeParsed = parseDuoduoCodes(lineSplit[1])
+      pushFirstDict(result, [
+        lineSplit[0],
+        codeParsed.codes,
+        lineno,
+        codeParsed.meta,
+      ])
+    }
+    catch (error) {
+      if (error instanceof Error)
+        throw new FormatError(`码表第${lineno}行，编码错误\n${error.message}`)
+    }
   }
   return result
 }

@@ -93,33 +93,8 @@ function displayDict(d: SchemaDict): string {
         <QItemLabel header>
           码表
         </QItemLabel>
-        <QItem clickable @click="_ => openSchema = true">
-          <QItemSection v-if="countDictItems(schemaData2) === 0">
-            <QItemLabel>
-              <div class="text-subtitle1 text-primary">
-                点击载入副码表
-              </div>
-            </QItemLabel>
-          </QItemSection>
-          <QItemSection v-else>
-            <QItemLabel>
-              {{ schemaData2?.cfg?.name || "" }}
-              <QBadge
-                rounded
-                color="blue-grey-5"
-                :label="`${countDictItems(schemaData2)} 行`"
-              />
-            </QItemLabel>
-            <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-              {{ displayDict(schemaData2.dicts[0]) }}
-            </QItemLabel>
-          </QItemSection>
 
-          <QItemSection side>
-            <QIcon :name="mdiTextBoxEditOutline" />
-          </QItemSection>
-        </QItem>
-        <QItem clickable @click="_ => openSchema2 = true">
+        <QItem clickable @click="_ => openSchema = true">
           <QItemSection v-if="countDictItems(schemaData) === 0">
             <QItemLabel>
               <div class="text-subtitle1 text-primary">
@@ -138,6 +113,32 @@ function displayDict(d: SchemaDict): string {
             </QItemLabel>
             <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
               {{ displayDict(schemaData.dicts[0]) }}
+            </QItemLabel>
+          </QItemSection>
+
+          <QItemSection side>
+            <QIcon :name="mdiTextBoxEditOutline" />
+          </QItemSection>
+        </QItem>
+        <QItem clickable @click="_ => openSchema2 = true">
+          <QItemSection v-if="countDictItems(schemaData2) === 0">
+            <QItemLabel>
+              <div class="text-subtitle1 text-primary">
+                点击载入副码表
+              </div>
+            </QItemLabel>
+          </QItemSection>
+          <QItemSection v-else>
+            <QItemLabel>
+              {{ schemaData2?.cfg?.name || "" }}
+              <QBadge
+                rounded
+                color="blue-grey-5"
+                :label="`${countDictItems(schemaData2)} 行`"
+              />
+            </QItemLabel>
+            <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+              {{ displayDict(schemaData2.dicts[0]) }}
             </QItemLabel>
           </QItemSection>
 

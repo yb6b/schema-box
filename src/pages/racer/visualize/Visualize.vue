@@ -50,7 +50,7 @@ const tabRef = ref('feeling')
   <QCard>
     <QBar>
       <QSpace />
-      <span class="text-overline text-blue-grey-9">{{ title }}</span>
+      <span class="text-overline text-blue-grey-9" style="text-wrap: nowrap;text-overflow: ellipsis; overflow: hidden;max-width: calc(99vw - 6rem)">{{ title }}</span>
       <QSpace />
       <QBtn v-close-popup round flat :icon="mdiClose">
         <QTooltip self="center middle" :offset="[0, 25]">
@@ -67,6 +67,8 @@ const tabRef = ref('feeling')
       <QTabPanels
         v-model="tabRef"
         animated
+        transition-next="slide-right"
+        transition-prev="slide-left"
       >
         <QTabPanel name="feeling">
           <Feeling />

@@ -20,8 +20,8 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
 </script>
 
 <template>
-  <div class="row flex-center q-col-gutter-md">
-    <div class="col-4">
+  <div class=" flex-center q-col-gutter-md">
+    <div class="row justify-center">
       <QMarkupTable separator="horizontal" flat bordered dense>
         <thead class="bg-indigo-5 text-white q-pa-md">
           <tr>
@@ -244,26 +244,28 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
       </QMarkupTable>
     </div>
 
-    <div class="col-8">
-      <BarChart
-        title="各手指击键数"
-        :labels="['大拇指', '左手小指', '左手无名指', '左手中指', '左手食指', '右手食指', '右手中指', '右手无名指', '右手小指']"
-        :datasets="[{
-                      label: schema.cfg!.name!,
-                      data: splice(result.fingersDist, 5, 2, []),
-                    },
-                    {
-                      label: schema2.cfg!.name!,
-                      data: splice(result2.fingersDist, 5, 2, []),
-                    }]"
-      />
+    <div class="row justify-center q-mx-lg">
+      <div class="col-full col-md-6">
+        <BarChart
+          title="各手指击键数"
+          :labels="['大拇指', '左手小指', '左手无名指', '左手中指', '左手食指', '右手食指', '右手中指', '右手无名指', '右手小指']"
+          :datasets="[{
+                        label: schema.cfg!.name!,
+                        data: splice(result.fingersDist, 5, 2, []),
+                      },
+                      {
+                        label: schema2.cfg!.name!,
+                        data: splice(result2.fingersDist, 5, 2, []),
+                      }]"
+        />
+      </div>
     </div>
   </div>
   <h3 class="text-subtitle2 text-center text-grey-8">
     按键使用率
   </h3>
-  <div class="row q-gutter-md flex-center">
-    <div class="col-5">
+  <div class="row q-gutter-lg justify-center">
+    <div class="col-12 col-sm-5">
       <div class="text-center">
         {{ schema.cfg?.name }}
       </div>
@@ -297,7 +299,7 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
         </div>
       </div>
     </div>
-    <div class="col-5">
+    <div class="col-12 col-sm-5">
       <div class="text-center">
         {{ schema2.cfg?.name }}
       </div>
