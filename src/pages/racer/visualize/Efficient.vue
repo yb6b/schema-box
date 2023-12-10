@@ -9,9 +9,15 @@ import { inject } from 'vue'
 
 const schema = inject('schema') as Schema
 const result = inject('result') as AnalysisResult
-const shrinpWordsDist = dropLastFalsyItems(result.wordsDist)
-const wordsDistLabels = Object.keys(shrinpWordsDist).map((_, i) => `${i + 1} 字词`)
-wordsDistLabels[0] = '打单'
+const schema2 = inject('schema2') as Schema
+const result2 = inject('result2') as AnalysisResult
+
+function makeLabel(dist: number[], suffix: string, firstItemName: string) {
+  const shrinkedDist = dropLastFalsyItems(dist)
+  const distLabels = Object.keys(shrinkedDist).map((_, i) => `${i + 1} ${suffix}`)
+  distLabels[0] = firstItemName
+  return distLabels
+}
 </script>
 
 <template>
@@ -23,8 +29,11 @@ wordsDistLabels[0] = '打单'
             <th class="text-right">
               测试项目
             </th>
-            <th>
+            <th class="text-left">
               {{ schema.cfg?.name }}
+            </th>
+            <th class="text-left">
+              {{ schema2.cfg?.name }}
             </th>
           </tr>
         </thead>
@@ -39,6 +48,12 @@ wordsDistLabels[0] = '打单'
               </TopTooltip>
               {{ result.lack }}
             </td>
+            <td>
+              <TopTooltip>
+                {{ [...result2.lackCounter.keys()].join('') }}
+              </TopTooltip>
+              {{ result2.lack }}
+            </td>
           </tr>
 
           <tr>
@@ -47,6 +62,9 @@ wordsDistLabels[0] = '打单'
             </td>
             <td>
               {{ result.commit }}
+            </td>
+            <td>
+              {{ result2.commit }}
             </td>
           </tr>
 
@@ -57,6 +75,9 @@ wordsDistLabels[0] = '打单'
             <td>
               {{ result.words }}
             </td>
+            <td>
+              {{ result2.words }}
+            </td>
           </tr>
 
           <tr>
@@ -65,6 +86,9 @@ wordsDistLabels[0] = '打单'
             </td>
             <td>
               {{ result.wordsChar }}
+            </td>
+            <td>
+              {{ result2.wordsChar }}
             </td>
           </tr>
 
@@ -78,6 +102,12 @@ wordsDistLabels[0] = '打单'
               </TopTooltip>
               {{ formatFloat(result.codeLength / result.commit) }}
             </td>
+            <td>
+              <TopTooltip>
+                总码长：{{ result2.codeLength }} <br> 总上屏：{{ result2.commit }}
+              </TopTooltip>
+              {{ formatFloat(result2.codeLength / result2.commit) }}
+            </td>
           </tr>
         </tbody>
       </QMarkupTable>
@@ -85,10 +115,26 @@ wordsDistLabels[0] = '打单'
     <div class="col-4">
       <BarChart
         title="上屏词语长度分布"
-        :labels="wordsDistLabels"
+        :labels="makeLabel(result.wordsDist, '字词', '打单')"
         :datasets="[{
           label: schema.cfg!.name!,
-          data: shrinpWordsDist,
+          data: dropLastFalsyItems(result.wordsDist),
+        }, {
+          label: schema2.cfg!.name!,
+          data: dropLastFalsyItems(result2.wordsDist),
+        }]"
+      />
+    </div>
+    <div class="col-4">
+      <BarChart
+        title="选重分布"
+        :labels="makeLabel(result.codeLengthDist, '重', '首选')"
+        :datasets="[{
+          label: schema.cfg!.name!,
+          data: dropLastFalsyItems(result.wordsDist),
+        }, {
+          label: schema2.cfg!.name!,
+          data: dropLastFalsyItems(result2.wordsDist),
         }]"
       />
     </div>

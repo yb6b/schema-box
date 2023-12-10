@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
+import { writeFileSync } from 'node:fs'
 
-const fs = require('node:fs')
-const { KEYS_NO_SHIFT } = require('../../constants')
+import { KEYS_NO_SHIFT } from '../../constants'
 
 // 只考虑40个键，不考虑-=[]'\` 和 大写的按键
 const keys = [...KEYS_NO_SHIFT.substring(0, 40)]
@@ -1776,55 +1775,86 @@ zz	13
 
 const dlMap = new Map(eq.split('\n').map(v => v.trimEnd().split('\t')))
 
-const singleSpan
-  = 'qa za fb gb vb dc cd ed de bf gf rf tf vf bg fg rg tg vg jh mh nh uh yh ki hj mj nj uj yj ik ol hm jm nm hn jn mn lo ;p aq fr gr tr ws xs ft gt rt hu ju yu bv fv gv sw sx hy jy uy az k, ;/ p; /;'
-const multiSpan
-  = 'br bt ce ec mu my nu ny p/ qz rb rv tb tv um un vr vt wx xw ym yn zq ,i /p'
-const longFingerDisturb
-  = 'ct ,y tc y, cr ,u rc u, cw ,o wc o, qc ,p cq p, qx p. xq .p xe .i ex i. xr .u rx u. xt .y tx y.'
-const littleFingerDisturb
-  = 'aa ac ad ae aq as aw ax az ca cq cz da dq dz ea eq ez ip i/ i; kp k/ k; lp l/ l; op o/ o; pi pk pl po pp p; qa qc qd qe qq qs qw qx sa sq sz wa wq wz xa xq xz za zc zd ze zs zw zx zz ,p ,/ ,; /i /k /l /o // /; ;i ;k ;l ;o ;p ;/ ;;'
+const keysUnderFinger = ['1qaz', '2wsx', '3edc', '4rfv5tgb', '6yhn7ujm', '8ik,', '9ol.', '0p;/']
 
-const ssSet = str2set(singleSpan)
-const msSet = str2set(multiSpan)
-const lfdSet = str2set(longFingerDisturb)
-const sfdSet = str2set(littleFingerDisturb)
+const singleSpan = keysUnderFinger.map((v) => {
+  const make3 = v => [v[0] + v[1], v[1] + v[2], v[2] + v[3]]
+  if (v.length === 4)
+    return make3(v)
+  return [
+    v,
+    v.slice(4),
+    v[0] + v[5] + v[2] + v[7],
+    v[4] + v[1] + v[6] + v[3],
+  ].map(make3)
+}) // '1q qa az 2w ws sx 3e ed dc 4r rf fv 5t tg gb 5r tf gv 4t rg fb 6y yh hn 7u uj jm 7y uh jn 6u yj hm 8i ik k, 9o ol l. 0p p; ;/ -[ [\' =]'
+
+const multiSpan = keysUnderFinger.map((v) => {
+  const make3 = v => [v[0] + v[2], v[1] + v[3], v[0] + v[3]]
+  if (v.length === 4)
+    return make3(v)
+  return [
+    v,
+    v.slice(4),
+    v[0] + v[1] + v[6] + v[7],
+    v[4] + v[5] + v[2] + v[3],
+  ].map(make3)
+}) // = 'br bt ce ec mu my nu ny p/ qz rb rv tb tv um un vr vt wx xw ym yn zq ,i /p '
+
+const longFingerDisturb = [['xc', 'rt45', 'we23'], ['sd', '45', '23'], [',.', 'yu67', 'io89'], ['kl', '67', '89']].map(([a, b, c]) => {
+  const res = [...a].map(a2 => [...b].map(b2 => a2 + b2))
+
+  res.push(a[0] + c[1])
+  res.push(a[1] + c[0])
+  if (c.length > 2) {
+    res.push(a[0] + c[3])
+    res.push(a[1] + c[2])
+  }
+  return res
+}) //  = 'ct ,y tc y, cr ,u rc u, cw ,o wc o, qc ,p cq p, qx p. xq .p xe .i ex i. xr .u rx u. xt .y tx y.'
+
+const littleFingerDisturb = [['1qaz', '2wsx3edc'], ['0p;/-[\'=]\\', '8ik,9ol.']].map(([little, long]) => [...little].map(k => [...long].map(k2 => k + k2)))
+// = 'aa ac ad ae aq as aw ax az ca cq cz da dq dz ea eq ez ip i/ i; kp k/ k; lp l/ l; op o/ o; pi pk pl po pp p; qa qc qd qe qq qs qw qx sa sq sz wa wq wz xa xq xz za zc zd ze zs zw zx zz ,p ,/ ,; /i /k /l /o // /; ;i ;k ;l ;o ;p ;/ ;;'
+
+const ssSet = makeSet(singleSpan)
+const msSet = makeSet(multiSpan)
+const lfdSet = makeSet(longFingerDisturb)
+const sfdSet = makeSet(littleFingerDisturb)
 
 const left = new Set('12345qwertasdfgzxcvb')
 const right = new Set('67890-=yuiop[]\\hjkl;\'nm,./')
 
-// 创建 40*40 的空二维数组
-const result = Array.from({ length: 40 }).fill(Array.from({ length: 40 }).fill(0))
-
-// 为了体积最小，如下设计了各个位的意义
-let max = 0
-keys.forEach((v1, i) => {
-  keys.forEach((v2, j) => {
-    const pair = v1 + v2
-    const r
-      = ((msSet.has(pair) | 0) << 10) // 同指大跨排
-      | ((lfdSet.has(pair) | 0) << 9) // 错手
-      | ((ssSet.has(pair) | 0) << 8) // 同指小跨排
-      | ((sfdSet.has(pair) | 0) << 7) // 小指干扰
-      | ((pair[0] === pair[1] | 0) << 6) // 双连击
-      | ((isDifferentHand(pair) | 0) << 5) // 左右互击
-      | (Number.parseInt(dlMap.get(pair) ?? 0) << 0) // 当量 空间是 0 ~ 0x1F
-    max = r > max ? r : max
-    result[i][j] = r
-  })
-})
-
-console.log('最大数字是：', max)
-
+const result = keys.map(v1 => keys.map(v2 => keyPairToMagic(v1 + v2)))
 const resultJson = JSON.stringify(result)
-fs.writeFileSync('comboFeelData.js', `export default "${resultJson}"`)
 
-function str2set(srcStr) {
-  return new Set(srcStr.split(' '))
+writeFileSync('comboFeelData.js', `export default "${resultJson}"`)
+
+////////////////////
+
+function makeSet(str_arr) {
+  const flatarr = str_arr.flat(99)
+  const r = new Set()
+  for (const i of flatarr) {
+    r.add(i)
+    r.add(i[1] + i[0])
+  }
+  return r
 }
 
 function isDifferentHand(k) {
   return (
     (left.has(k[0]) && right.has(k[1])) || (left.has(k[1]) && right.has(k[0]))
+  )
+}
+
+function keyPairToMagic(pair) {
+  return (
+    ((msSet.has(pair) | 0) << 10) // 同指大跨排
+    | ((lfdSet.has(pair) | 0) << 9) // 错手
+    | ((ssSet.has(pair) | 0) << 8) // 同指小跨排
+    | ((sfdSet.has(pair) | 0) << 7) // 小指干扰
+    | ((pair[0] === pair[1] | 0) << 6) // 双连击
+    | ((isDifferentHand(pair) | 0) << 5) // 左右互击
+    | (Number.parseInt(dlMap.get(pair) ?? 0) << 0) // 当量 空间是 0 ~ 0x1F
   )
 }

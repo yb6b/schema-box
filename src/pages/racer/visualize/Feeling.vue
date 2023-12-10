@@ -12,11 +12,15 @@ function formatPercentButZero(n: number) {
 }
 
 const schema = inject('schema') as Schema
+const schema2 = inject('schema2') as Schema
 const result = inject('result') as AnalysisResult
+const result2 = inject('result2') as AnalysisResult
+
+const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
 </script>
 
 <template>
-  <div class="row flex-center">
+  <div class="row flex-center q-col-gutter-md">
     <div class="col-4">
       <QMarkupTable separator="horizontal" flat bordered dense>
         <thead class="bg-indigo-5 text-white q-pa-md">
@@ -27,6 +31,9 @@ const result = inject('result') as AnalysisResult
             <th class="text-left">
               {{ schema.cfg?.name }}
             </th>
+            <th class="text-left">
+              {{ schema2.cfg?.name }}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -36,6 +43,9 @@ const result = inject('result') as AnalysisResult
             </td>
             <td>
               {{ result.combo }}
+            </td>
+            <td>
+              {{ result2.combo }}
             </td>
           </tr>
 
@@ -50,6 +60,13 @@ const result = inject('result') as AnalysisResult
               </TopTooltip>
               {{ formatFloat(result.Eq / result.combo, 3) }}
             </td>
+            <td>
+              <TopTooltip>
+                总当量：{{ result2.Eq }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatFloat(result2.Eq / result2.combo, 3) }}
+            </td>
           </tr>
           <tr>
             <td class="text-right">
@@ -61,6 +78,13 @@ const result = inject('result') as AnalysisResult
                 上屏字数：{{ result.combo }}
               </TopTooltip>
               {{ formatFloat(result.Eq / result.hanzi, 3) }}
+            </td>
+            <td>
+              <TopTooltip>
+                总当量：{{ result2.Eq }}<br>
+                上屏字数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatFloat(result2.Eq / result2.hanzi, 3) }}
             </td>
           </tr>
 
@@ -75,6 +99,13 @@ const result = inject('result') as AnalysisResult
               </TopTooltip>
               {{ formatPercentButZero(result.singleSpan / result.combo) }}
             </td>
+            <td>
+              <TopTooltip>
+                小跨排次数：{{ result2.singleSpan }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.singleSpan / result2.combo) }}
+            </td>
           </tr>
           <tr>
             <td class="text-right">
@@ -86,6 +117,13 @@ const result = inject('result') as AnalysisResult
                 组合数：{{ result.combo }}
               </TopTooltip>
               {{ formatPercentButZero(result.multiSpan / result.combo) }}
+            </td>
+            <td>
+              <TopTooltip>
+                大跨排次数：{{ result2.multiSpan }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.multiSpan / result2.combo) }}
             </td>
           </tr>
           <tr>
@@ -99,6 +137,13 @@ const result = inject('result') as AnalysisResult
               </TopTooltip>
               {{ formatPercentButZero(result.longFD / result.combo) }}
             </td>
+            <td>
+              <TopTooltip>
+                错手次数：{{ result2.longFD }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.longFD / result2.combo) }}
+            </td>
           </tr>
           <tr>
             <td class="text-right">
@@ -110,6 +155,13 @@ const result = inject('result') as AnalysisResult
                 组合数：{{ result.combo }}
               </TopTooltip>
               {{ formatPercentButZero(result.littleFD / result.combo) }}
+            </td>
+            <td>
+              <TopTooltip>
+                小指干扰次数：{{ result2.littleFD }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.littleFD / result2.combo) }}
             </td>
           </tr>
           <tr>
@@ -123,6 +175,13 @@ const result = inject('result') as AnalysisResult
               </TopTooltip>
               {{ formatPercentButZero(result.double / result.combo) }}
             </td>
+            <td>
+              <TopTooltip>
+                二连击次数：{{ result2.double }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.double / result2.combo) }}
+            </td>
           </tr>
           <tr>
             <td class="text-right">
@@ -134,6 +193,13 @@ const result = inject('result') as AnalysisResult
                 三键组合数：{{ result.combo - 1 }}
               </TopTooltip>
               {{ formatPercentButZero(result.trible / (result.combo - 1)) }}
+            </td>
+            <td>
+              <TopTooltip>
+                三连击次数：{{ result2.trible }}<br>
+                三键组合数：{{ result2.combo - 1 }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.trible / (result2.combo - 1)) }}
             </td>
           </tr>
           <tr>
@@ -147,6 +213,13 @@ const result = inject('result') as AnalysisResult
               </TopTooltip>
               {{ formatPercentButZero(result.sameFingers / (result.combo)) }}
             </td>
+            <td>
+              <TopTooltip>
+                同指组合次数：{{ result2.sameFingers }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(result2.sameFingers / (result2.combo)) }}
+            </td>
           </tr>
           <tr>
             <td class="text-right">
@@ -159,20 +232,104 @@ const result = inject('result') as AnalysisResult
               </TopTooltip>
               {{ formatPercentButZero(1 - result.sameFingers / result.combo) }}
             </td>
+            <td>
+              <TopTooltip>
+                异指组合次数：{{ result2.combo - result2.sameFingers }}<br>
+                组合数：{{ result2.combo }}
+              </TopTooltip>
+              {{ formatPercentButZero(1 - result2.sameFingers / result2.combo) }}
+            </td>
           </tr>
         </tbody>
       </QMarkupTable>
     </div>
 
-    <div class="col-4">
+    <div class="col-8">
       <BarChart
         title="各手指击键数"
         :labels="['大拇指', '左手小指', '左手无名指', '左手中指', '左手食指', '右手食指', '右手中指', '右手无名指', '右手小指']"
         :datasets="[{
-          label: schema.cfg!.name!,
-          data: splice(result.fingersDist, 5, 2, []),
-        }]"
+                      label: schema.cfg!.name!,
+                      data: splice(result.fingersDist, 5, 2, []),
+                    },
+                    {
+                      label: schema2.cfg!.name!,
+                      data: splice(result2.fingersDist, 5, 2, []),
+                    }]"
       />
+    </div>
+  </div>
+  <h3 class="text-subtitle2 text-center text-grey-8">
+    按键使用率
+  </h3>
+  <div class="row q-gutter-md flex-center">
+    <div class="col-5">
+      <div class="text-center">
+        {{ schema.cfg?.name }}
+      </div>
+      <div class="column no-wrap content-center">
+        <div v-for="line of keyboard" :key="line" class="col row">
+          <template v-for="k in line" :key="k">
+            <div class="col text-center non-selectable" :style="{ backgroundColor: `rgba(239,68,68,${result.keysDist[k] * 20 / result.keys})` }">
+              <TopTooltip>
+                按键 <kbd v-text="k" /> 按下 {{ result.keysDist[k] }} 次<br>
+                占比 {{ formatPercentButZero(result.keysDist[k] / result.keys) }}
+              </TopTooltip>
+              <kbd>{{ k }}</kbd>
+            </div>
+          </template>
+        </div>
+        <div
+          class="col row"
+        >
+          <div class="col-3" />
+          <div
+            class="col text-center"
+            :style="{ backgroundColor: `rgba(239,68,68,${result.keysDist[' '] * 10 / result.keys})` }"
+          >
+            <TopTooltip>
+              空格键按下 {{ result.keysDist[' '] }} 次<br>
+              占比 {{ formatPercentButZero(result.keysDist[' '] / result.keys) }}
+            </TopTooltip>
+            空格
+          </div>
+          <div class="col-3" />
+        </div>
+      </div>
+    </div>
+    <div class="col-5">
+      <div class="text-center">
+        {{ schema2.cfg?.name }}
+      </div>
+      <div class="column no-wrap content-center">
+        <div v-for="line of keyboard" :key="line" class="col row">
+          <template v-for="k in line" :key="k">
+            <div class="col text-center non-selectable" :style="{ backgroundColor: `rgba(239,68,68,${result2.keysDist[k] * 20 / result2.keys})` }">
+              <TopTooltip>
+                按键 <kbd v-text="k" /> 按下 {{ result2.keysDist[k] }} 次<br>
+                占比 {{ formatPercentButZero(result2.keysDist[k] / result2.keys) }}
+              </TopTooltip>
+              <kbd>{{ k }}</kbd>
+            </div>
+          </template>
+        </div>
+        <div
+          class="col row"
+        >
+          <div class="col-3" />
+          <div
+            class="col text-center"
+            :style="{ backgroundColor: `rgba(239,68,68,${result2.keysDist[' '] * 10 / result2.keys})` }"
+          >
+            <TopTooltip>
+              空格键按下 {{ result2.keysDist[' '] }} 次<br>
+              占比 {{ formatPercentButZero(result2.keysDist[' '] / result2.keys) }}
+            </TopTooltip>
+            空格
+          </div>
+          <div class="col-3" />
+        </div>
+      </div>
     </div>
   </div>
 </template>

@@ -8,10 +8,12 @@ import { loadDuoduoDict } from 'libs/platforms/duoduo/load'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
 import LoadFileDialog from 'components/loadFile/LoadFileDialog.vue'
-import moc_article from 'app/dist/xinqing_jueding.js'
-import moc_schema from 'app/dist/qqwb.js'
 import RawFile from 'src/libs/platforms/rawFile'
 import Visualize from './visualize/Visualize.vue'
+
+// import moc_article from 'app/dist/xinqing_jueding.js'
+// import moc_qqwb from 'app/dist/qqwb.js'
+// import moc_xima from 'app/dist/xima.js'
 
 const openArticle = ref(false)
 const articleData = reactive({
@@ -21,19 +23,25 @@ const articleData = reactive({
 
 const openSchema = ref(false)
 const schemaData = shallowRef(createEmptySchema())
+const openSchema2 = ref(false)
+const schemaData2 = shallowRef(createEmptySchema())
 
 const openVisualize = ref(false)
 
+/*
 // 开发模式下，直接提供一些方案
 if (process.env.DEV) {
   onMounted(async () => {
     articleData.name = '心情决定事情'
     articleData.content = moc_article
-    const raw = await loadDuoduoDict(new RawFile(moc_schema))
+    const raw = await loadDuoduoDict(new RawFile(moc_qqwb))
     schemaData.value = raw
-    schemaData.value.cfg = { name: 'QQ五笔', cmLen: 4, raw: moc_schema, plat: 'duoduo' }
+    schemaData.value.cfg = { name: 'QQ五笔', cmLen: 4, raw: moc_qqwb, plat: 'duoduo', selectKeys: ' ;3456789' }
+    schemaData2.value = await loadDuoduoDict(new RawFile(moc_xima))
+    schemaData2.value.cfg = { name: '希码', cmLen: 4, raw: moc_qqwb, plat: 'duoduo', selectKeys: ' ,./56789' }
   })
 }
+*/
 
 function displayDict(d: SchemaDict): string {
   let r = ''
@@ -85,7 +93,33 @@ function displayDict(d: SchemaDict): string {
         <QItemLabel header>
           码表
         </QItemLabel>
-        <QItem clickable @click="openSchema = true">
+        <QItem clickable @click="_ => openSchema = true">
+          <QItemSection v-if="countDictItems(schemaData2) === 0">
+            <QItemLabel>
+              <div class="text-subtitle1 text-primary">
+                点击载入副码表
+              </div>
+            </QItemLabel>
+          </QItemSection>
+          <QItemSection v-else>
+            <QItemLabel>
+              {{ schemaData2?.cfg?.name || "" }}
+              <QBadge
+                rounded
+                color="blue-grey-5"
+                :label="`${countDictItems(schemaData2)} 行`"
+              />
+            </QItemLabel>
+            <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+              {{ displayDict(schemaData2.dicts[0]) }}
+            </QItemLabel>
+          </QItemSection>
+
+          <QItemSection side>
+            <QIcon :name="mdiTextBoxEditOutline" />
+          </QItemSection>
+        </QItem>
+        <QItem clickable @click="_ => openSchema2 = true">
           <QItemSection v-if="countDictItems(schemaData) === 0">
             <QItemLabel>
               <div class="text-subtitle1 text-primary">
@@ -124,6 +158,16 @@ function displayDict(d: SchemaDict): string {
         }"
       />
       <LoadFileDialog
+        v-model:dialog="openSchema2"
+        dict-mode
+        @value="(v) => {
+          schemaData2.cfg = v.options
+          loadDuoduoDict(v.content!).then(
+            v => schemaData2.dicts[0] = v.dicts[0],
+          )
+        }"
+      />
+      <LoadFileDialog
         v-model:dialog="openArticle"
         @value="v => {
           v.content?.getText().then(t => articleData.content = t)
@@ -136,6 +180,7 @@ function displayDict(d: SchemaDict): string {
           v-model:dialog="openVisualize"
           :article="articleData"
           :schema="schemaData"
+          :schema2="schemaData2"
         />
       </QDialog>
 

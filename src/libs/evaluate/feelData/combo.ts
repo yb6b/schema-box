@@ -6,7 +6,7 @@ import { KEYS_NO_SHIFT } from '../../constants'
 import ComboDataJson from './comboFeelData.js'
 
 // JSON.parse解析速度比js对象更快。
-const comboData = JSON.parse(ComboDataJson)
+const comboData: number[][] = JSON.parse(ComboDataJson)
 const key40 = [...KEYS_NO_SHIFT.substring(0, 40)]
 
  type KeyPairMagicNumber = number

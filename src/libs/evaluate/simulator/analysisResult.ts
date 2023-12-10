@@ -142,7 +142,7 @@ export class AnalysisResult {
 
     // 打词
     for (let i = 1; i < this.wordsDist.length; i++) {
-      this.words++
+      this.words += this.wordsDist[i]
       this.wordsChar += this.wordsDist[i] * (i + 1)
     }
 
@@ -223,6 +223,7 @@ export class AnalysisResult {
       this.littleFD += (feelMagic >> 7) & 1
       this.singleSpan += (feelMagic >> 8) & 1
       this.longFD += (feelMagic >> 9) & 1
+
       this.multiSpan += (feelMagic >> 10) & 1
 
       const firstFinger = keyFeelData[expandCode[i - 1]]
