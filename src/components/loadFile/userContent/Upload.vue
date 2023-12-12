@@ -1,11 +1,12 @@
 <script setup>
 import { mdiFolderOpen } from '@quasar/extras/mdi-v7'
-import { ref, watch, watchEffect } from 'vue'
+import { inject, ref, watch } from 'vue'
 import RawFile from 'libs/platforms/rawFile'
 
-const e = defineEmits(['value'])
 const fileRef = ref()
 const hintRef = ref('可以拖动文件到这里')
+
+const res = inject('result')
 
 const fileEncodings = [
   'UTF-8',
@@ -20,7 +21,9 @@ watch(fileRef, async () => {
   const t = await rawData.getText()
   hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
   encodingRef.value = rawData.encoding
-  e('value', rawData)
+  res.value.text = t
+  res.value.raw = rawData
+  res.value.option = { name: rawData.name }
 })
 
 watch(encodingRef, async () => {
@@ -29,7 +32,9 @@ watch(encodingRef, async () => {
     rawData.encoding = encodingRef.value
     const t = await rawData.getText()
     hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
-    e('value', rawData)
+    res.value.text = t
+    res.value.raw = rawData
+    res.value.option = { name: rawData.name }
   }
 })
 </script>

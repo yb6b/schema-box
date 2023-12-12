@@ -12,4 +12,6 @@ export const KEYS_SHIFT = `!QAZ@WSX#EDC$RFV%TGB^YHN&UJM*IK<(OL>)P:?_{"+}|~`
 export const KEYS_UNO = ' ↑←→↩'
 
 /** 所有能用的按键 */
-export const KEYS_ALL = KEYS_NO_SHIFT + KEYS_UNO
+export const KEYS = KEYS_NO_SHIFT + KEYS_UNO
+
+export const KEYS_ALL = KEYS + KEYS_SHIFT

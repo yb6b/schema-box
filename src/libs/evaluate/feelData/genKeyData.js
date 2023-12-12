@@ -1,5 +1,5 @@
 import { writeFileSync } from 'node:fs'
-import { KEYS_ALL } from '../../constants'
+import { KEYS } from '../../constants'
 
 /** 每一排的按键 */
 export const KEYS_BY_LINE = [
@@ -68,7 +68,7 @@ const keyToFinger = {
 }
 
 const result = [];
-[...KEYS_ALL].forEach((v) => {
+[...KEYS].forEach((v) => {
   const r = keyToFinger[v] << 2 | (key2line.get(v))
   result.push(r)
 })

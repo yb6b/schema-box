@@ -53,13 +53,13 @@ export const PUNCTUATIONS: PunctuationsData = {
 
 }
 
+const ALL_KEYS_SET = new Set(KEYS_ALL)
 /**
  * 验证编码是否合规
  * @param code 待验证的编码
  * @returns 能否成功
  */
 export function validateCodes(code: string) {
-  const ALL_KEYS_SET = new Set(KEYS_ALL)
   for (let i = 0; i < code.length; i++) {
     if (!ALL_KEYS_SET.has(code[i]))
       return false
@@ -72,7 +72,6 @@ export function validateCodes(code: string) {
  * @throws 不合规的编码报错
  */
 export function checkCodes(code: string) {
-  const ALL_KEYS_SET = new Set(KEYS_ALL)
   for (let i = 0; i < code.length; i++) {
     if (!ALL_KEYS_SET.has(code[i]))
       throw new TypeError(`${code} 中的第 ${i + 1} 个字母不是合规的编码。`)

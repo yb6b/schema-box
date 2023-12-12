@@ -1,28 +1,16 @@
 <script setup>
-import { reactive, watchEffect } from 'vue'
+import { inject } from 'vue'
 
-const p = defineProps(['filename'])
-const e = defineEmits(['value'])
+const res = inject('result')
 
-const articleOptions = reactive({
-  name: '',
-})
-
-// 允许修改名称
-watchEffect(() => {
-  if (p.filename)
-    articleOptions.name = p.filename
-})
-
-watchEffect(() => {
-  e('value', { ...articleOptions })
-})
+if (!res.value.option)
+  res.value.option = { name: '' }
 </script>
 
 <template>
   <div class="column q-gutter-sm">
     <QInput
-      v-model="articleOptions.name"
+      v-model="res.option.name"
       class="col"
       label="文章名称"
       stack-label

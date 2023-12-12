@@ -1,31 +1,30 @@
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue'
+import { inject, ref } from 'vue'
+import { mdiClipboardOutline, mdiContentCopy, mdiFileDocument } from '@quasar/extras/mdi-v7'
 
-import type RawFile from 'libs/platforms/rawFile'
 import Upload from './Upload.vue'
 import Clipboard from './Clipboard.vue'
-import Textarea from './Textarea.vue'
-import { selectOptions } from './source'
+import TextareaContent from './Textarea.vue'
 
-const e = defineEmits<{
-  (e: 'value', content: RawFile): void
-}>()
+const dictMode = inject('dictMode') as boolean
 
-const dictMode = inject('dictMode')
+type SelectSource = 'upload' | 'clipboard' | 'textarea' | 'preset'
+
+interface SelectOption {
+  label: string
+  value: SelectSource
+  icon: string
+  dsc: string
+}
+
+const selectOptions: SelectOption[] = [
+  { label: '本地文件', value: 'upload', icon: mdiFileDocument, dsc: '打开本地文件' },
+  { label: '系统剪贴板', value: 'clipboard', icon: mdiClipboardOutline, dsc: '一键读取剪切板，性能好' },
+  { label: '粘贴', value: 'textarea', icon: mdiContentCopy, dsc: '手动粘贴，可能卡顿' },
+  //  { label: '预置方案', value: 'presets', icon: mdiViewDashboardOutline, dsc: '预装的20种方案' },
+]
 
 const selectSource = ref(selectOptions[0])
-const content = ref<RawFile>()
-
-watch(selectSource, () => {
-  // 切换类型后，清空内容。避免textarea卡顿
-  content.value = undefined
-})
-
-watch([content], () => {
-  // 内容改动后，立即触发emit
-  if (content.value)
-    e('value', content.value)
-})
 </script>
 
 <template>
@@ -54,15 +53,15 @@ watch([content], () => {
     </QSelect>
 
     <div v-if="selectSource.value === 'upload'">
-      <Upload @value="v => content = v" />
+      <Upload />
     </div>
 
-    <div v-else-if="selectSource.value === 'clipboard'" class="">
-      <Clipboard @value="v => content = v" />
+    <div v-else-if="selectSource.value === 'clipboard'">
+      <Clipboard />
     </div>
 
     <div v-else-if="selectSource.value === 'textarea'" class="col">
-      <Textarea @value="v => content = v" />
+      <TextareaContent />
     </div>
 
     <!-- <div v-else-if="selectSource.value === 'preset'">

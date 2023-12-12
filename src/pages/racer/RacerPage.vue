@@ -4,16 +4,16 @@ import type { Schema, SchemaDict } from 'libs/schema'
 import { onMounted, reactive, ref, shallowRef } from 'vue'
 import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
 import { countDictItems, createEmptySchema } from 'libs/schema/schemaUtils'
-import { loadDuoduoDict } from 'libs/platforms/duoduo/load'
+import { platDuoduo } from 'libs/platforms/duoduo'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
-import LoadFileDialog from 'components/loadFile/LoadFileDialog.vue'
+import LoadFile from 'components/loadFile/LoadFile.vue'
 import RawFile from 'src/libs/platforms/rawFile'
-import Visualize from './visualize/Visualize.vue'
 
-// import moc_article from 'app/dist/xinqing_jueding.js'
-// import moc_qqwb from 'app/dist/qqwb.js'
-// import moc_xima from 'app/dist/xima.js'
+import moc_article from 'app/dist/xinqing_jueding.js'
+import moc_qqwb from 'app/dist/qqwb.js'
+import moc_xima from 'app/dist/xima.js'
+import Visualize from './visualize/Visualize.vue'
 
 const openArticle = ref(false)
 const articleData = reactive({
@@ -27,8 +27,8 @@ const openSchema2 = ref(false)
 const schemaData2 = shallowRef(createEmptySchema())
 
 const openVisualize = ref(false)
+const loadDuoduoDict = platDuoduo.load
 
-/*
 // 开发模式下，直接提供一些方案
 if (process.env.DEV) {
   onMounted(async () => {
@@ -41,7 +41,6 @@ if (process.env.DEV) {
     schemaData2.value.cfg = { name: '希码', cmLen: 4, raw: moc_qqwb, plat: 'duoduo', selectKeys: ' ,./56789' }
   })
 }
-*/
 
 function displayDict(d: SchemaDict): string {
   let r = ''
@@ -148,37 +147,47 @@ function displayDict(d: SchemaDict): string {
         </QItem>
       </QList>
 
-      <LoadFileDialog
-        v-model:dialog="openSchema"
-        dict-mode
-        @value="(v) => {
-          schemaData.cfg = v.options
-          loadDuoduoDict(v.content!).then(
-            v => schemaData.dicts[0] = v.dicts[0],
-          )
-        }"
-      />
-      <LoadFileDialog
-        v-model:dialog="openSchema2"
-        dict-mode
-        @value="(v) => {
-          schemaData2.cfg = v.options
-          loadDuoduoDict(v.content!).then(
-            v => schemaData2.dicts[0] = v.dicts[0],
-          )
-        }"
-      />
-      <LoadFileDialog
-        v-model:dialog="openArticle"
-        @value="v => {
-          v.content?.getText().then(t => articleData.content = t)
-          articleData.name = v.options.name!
-        }"
-      />
+      <QDialog v-model="openSchema">
+        <LoadFile
+          v-model:dialog="openSchema"
+          dict-mode
+          @value="(v) => {
+            schemaData.cfg = v.option
+            loadDuoduoDict(v.raw || new RawFile(v.text!, v.option?.name)).then(
+              v => {
+                schemaData.dicts[0] = v.dicts[0]
+                openSchema = false
+              },
+            )
+          }"
+        />
+      </QDialog>
+      <QDialog v-model="openSchema2">
+        <LoadFile
+          dict-mode
+          @value="(v) => {
+            schemaData.cfg = v.option
+            loadDuoduoDict(v.raw || new RawFile(v.text!, v.option?.name)).then(
+              v => {
+                schemaData.dicts[0] = v.dicts[0]
+                openSchema2 = false
+              },
+            )
+          }"
+        />
+      </QDialog>
+      <QDialog v-model="openArticle">
+        <LoadFile
+          v-model:dialog="openArticle"
+          @value="v => {
+            articleData.content = v.text!
+            articleData.name = v.option!.name!
+            openArticle = false
+          }"
+        />
+      </QDialog>
       <QDialog v-model="openVisualize" maximized>
         <Visualize
-          v-if="openVisualize"
-          v-model:dialog="openVisualize"
           :article="articleData"
           :schema="schemaData"
           :schema2="schemaData2"

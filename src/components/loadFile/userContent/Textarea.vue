@@ -1,20 +1,19 @@
 <script setup>
-import { inject, ref, watchEffect } from 'vue'
-import RawFile from 'libs/platforms/rawFile'
+import { inject, watchEffect } from 'vue'
 import { nanoid6 } from 'libs/utils'
 
-const e = defineEmits(['value'])
 const dictMode = inject('dictMode')
-const contentRef = ref('')
+const res = inject('result')
+
 watchEffect(() => {
-  if (contentRef.value)
-    e('value', new RawFile(contentRef.value, `用户输入_${nanoid6()}`))
+  if (res.value.text)
+    res.value.option = { name: `用户输入_${nanoid6()}` }
 })
 </script>
 
 <template>
   <QInput
-    v-model="contentRef"
+    v-model="res.text"
     clearable
     autofocus
     outlined

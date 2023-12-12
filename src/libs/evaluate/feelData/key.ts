@@ -1,5 +1,5 @@
 /** 每个按键的手感数据 */
-import { KEYS_ALL } from '../../constants'
+import { KEYS } from '../../constants'
 import Data from './keyFeelData'
 
 const dataArray = JSON.parse(Data)
@@ -23,7 +23,7 @@ export type Fingers = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 type KeyFeelMagicNumber = number
 const result: Record<string, KeyFeelMagicNumber> = {};
-[...KEYS_ALL].forEach((v, i) => {
+[...KEYS].forEach((v, i) => {
   result[v] = dataArray[i]
 })
 

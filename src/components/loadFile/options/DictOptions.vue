@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref, watchEffect } from 'vue'
+import type { Ref } from 'vue'
+import { inject, ref } from 'vue'
 import { nanoid6 } from 'libs/utils'
-import type { SchemaConfig } from 'libs/schema'
+import type { LoadFileResult } from '../LoadFile.vue'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
 
@@ -13,13 +14,6 @@ import RimePng from './assets/rime.png'
 
 // @ts-expect-error picture
 import YongPng from './assets/yong.png'
-
-const p = defineProps<{
-  filename?: string
-}>()
-const e = defineEmits<{
-  value: [v: SchemaConfig]
-}>()
 
 interface DictFormat {
   label: string
@@ -45,26 +39,21 @@ const dictFormats: DictFormat[] = [
 ]
 const tmpFormat = ref(dictFormats[1])
 
-const dictOptions = reactive<SchemaConfig>({
-  name: `码表_${nanoid6()}`,
-  plat: 'rime',
-  cmLen: 4,
-})
+const res = inject('result') as Ref<LoadFileResult>
 
-watchEffect(() => {
-  if (p.filename)
-    dictOptions.name = p.filename
-})
-
-watchEffect(() => {
-  e('value', { ...dictOptions } as SchemaConfig)
-})
+if (!res.value.option)
+  res.value.option = {}
+res.value.option.plat = 'auto'
+res.value.option.selectKeys = ''
+res.value.option.cmLen = 4
+if (!res.value.option.name)
+  res.value.option.name = `码表_${nanoid6()}`
 </script>
 
 <template>
   <div class="column q-gutter-sm">
     <QInput
-      v-model="dictOptions.name"
+      v-model="res.option!.name"
       class="col"
       label="码表名称"
       stack-label
@@ -78,7 +67,7 @@ watchEffect(() => {
       options-dense
       :model-value="tmpFormat"
       @update:model-value="v => {
-        dictOptions.plat = v.value;
+        res.option!.plat = v.value;
         tmpFormat = v
       }"
     >
@@ -96,7 +85,7 @@ watchEffect(() => {
       </template>
     </QSelect>
     <QInput
-      v-model.number="dictOptions.cmLen"
+      v-model.number="res.option!.cmLen"
       class="col"
       type="number"
       label="顶屏码长"
