@@ -44,11 +44,11 @@ const dictFormats: DictFormat[] = [
     icon: YongPng,
   },
 ]
-const tmpFormat = ref(dictFormats[1])
+const tmpFormat = ref(dictFormats[0])
 
 const res = inject('result') as Ref<Schema>
 
-if (!res.value.cfg.raw) {
+if (!res.value.cfg.cmLen) {
   res.value.cfg.plat = 'auto'
   res.value.cfg.selectKeys = ' 23456789'
   res.value.cfg.cmLen = 4

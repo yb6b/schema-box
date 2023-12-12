@@ -26,7 +26,7 @@ const resultRef = ref<Schema>(props.preset || createEmptySchema())
 
 provide('result', resultRef)
 
-const hasPreset = !!props.preset?.dicts?.length
+const hasPreset = !!props.preset?.cfg.txt
 if (hasPreset)
   resultRef.value = props.preset
 const stepPageRef = ref(hasPreset ? 2 : 1)
@@ -36,7 +36,7 @@ function handlePrimaryBtn() {
     stepPageRef.value = 2
     return
   }
-  if (dictMode)
+  if (dictMode && !resultRef.value.cfg.raw)
     resultRef.value.cfg.raw = new RawFile(resultRef.value.cfg.txt!)
   emits('value', resultRef.value)
 }

@@ -28,6 +28,7 @@ const selectOptions: SelectOption[] = [
 const selectOptRef = ref(selectOptions[0])
 watch(selectOptRef, () => {
   res.value.cfg.txt = ''
+  res.value.cfg.raw = undefined
 })
 </script>
 

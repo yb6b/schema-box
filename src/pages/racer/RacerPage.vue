@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SchemaDict } from 'libs/schema'
+import type { Schema, SchemaDict } from 'libs/schema'
 
 import { computed, onMounted, reactive, ref, shallowRef } from 'vue'
 import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
@@ -61,6 +61,21 @@ function displayDict(d: SchemaDict): string {
   }
   return r
 }
+
+function getSchemaResult(schemaDataRef: typeof schemaData, openRef: typeof openSchema) {
+  return async (v: Schema) => {
+    const raw = v.cfg.raw!
+    const isDict = await platAuto.validate(raw)
+    if (!isDict)
+      throw new TypeError(`无法解析码表${v.cfg.name}`)
+    const v2 = await platAuto.load(raw)
+    schemaDataRef.value = v2
+    schemaDataRef.value.cfg = v.cfg
+    openRef.value = false
+  }
+}
+const getSchema = getSchemaResult(schemaData, openSchema)
+const getSchema2 = getSchemaResult(schemaData2, openSchema2)
 </script>
 
 <template>
@@ -159,28 +174,14 @@ function displayDict(d: SchemaDict): string {
         <LoadFile
           dict-mode
           :preset="schemaData"
-          @value="async (v) => {
-            const raw = v.cfg.raw!
-            await platAuto.validate(raw)
-            const v2 = await platAuto.load(raw)
-            schemaData.dicts = v2.dicts
-            schemaData.cfg = v.cfg
-            openSchema = false
-          }"
+          @value="getSchema"
         />
       </QDialog>
       <QDialog v-model="openSchema2">
         <LoadFile
           dict-mode
           :preset="schemaData2"
-          @value="async (v) => {
-            const raw = v.cfg.raw!
-            await platAuto.validate(raw)
-            const v2 = await platAuto.load(raw)
-            schemaData2 = v2
-            schemaData2.cfg = v.cfg
-            openSchema2 = false
-          }"
+          @value="getSchema2"
         />
       </QDialog>
       <QDialog v-model="openArticle">

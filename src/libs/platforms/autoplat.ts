@@ -35,6 +35,9 @@ export const platAuto: Platform & { format?: autoFormat } = {
       if (!line.trim())
         continue
       const wordsSplit = line.split(format.split)
+      if (wordsSplit.length === 1)
+        throw new FormatError(`第${lineno}行只有一列数据`)
+
       if (format.ahead) {
         const codes = checkCodes(wordsSplit[0])
         for (const w of wordsSplit.slice(1)) {
