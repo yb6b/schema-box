@@ -9,7 +9,8 @@ export default class RawFile {
   constructor(src: Blob | File | string, name = '') {
     this.name = name
     if (typeof src === 'string') {
-      this.blob = createTextBlob(src)
+      // this.blob = createTextBlob(src)
+      this.blob = new Blob()
       this._encoding = 'UTF-8'
       this._textCache = src
       return this

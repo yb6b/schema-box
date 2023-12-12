@@ -30,7 +30,7 @@ useSetTitle()
     </QHeader>
 
     <QPageContainer>
-      <div class="flex flex-center">
+      <div class="flex flex-center container">
         <slot />
       </div>
     </QPageContainer>

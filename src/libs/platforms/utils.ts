@@ -1,4 +1,4 @@
-export { checkCodes } from '../schema/keys'
+export { checkCodes, validateCodes } from '../schema/keys'
 
 export function* genEachLine(src: string) {
   const lineBreakerPattern = /\r?\n|\r/g

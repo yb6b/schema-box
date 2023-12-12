@@ -6,6 +6,7 @@ import { useSetTitle } from 'libs/hooks'
 import { simulateSchema } from 'libs/evaluate/simulator'
 import Feeling from './Feeling.vue'
 import Efficient from './Efficient.vue'
+import type { SchemaAndResult } from './share.ts'
 
 const p = defineProps<{
   article: {
@@ -19,21 +20,9 @@ const p = defineProps<{
 const title = `《${p.schema.cfg?.name}》和《${p.schema2.cfg?.name}》赛码结果`
 useSetTitle(title)
 
-if (process.env.DEV)
-  console.time(`计算方案《${p.schema.cfg?.name}》用时`)
-
 const resultRef = computed(() => simulateSchema(p.schema, p.article.content))
 
-if (process.env.DEV)
-  console.timeEnd(`计算方案《${p.schema.cfg?.name}》用时`)
-
-if (process.env.DEV)
-  console.time(`计算方案《${p.schema2.cfg?.name}》用时`)
-
 const result2Ref = computed(() => simulateSchema(p.schema2, p.article.content))
-
-if (process.env.DEV)
-  console.timeEnd(`计算方案《${p.schema2.cfg?.name}》用时`)
 
 // 其他子组件都通过依赖注入获取所需的资源
 
@@ -42,6 +31,8 @@ provide('result2', readonly(result2Ref.value))
 provide('schema', readonly(p.schema))
 provide('schema2', readonly(p.schema2))
 provide('article', readonly(p.article))
+provide('SchRes', readonly({ schema: p.schema, result: resultRef.value } as SchemaAndResult))
+provide('SchRes2', readonly({ schema: p.schema2, result: result2Ref.value } as SchemaAndResult))
 
 const tabRef = ref('feeling')
 </script>
@@ -50,7 +41,7 @@ const tabRef = ref('feeling')
   <QCard>
     <QBar>
       <QSpace />
-      <span class="text-overline text-blue-grey-9" style="text-wrap: nowrap;text-overflow: ellipsis; overflow: hidden;max-width: calc(99vw - 6rem)">{{ title }}</span>
+      <span class="text-overline text-blue-grey-9 text-truncate" style="overflow: hidden;max-width: calc(99vw - 6rem)">{{ title }}</span>
       <QSpace />
       <QBtn v-close-popup round flat :icon="mdiClose">
         <QTooltip self="center middle" :offset="[0, 25]">
@@ -69,6 +60,7 @@ const tabRef = ref('feeling')
         animated
         transition-next="slide-right"
         transition-prev="slide-left"
+        class="container-lg"
       >
         <QTabPanel name="feeling">
           <Feeling />
