@@ -6,14 +6,14 @@ const dictMode = inject('dictMode')
 const res = inject('result')
 
 watchEffect(() => {
-  if (res.value.text)
-    res.value.option = { name: `用户输入_${nanoid6()}` }
+  if (res.value.cfg.txt)
+    res.value.cfg.name = `用户输入_${nanoid6()}`
 })
 </script>
 
 <template>
   <QInput
-    v-model="res.text"
+    v-model="res.cfg.txt"
     clearable
     autofocus
     outlined

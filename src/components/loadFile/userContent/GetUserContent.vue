@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue'
+import type { Ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 import { mdiClipboardOutline, mdiContentCopy, mdiFileDocument } from '@quasar/extras/mdi-v7'
+import type { Schema } from 'libs/schema'
 
 import Upload from './Upload.vue'
 import Clipboard from './Clipboard.vue'
 import TextareaContent from './Textarea.vue'
 
 const dictMode = inject('dictMode') as boolean
-
-type SelectSource = 'upload' | 'clipboard' | 'textarea' | 'preset'
+const res = inject('result') as Ref<Schema>
 
 interface SelectOption {
   label: string
-  value: SelectSource
+  value: 'upload' | 'clipboard' | 'textarea' | 'preset'
   icon: string
   dsc: string
 }
@@ -24,13 +25,16 @@ const selectOptions: SelectOption[] = [
   //  { label: '预置方案', value: 'presets', icon: mdiViewDashboardOutline, dsc: '预装的20种方案' },
 ]
 
-const selectSource = ref(selectOptions[0])
+const selectOptRef = ref(selectOptions[0])
+watch(selectOptRef, () => {
+  res.value.cfg.txt = ''
+})
 </script>
 
 <template>
   <div>
     <QSelect
-      v-model="selectSource"
+      v-model="selectOptRef"
       class="q-mb-lg"
       :options="selectOptions"
       square
@@ -52,15 +56,15 @@ const selectSource = ref(selectOptions[0])
       </template>
     </QSelect>
 
-    <div v-if="selectSource.value === 'upload'">
+    <div v-if="selectOptRef.value === 'upload'">
       <Upload />
     </div>
 
-    <div v-else-if="selectSource.value === 'clipboard'">
+    <div v-else-if="selectOptRef.value === 'clipboard'">
       <Clipboard />
     </div>
 
-    <div v-else-if="selectSource.value === 'textarea'" class="col">
+    <div v-else-if="selectOptRef.value === 'textarea'" class="col">
       <TextareaContent />
     </div>
 

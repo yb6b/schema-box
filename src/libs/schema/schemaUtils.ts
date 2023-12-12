@@ -1,7 +1,7 @@
 import type { Schema, SchemaDictItem } from './schemaTypes'
 
 export function createEmptySchema(): Schema {
-  return { dicts: [{ items: [] }] }
+  return { dicts: [{ items: [] }], cfg: {} }
 }
 
 export function countDictItems(aSchema: Schema) {

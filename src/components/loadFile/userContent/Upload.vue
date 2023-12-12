@@ -21,9 +21,8 @@ watch(fileRef, async () => {
   const t = await rawData.getText()
   hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
   encodingRef.value = rawData.encoding
-  res.value.text = t
-  res.value.raw = rawData
-  res.value.option = { name: rawData.name }
+  res.value.cfg.txt = t
+  res.value.cfg.name = rawData.name.replace(/\.\w+$/, '')
 })
 
 watch(encodingRef, async () => {
@@ -32,9 +31,8 @@ watch(encodingRef, async () => {
     rawData.encoding = encodingRef.value
     const t = await rawData.getText()
     hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
-    res.value.text = t
-    res.value.raw = rawData
-    res.value.option = { name: rawData.name }
+    res.value.cfg.txt = t
+    res.value.cfg.name = rawData.name.replace(/\.\w+$/, '')
   }
 })
 </script>

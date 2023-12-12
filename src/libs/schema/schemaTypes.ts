@@ -1,12 +1,16 @@
+import type RawFile from '../platforms/rawFile'
+
 export interface Schema {
   dicts: SchemaDict[]
-  cfg?: SchemaConfig
+  cfg: SchemaConfig
   meta?: Record<string, unknown>
 }
 
 export interface SchemaConfig {
   /** 配置文件的原始文件 */
-  raw?: RawData
+  raw?: RawFile
+  /** 原始文件的副本 */
+  txt?: string
   /** 方案的名称 */
   name?: string
   /** 方案作者 */
@@ -23,7 +27,7 @@ export interface SchemaConfig {
 
 export interface SchemaDict {
   items: SchemaDictItem[]
-  raw?: RawData
+  raw?: RawFile
   /** 最大码长 */
   maxCodeLen?: number
   /** 最大词长 */
@@ -47,5 +51,3 @@ export type SchemaDictItem = [
   lineNumber: number,
   Meta?: unknown,
 ]
-
-export type RawData = Blob | File | string

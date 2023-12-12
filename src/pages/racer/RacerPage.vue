@@ -1,24 +1,31 @@
 <script lang="ts" setup>
-import type { Schema, SchemaDict } from 'libs/schema'
+import type { SchemaDict } from 'libs/schema'
 
-import { onMounted, reactive, ref, shallowRef } from 'vue'
+import { computed, onMounted, reactive, ref, shallowRef } from 'vue'
 import { mdiTextBoxEditOutline } from '@quasar/extras/mdi-v7'
 import { countDictItems, createEmptySchema } from 'libs/schema/schemaUtils'
 import { platDuoduo } from 'libs/platforms/duoduo'
+import { platAuto } from 'libs/platforms/autoplat'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import RawFile from 'src/libs/platforms/rawFile'
 
-import moc_article from 'app/dist/xinqing_jueding.js'
-import moc_qqwb from 'app/dist/qqwb.js'
-import moc_xima from 'app/dist/xima.js'
+// import moc_article from 'app/dist/xinqing_jueding.js'
+// import moc_qqwb from 'app/dist/qqwb.js'
+// import moc_xima from 'app/dist/xima.js'
 import Visualize from './visualize/Visualize.vue'
 
 const openArticle = ref(false)
 const articleData = reactive({
   name: '',
-  content: '',
+  txt: '',
+})
+
+const articleSchema = computed(() => {
+  const res = createEmptySchema()
+  res.cfg = articleData
+  return res
 })
 
 const openSchema = ref(false)
@@ -27,20 +34,21 @@ const openSchema2 = ref(false)
 const schemaData2 = shallowRef(createEmptySchema())
 
 const openVisualize = ref(false)
-const loadDuoduoDict = platDuoduo.load
 
 // 开发模式下，直接提供一些方案
-if (process.env.DEV) {
-  onMounted(async () => {
-    articleData.name = '心情决定事情'
-    articleData.content = moc_article
-    const raw = await loadDuoduoDict(new RawFile(moc_qqwb))
-    schemaData.value = raw
-    schemaData.value.cfg = { name: 'QQ五笔', cmLen: 4, raw: moc_qqwb, plat: 'duoduo', selectKeys: ' ;3456789' }
-    schemaData2.value = await loadDuoduoDict(new RawFile(moc_xima))
-    schemaData2.value.cfg = { name: '希码', cmLen: 4, raw: moc_qqwb, plat: 'duoduo', selectKeys: ' ,./56789' }
-  })
-}
+// if (process.env.DEV) {
+//   onMounted(async () => {
+//     articleData.name = '心情决定事情'
+//     articleData.txt = moc_article
+//     const raw_qqwb = new RawFile(moc_qqwb)
+//     const raw = await loadDuoduoDict(raw_qqwb)
+//     schemaData.value = raw
+//     schemaData.value.cfg = { name: 'QQ五笔', cmLen: 4, raw: raw_qqwb, plat: 'duoduo', selectKeys: ' ;3456789' }
+//     const raw_xima = new RawFile(moc_xima)
+//     schemaData2.value = await loadDuoduoDict(raw_xima)
+//     schemaData2.value.cfg = { name: '希码', cmLen: 4, raw: raw_xima, plat: 'duoduo', selectKeys: ' ,./56789' }
+//   })
+// }
 
 function displayDict(d: SchemaDict): string {
   let r = ''
@@ -63,7 +71,7 @@ function displayDict(d: SchemaDict): string {
           赛文
         </QItemLabel>
         <QItem clickable @click="() => openArticle = true">
-          <QItemSection v-if="articleData.content === ''">
+          <QItemSection v-if="articleData.txt === ''">
             <QItemLabel>
               <div class="text-subtitle1 text-primary">
                 点击加载赛文
@@ -76,11 +84,11 @@ function displayDict(d: SchemaDict): string {
               <QBadge
                 rounded
                 color="blue-grey-5"
-                :label="`${articleData.content.length} 字`"
+                :label="`${articleData.txt.length} 字`"
               />
             </QItemLabel>
-            <QItemLabel caption style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-              {{ articleData.content.slice(0, 50) }}
+            <QItemLabel caption class="text-truncate">
+              {{ articleData.txt.slice(0, 50) }}
             </QItemLabel>
           </QItemSection>
 
@@ -103,7 +111,7 @@ function displayDict(d: SchemaDict): string {
           </QItemSection>
           <QItemSection v-else>
             <QItemLabel>
-              {{ schemaData?.cfg?.name || "" }}
+              {{ schemaData.cfg.name || "" }}
               <QBadge
                 rounded
                 color="blue-grey-5"
@@ -129,7 +137,7 @@ function displayDict(d: SchemaDict): string {
           </QItemSection>
           <QItemSection v-else>
             <QItemLabel>
-              {{ schemaData2?.cfg?.name || "" }}
+              {{ schemaData2.cfg.name || "" }}
               <QBadge
                 rounded
                 color="blue-grey-5"
@@ -149,39 +157,38 @@ function displayDict(d: SchemaDict): string {
 
       <QDialog v-model="openSchema">
         <LoadFile
-          v-model:dialog="openSchema"
           dict-mode
-          @value="(v) => {
-            schemaData.cfg = v.option
-            loadDuoduoDict(v.raw || new RawFile(v.text!, v.option?.name)).then(
-              v => {
-                schemaData.dicts[0] = v.dicts[0]
-                openSchema = false
-              },
-            )
+          :preset="schemaData"
+          @value="async (v) => {
+            const raw = v.cfg.raw!
+            await platAuto.validate(raw)
+            const v2 = await platAuto.load(raw)
+            schemaData.dicts = v2.dicts
+            schemaData.cfg = v.cfg
+            openSchema = false
           }"
         />
       </QDialog>
       <QDialog v-model="openSchema2">
         <LoadFile
           dict-mode
-          @value="(v) => {
-            schemaData.cfg = v.option
-            loadDuoduoDict(v.raw || new RawFile(v.text!, v.option?.name)).then(
-              v => {
-                schemaData.dicts[0] = v.dicts[0]
-                openSchema2 = false
-              },
-            )
+          :preset="schemaData2"
+          @value="async (v) => {
+            const raw = v.cfg.raw!
+            await platAuto.validate(raw)
+            const v2 = await platAuto.load(raw)
+            schemaData2 = v2
+            schemaData2.cfg = v.cfg
+            openSchema2 = false
           }"
         />
       </QDialog>
       <QDialog v-model="openArticle">
         <LoadFile
-          v-model:dialog="openArticle"
+          :preset="articleSchema"
           @value="v => {
-            articleData.content = v.text!
-            articleData.name = v.option!.name!
+            articleData.txt = v.cfg.txt!
+            articleData.name = v.cfg.name!
             openArticle = false
           }"
         />
@@ -197,7 +204,7 @@ function displayDict(d: SchemaDict): string {
       <div class="col row flex-center">
         <QBtn
           :disable="!articleData.name || !schemaData?.cfg?.name"
-          label="计 算"
+          label="赛 码"
           color="primary"
           rounded
           glossy

@@ -3,7 +3,8 @@
  */
 
 import DetectFileEncoding from 'detect-file-encoding-and-language'
-import { createTextBlob } from './utils'
+
+// import { createTextBlob } from './utils'
 
 export default class RawFile {
   constructor(src: Blob | File | string, name = '') {
@@ -11,29 +12,32 @@ export default class RawFile {
     if (typeof src === 'string') {
       // this.blob = createTextBlob(src)
       this.blob = new Blob()
-      this._encoding = 'UTF-8'
-      this._textCache = src
+      this._encode = 'UTF-8'
+      this.txt = src
+      this.size = src.length
       return this
     }
     if (src instanceof File)
       this.name = src.name
     this.blob = src
+    this.size = src.size
   }
 
   readonly blob: Blob
   name = ''
+  size
 
-  private _encoding?: string
+  private _encode?: string
   get encoding() {
-    if (!this._encoding)
-      this._encoding = ''
+    if (!this._encode)
+      this._encode = ''
 
-    return this._encoding
+    return this._encode
   }
 
   set encoding(newEncoding: string) {
-    this._encoding = newEncoding
-    this._textCache = undefined
+    this._encode = newEncoding
+    this.txt = undefined
   }
 
   /** 根据blob数据，推测文件编码 */
@@ -49,8 +53,8 @@ export default class RawFile {
   async readBlob(): Promise<string> {
     const encoding = this.encoding
     if (encoding === 'UTF-8') {
-      this._textCache = await this.blob.text()
-      return this._textCache
+      this.txt = await this.blob.text()
+      return this.txt
     }
     return new Promise<string>((res, rej) => {
       const reader = new FileReader()
@@ -58,7 +62,7 @@ export default class RawFile {
       reader.readAsText(this.blob, encoding)
       reader.onload = () => {
         const resultText = reader.result as string
-        this._textCache = resultText
+        this.txt = resultText
         res(resultText)
       }
       reader.onerror = () => {
@@ -70,25 +74,26 @@ export default class RawFile {
   /** 获取缓存的文本 */
   async getText() {
     // 没有缓存则生成一个新的
-    if (!this._textCache) {
+    if (!this.txt) {
       // 没有编码则重新检测
-      if (!this._encoding)
+      if (!this._encode)
         await this.detectEncoding()
       await this.readBlob()
     }
-    return this._textCache!
+    return this.txt!
   }
 
-  private _textCache?: string
+  /** 尽量不要使用这个值 */
+  public txt?: string
 
   async getBytes() {
-    if (!this._bytesCache) {
+    if (!this._byte) {
       const blobbuffer = await this.blob.arrayBuffer()
-      this._bytesCache = new Uint8Array(blobbuffer)
+      this._byte = new Uint8Array(blobbuffer)
     }
-    return this._bytesCache
+    return this._byte
   }
 
   // 二进制不在乎文件编码
-  private _bytesCache?: Uint8Array
+  private _byte?: Uint8Array
 }

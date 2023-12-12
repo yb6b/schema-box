@@ -2,7 +2,8 @@
 import type { Ref } from 'vue'
 import { inject, ref } from 'vue'
 import { nanoid6 } from 'libs/utils'
-import type { LoadFileResult } from '../LoadFile.vue'
+import type { Schema } from 'libs/schema'
+import { mdiLightbulbQuestionOutline } from '@quasar/extras/mdi-v7'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
 
@@ -18,9 +19,15 @@ import YongPng from './assets/yong.png'
 interface DictFormat {
   label: string
   value: string
-  icon: string
+  icon?: string
+  mdi?: string
 }
 const dictFormats: DictFormat[] = [
+  {
+    label: '自动判断',
+    value: 'auto',
+    mdi: mdiLightbulbQuestionOutline,
+  },
   {
     label: '极速赛码表',
     value: 'jisu',
@@ -39,21 +46,20 @@ const dictFormats: DictFormat[] = [
 ]
 const tmpFormat = ref(dictFormats[1])
 
-const res = inject('result') as Ref<LoadFileResult>
+const res = inject('result') as Ref<Schema>
 
-if (!res.value.option)
-  res.value.option = {}
-res.value.option.plat = 'auto'
-res.value.option.selectKeys = ''
-res.value.option.cmLen = 4
-if (!res.value.option.name)
-  res.value.option.name = `码表_${nanoid6()}`
+if (!res.value.cfg.raw) {
+  res.value.cfg.plat = 'auto'
+  res.value.cfg.selectKeys = ' 23456789'
+  res.value.cfg.cmLen = 4
+  res.value.cfg.name = `码表_${nanoid6()}`
+}
 </script>
 
 <template>
   <div class="column q-gutter-sm">
     <QInput
-      v-model="res.option!.name"
+      v-model="res.cfg.name"
       class="col"
       label="码表名称"
       stack-label
@@ -67,14 +73,15 @@ if (!res.value.option.name)
       options-dense
       :model-value="tmpFormat"
       @update:model-value="v => {
-        res.option!.plat = v.value;
+        res.cfg.plat = v.value;
         tmpFormat = v
       }"
     >
       <template #option="scope">
         <QItem v-bind="scope.itemProps">
           <QItemSection avatar>
-            <QIcon size="xs" :name="`img:${scope.opt.icon}`" />
+            <QIcon v-if="scope.opt.icon" size="xs" :name="`img:${scope.opt.icon}`" />
+            <QIcon v-if="scope.opt.mdi" size="xs" :name="scope.opt.mdi" />
           </QItemSection>
           <QItemSection>
             <QItemLabel>
@@ -85,7 +92,7 @@ if (!res.value.option.name)
       </template>
     </QSelect>
     <QInput
-      v-model.number="res.option!.cmLen"
+      v-model.number="res.cfg.cmLen"
       class="col"
       type="number"
       label="顶屏码长"

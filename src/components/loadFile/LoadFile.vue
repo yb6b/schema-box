@@ -1,43 +1,44 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import type { Schema, SchemaConfig } from 'libs/schema'
+import type { Schema } from 'libs/schema'
 import { createEmptySchema } from 'src/libs/schema/schemaUtils'
-import type RawFile from 'src/libs/platforms/rawFile'
+import RawFile from 'libs/platforms/rawFile'
 import GetUserContent from './userContent/GetUserContent.vue'
 import DictOptions from './options/DictOptions.vue'
 import ArticleOptions from './options/ArticleOptions.vue'
 
-export interface LoadFileResult {
-  raw?: RawFile
-  schema?: Schema
-  text?: string
-  option?: SchemaConfig
-}
+/** 子程序只改动schema以外的属性 */
 
 const props = defineProps<{
   dictMode?: boolean
-  preset?: LoadFileResult
+  preset?: Schema
 }>()
 
 const emits = defineEmits<{
-  value: [v: LoadFileResult]
+  value: [v: Schema]
 }>()
 
-provide('dictMode', !!props.dictMode)
+const dictMode = !!props.dictMode
 
-const resultRef = ref<LoadFileResult>({})
-if (props.dictMode)
-  resultRef.value.schema = createEmptySchema()
+provide('dictMode', dictMode)
+
+const resultRef = ref<Schema>(props.preset || createEmptySchema())
 
 provide('result', resultRef)
 
-const stepPageRef = ref(props.preset ? 2 : 1)
+const hasPreset = !!props.preset?.dicts?.length
+if (hasPreset)
+  resultRef.value = props.preset
+const stepPageRef = ref(hasPreset ? 2 : 1)
 
 function handlePrimaryBtn() {
-  if (stepPageRef.value === 1)
+  if (stepPageRef.value === 1) {
     stepPageRef.value = 2
-  else
-    emits('value', resultRef.value)
+    return
+  }
+  if (dictMode)
+    resultRef.value.cfg.raw = new RawFile(resultRef.value.cfg.txt!)
+  emits('value', resultRef.value)
 }
 </script>
 
@@ -48,7 +49,7 @@ function handlePrimaryBtn() {
         <GetUserContent style="min-height:12rem;" />
       </QStep>
       <QStep :name="2" title="配置" :done="stepPageRef > 2">
-        <DictOptions v-if="props.dictMode" />
+        <DictOptions v-if="dictMode" />
         <ArticleOptions v-else />
       </QStep>
     </QStepper>
@@ -62,7 +63,7 @@ function handlePrimaryBtn() {
       />
       <QBtn
         color="primary"
-        :disable="stepPageRef === 1 && !resultRef.text"
+        :disable="stepPageRef === 1 && !resultRef.cfg?.txt"
         :label="stepPageRef < 2 ? '下一步' : '完 成'"
         @click="handlePrimaryBtn"
       />

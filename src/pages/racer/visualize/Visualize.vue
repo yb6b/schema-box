@@ -11,7 +11,7 @@ import type { SchemaAndResult } from './share.ts'
 const p = defineProps<{
   article: {
     name: string
-    content: string
+    txt: string
   }
   schema: Schema
   schema2: Schema
@@ -20,9 +20,9 @@ const p = defineProps<{
 const title = `《${p.schema.cfg?.name}》和《${p.schema2.cfg?.name}》赛码结果`
 useSetTitle(title)
 
-const resultRef = computed(() => simulateSchema(p.schema, p.article.content))
+const resultRef = computed(() => simulateSchema(p.schema, p.article.txt))
 
-const result2Ref = computed(() => simulateSchema(p.schema2, p.article.content))
+const result2Ref = computed(() => simulateSchema(p.schema2, p.article.txt))
 
 // 其他子组件都通过依赖注入获取所需的资源
 
