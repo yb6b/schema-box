@@ -4,6 +4,10 @@
     white-space: nowrap;
 }
 
+.text-spacing{
+    letter-spacing: 2px
+}
+
 .container,
 .container-fluid,
 .container-xxl,

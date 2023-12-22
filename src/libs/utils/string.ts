@@ -30,3 +30,15 @@ export function reflectRealIndex(str: string, utf32_index: number): number {
   }
   return -1
 }
+
+/** 统计字符串里汉字字符的数量 */
+export function countHanzi(src: string): number {
+  const re = /\p{Ideo}/gu
+  const m = src.match(re)
+  return m ? m.length : 0
+}
+
+/** 删除文件名的后缀名 */
+export function removeFileNameExt(filename: string) {
+  return filename.replace(/\.\w+$/, '')
+}

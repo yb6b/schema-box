@@ -23,5 +23,12 @@
 			"  console.log($1)",
 			"}"
 		]
+	},
+	"import mdi icons": {
+		"scope": "javascript,typescript",
+		"prefix": "immdi",
+		"body": [
+			"import {$1} from \"@quasar/extras/mdi-v7\";"
+		]
 	}
 }

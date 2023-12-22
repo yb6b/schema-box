@@ -102,11 +102,14 @@ module.exports = configure((ctx) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: [
+        'Notify',
+      ],
     },
 
     vendor: {
-      remove: ['.*vueuse.*', '@quasar'],
+      disable: true,
+      // remove: ['.*vueuse.*', '@quasar'],
     },
 
     // animations: 'all', // --- includes all animations

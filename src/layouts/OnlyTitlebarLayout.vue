@@ -12,20 +12,19 @@ useSetTitle()
 </script>
 
 <template>
-  <QLayout view="hHh lpR fFf" class="bg-blue-grey-1">
-    <QHeader reveal elevated class="bg-grey-1 text-dark">
+  <QLayout view="hHh lpR fFf" class="bg-grey-3">
+    <QHeader reveal elevated class="bg-white text-dark">
       <QToolbar>
-        <QToolbarTitle>
-          <QBtn to="/" flat square title="形码盒子主页">
-            <QAvatar square>
-              <img src="~assets/icon.svg">
-            </QAvatar>
-          </QBtn>
-          <span style="letter-spacing: 2px;" class="text-blue-grey-9">
-            {{ title }}
-          </span>
-          <slot name="toolbar" />
+        <QBtn to="/" flat square title="形码盒子主页">
+          <QAvatar square>
+            <img src="~assets/icon.svg">
+          </QAvatar>
+        </QBtn>
+
+        <QToolbarTitle style="letter-spacing: 2px;" class="text-blue-grey-9">
+          {{ title }}
         </QToolbarTitle>
+        <slot name="toolbar" />
       </QToolbar>
     </QHeader>
 

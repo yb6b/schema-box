@@ -30,9 +30,9 @@
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.0",
     "quasar": "^2.14.1",
-    "remeda": "^1.29.0",
+    "remeda": "^1.30.0",
     "vue": "^3.3.11",
-    "vue-chartjs": "^5.2.0",
+    "vue-chartjs": "^5.3.0",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {

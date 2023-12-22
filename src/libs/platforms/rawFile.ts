@@ -17,7 +17,7 @@ export default class RawFile {
       this.size = src.length
       return this
     }
-    if (src instanceof File)
+    if (src instanceof File && !name)
       this.name = src.name
     this.blob = src
     this.size = src.size

@@ -26,34 +26,39 @@ const dictFormats: DictFormat[] = [
   {
     label: '自动判断',
     value: 'auto',
-    mdi: mdiLightbulbQuestionOutline,
+    icon: mdiLightbulbQuestionOutline,
   },
   {
     label: '极速赛码表',
     value: 'jisu',
-    icon: JisuPng,
+    icon: `img:${JisuPng}`,
   },
   {
     label: 'Rime / 多多',
     value: 'rime',
-    icon: RimePng,
+    icon: `img:${RimePng}`,
   },
   {
     label: '小小 / 极点',
     value: 'yong',
-    icon: YongPng,
+    icon: `img:${YongPng}`,
   },
 ]
 const tmpFormat = ref(dictFormats[0])
 
 const res = inject('result') as Ref<Schema>
 
-if (!res.value.cfg.cmLen) {
-  res.value.cfg.plat = 'auto'
-  res.value.cfg.selectKeys = ' 23456789'
-  res.value.cfg.cmLen = 4
+if (!res.value.cfg.name)
   res.value.cfg.name = `码表_${nanoid6()}`
-}
+
+if (!res.value.cfg.plat)
+  res.value.cfg.plat = 'auto'
+
+if (!res.value.cfg.selectKeys)
+  res.value.cfg.selectKeys = ' 23456789'
+
+if (!res.value.cfg.cmLen)
+  res.value.cfg.cmLen = 4
 </script>
 
 <template>
@@ -80,8 +85,7 @@ if (!res.value.cfg.cmLen) {
       <template #option="scope">
         <QItem v-bind="scope.itemProps">
           <QItemSection avatar>
-            <QIcon v-if="scope.opt.icon" size="xs" :name="`img:${scope.opt.icon}`" />
-            <QIcon v-if="scope.opt.mdi" size="xs" :name="scope.opt.mdi" />
+            <QIcon size="xs" :name="scope.opt.icon" />
           </QItemSection>
           <QItemSection>
             <QItemLabel>

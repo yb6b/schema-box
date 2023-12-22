@@ -223,21 +223,23 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           </tr>
           <tr>
             <td class="text-right">
-              异指组合比例
+              异手互击比例
             </td>
             <td>
               <TopTooltip>
-                异指组合次数：{{ result.combo - result.sameFingers }}<br>
+                先左手再右手的组合次数：{{ result.LeftRight }}<br>
+                先右手再左手的组合次数：{{ result.RightLeft }}<br>
                 组合数：{{ result.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(1 - result.sameFingers / result.combo) }}
+              {{ formatPercentButZero((result.LeftRight + result.RightLeft) / (result.combo)) }}
             </td>
             <td>
               <TopTooltip>
-                异指组合次数：{{ result2.combo - result2.sameFingers }}<br>
+                先左手再右手的组合次数：{{ result2.LeftRight }}<br>
+                先右手再左手的组合次数：{{ result2.RightLeft }}<br>
                 组合数：{{ result2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(1 - result2.sameFingers / result2.combo) }}
+              {{ formatPercentButZero((result2.LeftRight + result2.RightLeft) / (result2.combo)) }}
             </td>
           </tr>
         </tbody>
