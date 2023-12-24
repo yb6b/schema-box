@@ -58,6 +58,7 @@ export const platDuoduo: Platform = {
   async load(raw) {
     let lineno = 0
     const result = createEmptySchema()
+    result.cfg.plat = 'duoduo'
     const text = await raw.getText()
     for (const i of genEachLine(text)) {
       lineno++

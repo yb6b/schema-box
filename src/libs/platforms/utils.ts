@@ -12,6 +12,19 @@ export function* genEachLine(src: string) {
   yield src.slice(last)
 }
 
+/**
+ * 迭代每一行，会过滤空行
+ * @param src
+ */
+export function* genEachLineFilterEmpty(src: string) {
+  for (let line of genEachLine(src)) {
+    line = line.trimEnd()
+    if (!line)
+      continue
+    yield line
+  }
+}
+
 export function createTextBlob(content: string) {
   return new Blob([content], { type: 'text/plain;charset=utf-8' })
 }

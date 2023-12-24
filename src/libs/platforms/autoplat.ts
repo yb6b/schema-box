@@ -28,6 +28,8 @@ export const platAuto: Platform & { format?: autoFormat } = {
     const format = this.format
     const text = await raw.getText()
     const res = createEmptySchema()
+    res.cfg.plat = 'auto'
+    res.meta = format
     let lineno = 0
     for (const line of genEachLine(text)) {
       lineno++
@@ -112,7 +114,7 @@ export const platAuto: Platform & { format?: autoFormat } = {
 
   /** 按照 this.format 格式转换 */
   dump(schema) {
-    const format = this.format
+    const format = this.format ?? schema.meta as autoFormat
     if (!format)
       throw new FormatError('fail: dump platAuto - no this.format')
     let res = ''

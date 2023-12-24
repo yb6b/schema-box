@@ -3,7 +3,7 @@ import type RawFile from '../platforms/rawFile'
 export interface Schema {
   dicts: SchemaDict[]
   cfg: SchemaConfig
-  meta?: Record<string, unknown>
+  meta?: unknown
 }
 
 export interface SchemaConfig {
