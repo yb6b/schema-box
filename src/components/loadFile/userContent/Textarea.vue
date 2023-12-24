@@ -1,19 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import { inject, watchEffect } from 'vue'
 import { nanoid6 } from 'libs/utils'
+import { jDictMode, jResultRef } from '../inject'
 
-const dictMode = inject('dictMode')
-const res = inject('result')
+const dictMode = inject(jDictMode)!
+const res = inject(jResultRef)!
 
 watchEffect(() => {
-  if (res.value.cfg.txt)
-    res.value.cfg.name = `用户输入_${nanoid6()}`
+  if (res.value.txt)
+    res.value.name = `用户输入_${nanoid6()}`
 })
 </script>
 
 <template>
   <QInput
-    v-model="res.cfg.txt"
+    v-model="res.txt"
     clearable
     autofocus
     outlined

@@ -13,15 +13,16 @@ export function* genEachLine(src: string) {
 }
 
 /**
- * 迭代每一行，会过滤空行
+ * 迭代每一行，会过滤空行，同时返回每一行的行数
  * @param src
  */
-export function* genEachLineFilterEmpty(src: string) {
-  for (let line of genEachLine(src)) {
-    line = line.trimEnd()
-    if (!line)
+export function* genEachLine2(src: string) {
+  let lineNumber = 0
+  for (const line of genEachLine(src)) {
+    lineNumber++
+    if (!line.trim())
       continue
-    yield line
+    yield [line, lineNumber] as const
   }
 }
 

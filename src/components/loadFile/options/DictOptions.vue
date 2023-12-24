@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
 import { inject, ref } from 'vue'
 import { nanoid6 } from 'libs/utils'
-import type { Schema } from 'libs/schema'
 import { mdiLightbulbQuestionOutline } from '@quasar/extras/mdi-v7'
+import { jResultRef } from '../inject'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
 
@@ -46,25 +45,25 @@ const dictFormats: DictFormat[] = [
 ]
 const tmpFormat = ref(dictFormats[0])
 
-const res = inject('result') as Ref<Schema>
+const res = inject(jResultRef) !
 
-if (!res.value.cfg.name)
-  res.value.cfg.name = `码表_${nanoid6()}`
+if (!res.value.name)
+  res.value.name = `码表_${nanoid6()}`
 
-if (!res.value.cfg.plat)
-  res.value.cfg.plat = 'auto'
+if (!res.value.plat)
+  res.value.plat = 'auto'
 
-if (!res.value.cfg.selectKeys)
-  res.value.cfg.selectKeys = ' 23456789'
+if (!res.value.selectKeys)
+  res.value.selectKeys = ' 23456789'
 
-if (!res.value.cfg.cmLen)
-  res.value.cfg.cmLen = 4
+if (!res.value.cmLen)
+  res.value.cmLen = 4
 </script>
 
 <template>
   <div class="column q-gutter-sm">
     <QInput
-      v-model="res.cfg.name"
+      v-model="res.name"
       class="col"
       label="码表名称"
       stack-label
@@ -78,7 +77,7 @@ if (!res.value.cfg.cmLen)
       options-dense
       :model-value="tmpFormat"
       @update:model-value="v => {
-        res.cfg.plat = v.value;
+        res.plat = v.value;
         tmpFormat = v
       }"
     >
@@ -96,7 +95,7 @@ if (!res.value.cfg.cmLen)
       </template>
     </QSelect>
     <QInput
-      v-model.number="res.cfg.cmLen"
+      v-model.number="res.cmLen"
       class="col"
       type="number"
       label="顶屏码长"

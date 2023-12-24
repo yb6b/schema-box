@@ -1,34 +1,30 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import type { Schema } from 'libs/schema'
-import { createEmptySchema } from 'src/libs/schema/schemaUtils'
+import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import RawFile from 'libs/platforms/rawFile'
 import GetUserContent from './userContent/GetUserContent.vue'
 import DictOptions from './options/DictOptions.vue'
 import ArticleOptions from './options/ArticleOptions.vue'
-
-/** 子程序只改动schema以外的属性 */
+import { jDictMode, jResultRef } from './inject'
 
 const props = defineProps<{
   dictMode?: boolean
-  preset?: Schema
+  preset?: Mabiao
 }>()
 
 const emits = defineEmits<{
-  value: [v: Schema]
+  value: [v: Mabiao]
 }>()
 
 const dictMode = !!props.dictMode
 
-provide('dictMode', dictMode)
+provide(jDictMode, dictMode)
 
-const resultRef = ref<Schema>(props.preset || createEmptySchema())
+const resultRef = ref<Mabiao>(props.preset || createEmptyMabiao())
 
-provide('result', resultRef)
+provide(jResultRef, resultRef)
 
-const hasPreset = !!props.preset?.cfg.txt
-if (hasPreset)
-  resultRef.value = props.preset
+const hasPreset = !!props.preset?.txt
 const stepPageRef = ref(hasPreset ? 2 : 1)
 
 function handlePrimaryBtn() {
@@ -36,8 +32,8 @@ function handlePrimaryBtn() {
     stepPageRef.value = 2
     return
   }
-  if (dictMode && !resultRef.value.cfg.raw)
-    resultRef.value.cfg.raw = new RawFile(resultRef.value.cfg.txt!)
+  if (dictMode && !resultRef.value.raw)
+    resultRef.value.raw = new RawFile(resultRef.value.txt!)
   emits('value', resultRef.value)
 }
 </script>
@@ -63,7 +59,7 @@ function handlePrimaryBtn() {
       />
       <QBtn
         color="primary"
-        :disable="stepPageRef === 1 && !resultRef.cfg?.txt"
+        :disable="stepPageRef === 1 && !resultRef?.txt"
         :label="stepPageRef < 2 ? '下一步' : '完 成'"
         @click="handlePrimaryBtn"
       />

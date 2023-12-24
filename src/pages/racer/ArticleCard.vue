@@ -4,15 +4,12 @@ import { mdiCounter, mdiPlusBoxOutline, mdiTextBoxEditOutline, mdiTrashCanOutlin
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import RawFile from 'src/libs/platforms/rawFile'
 import { formatYiWan } from 'libs/utils/format'
-import { createEmptySchema } from 'libs/schema'
+import { createEmptyMabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
+import type { ArticleInfo } from './visualize/inject'
 
-interface ArticleData {
-  name: string
-  txt: string
-}
 const emits = defineEmits<{
-  value: [value: ArticleData]
+  value: [value: ArticleInfo]
 }>()
 
 const openArticle = shallowRef(false)
@@ -37,9 +34,8 @@ function onDropArticle(e: DragEvent) {
 }
 
 const wrapInSchema = computed(() => {
-  const result = createEmptySchema()
-  result.cfg = articleData.value
-  return result
+  const emptyMb = createEmptyMabiao()
+  return { ...emptyMb, ...articleData.value }
 })
 </script>
 
@@ -104,8 +100,8 @@ const wrapInSchema = computed(() => {
     <LoadFile
       :preset="wrapInSchema"
       @value="v => {
-        articleData.txt = v.cfg.txt !
-        articleData.name = v.cfg.name!
+        articleData.txt = v.txt !
+        articleData.name = v.name!
         openArticle = false
       }"
     />

@@ -1,38 +1,34 @@
 <script setup lang="ts">
-import type { Schema } from 'libs/schema'
-import { computed, provide, readonly, ref } from 'vue'
+import type { Mabiao } from 'libs/schema'
+import { computed, provide, ref } from 'vue'
 import { mdiClose, mdiHandFrontRightOutline, mdiSpeedometer } from '@quasar/extras/mdi-v7'
 import { useSetTitle } from 'libs/hooks'
 import { simulateSchema } from 'libs/evaluate/simulator'
 import Feeling from './Feeling.vue'
 import Efficient from './Efficient.vue'
-import type { SchemaAndResult } from './share.ts'
+import type { ArticleInfo } from './inject'
+import { jArticle, jMabiao, jMabiao2, jResult, jResult2 } from './inject'
 
 const p = defineProps<{
-  article: {
-    name: string
-    txt: string
-  }
-  schema: Schema
-  schema2: Schema
+  article: ArticleInfo
+  mb: Mabiao
+  mb2: Mabiao
 }>()
 
-const title = `《${p.schema.cfg?.name}》和《${p.schema2.cfg?.name}》赛码结果`
+const title = `《${p.mb?.name}》和《${p.mb2?.name}》赛码结果`
 useSetTitle(title)
 
-const resultRef = computed(() => simulateSchema(p.schema, p.article.txt))
+const resultRef = computed(() => simulateSchema(p.mb, p.article.txt))
 
-const result2Ref = computed(() => simulateSchema(p.schema2, p.article.txt))
+const result2Ref = computed(() => simulateSchema(p.mb2, p.article.txt))
 
 // 其他子组件都通过依赖注入获取所需的资源
 
-provide('result', readonly(resultRef.value))
-provide('result2', readonly(result2Ref.value))
-provide('schema', readonly(p.schema))
-provide('schema2', readonly(p.schema2))
-provide('article', readonly(p.article))
-provide('SchRes', readonly({ schema: p.schema, result: resultRef.value } as SchemaAndResult))
-provide('SchRes2', readonly({ schema: p.schema2, result: result2Ref.value } as SchemaAndResult))
+provide(jResult, resultRef.value)
+provide(jResult2, result2Ref.value)
+provide(jMabiao, p.mb)
+provide(jMabiao2, p.mb2)
+provide(jArticle, p.article)
 
 const tabRef = ref('feeling')
 </script>

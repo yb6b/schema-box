@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import TopTooltip from 'components/custom/TopTooltip.vue'
 import BarChart from 'components/custom/BarChart.vue'
-import type { Schema } from 'src/libs/schema'
-import type { AnalysisResult } from 'src/libs/evaluate/simulator/analysisResult'
+
 import { formatFloat } from 'libs/utils/format'
 import { inject } from 'vue'
 import { splice } from 'remeda'
+import { jMabiao, jMabiao2, jResult, jResult2 } from './inject'
+
+const mabiao = inject(jMabiao)!
+const result = inject(jResult)!
+const mabiao2 = inject(jMabiao2)!
+const result2 = inject(jResult2)!
 
 function formatPercentButZero(n: number) {
   return n === 0 ? '0' : formatFloat(n, 2, true)
 }
-
-const schema = inject('schema') as Schema
-const schema2 = inject('schema2') as Schema
-const result = inject('result') as AnalysisResult
-const result2 = inject('result2') as AnalysisResult
 
 const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
 </script>
@@ -29,10 +29,10 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
               测评项目
             </th>
             <th class="text-left">
-              {{ schema.cfg?.name }}
+              {{ mabiao?.name }}
             </th>
             <th class="text-left">
-              {{ schema2.cfg?.name }}
+              {{ mabiao2?.name }}
             </th>
           </tr>
         </thead>
@@ -252,11 +252,11 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           title="各手指击键数"
           :labels="['大拇指', '左手小指', '左手无名指', '左手中指', '左手食指', '右手食指', '右手中指', '右手无名指', '右手小指']"
           :datasets="[{
-                        label: schema.cfg!.name!,
+                        label: mabiao!.name!,
                         data: splice(result.fingersDist, 5, 2, []),
                       },
                       {
-                        label: schema2.cfg!.name!,
+                        label: mabiao2!.name!,
                         data: splice(result2.fingersDist, 5, 2, []),
                       }]"
         />
@@ -269,7 +269,7 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
   <div class="row q-gutter-lg justify-center">
     <div class="col-12 col-sm-5">
       <div class="text-center">
-        {{ schema.cfg?.name }}
+        {{ mabiao?.name }}
       </div>
       <div class="column no-wrap content-center">
         <div v-for="line of keyboard" :key="line" class="col row">
@@ -303,7 +303,7 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
     </div>
     <div class="col-12 col-sm-5">
       <div class="text-center">
-        {{ schema2.cfg?.name }}
+        {{ mabiao2?.name }}
       </div>
       <div class="column no-wrap content-center">
         <div v-for="line of keyboard" :key="line" class="col row">

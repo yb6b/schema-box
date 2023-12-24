@@ -1,10 +1,10 @@
 import { bench } from 'vitest'
-import type { SchemaDictItem } from 'libs/schema'
+import type { MabiaoItem } from 'libs/schema'
 import { AnalysisResult } from './analysisResult'
 import { createTree, treeAdd } from './uniqueTrieTree'
 import { Segment } from './segmentation'
 
-const v: SchemaDictItem[] = [
+const v: MabiaoItem[] = [
   ['不', 'aa', 1],
   ['不是是', 'aa bB', 2],
   ['是', 'b', 3],

@@ -1,7 +1,7 @@
-import type { SchemaDictItem } from 'libs/schema'
+import type { MabiaoItem } from 'libs/schema'
 import { createTree, treeAdd, treeDelete, treeGet } from './uniqueTrieTree'
 
-const ttvs: SchemaDictItem[] = [
+const ttvs: MabiaoItem[] = [
   ['不', 'aa', 1],
   ['是', 'aa', 2],
   ['是', 'abb', 3],

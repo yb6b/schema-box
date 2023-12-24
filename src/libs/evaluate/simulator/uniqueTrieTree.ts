@@ -1,4 +1,4 @@
-import type { SchemaDictItem } from 'libs/schema'
+import type { MabiaoItem } from 'libs/schema'
 
 /**
  * 字典树中，每个词语的值。
@@ -17,7 +17,7 @@ export interface TrieTreeValue {
    * 若是null,表示该记录是空穴
    * 手动添加时, 请勿设置为null
    */
-  i: SchemaDictItem | null
+  i: MabiaoItem | null
 }
 
 /** 这种字典树里每个词条只保留一个编码 */
@@ -48,7 +48,7 @@ export function treeGet(tree: UniqueTrieTree, words: string) {
  * @param shortest 如果一词多码，是否只保留最短的编码？
  * @return 是否正常添加进字典树
  */
-export function treeAdd(tree: UniqueTrieTree, item: SchemaDictItem, collision: number, shortest = true): boolean {
+export function treeAdd(tree: UniqueTrieTree, item: MabiaoItem, collision: number, shortest = true): boolean {
   const words = item[0]
   const oldValue = tree.get(words)
   // 词条已经存在

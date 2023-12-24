@@ -1,7 +1,25 @@
-import { createEmptySchema, pushFirstDict } from 'libs/schema/schemaUtils'
-import { FormatError } from './platformTypes'
-import type { Platform } from './platformTypes'
-import { checkCodes, createTextBlob, genEachLine, validateCodes } from './utils'
+import { type Mabiao, createEmptyMabiao } from '../schema'
+import { checkCodes, genEachLine2, validateCodes } from './utils'
+import type RawFile from './rawFile'
+import { FormatError } from './index'
+
+interface DuoduoMeta {
+  order?: number
+  kind?: number
+  fix?: boolean
+  user?: boolean
+  secondary?: boolean
+  support?: boolean
+}
+interface DuoduoCodesInfo {
+  codes: string
+  meta: DuoduoMeta
+}
+
+export interface MbDuoduo extends Mabiao<DuoduoMeta> {
+  plat: 'duoduo'
+  header: string
+}
 
 const sharpControlZi = new Set('固用辅次类序')
 function validateDuoduoCodes(codes: string): boolean {
@@ -10,18 +28,6 @@ function validateDuoduoCodes(codes: string): boolean {
     return validateCodes(codes)
   const nextZi = codes[sharpSigIndex + 1]
   return sharpControlZi.has(nextZi)
-}
-
-interface DuoduoCodesInfo {
-  codes: string
-  meta: {
-    order?: number
-    kind?: number
-    fix?: boolean
-    user?: boolean
-    secondary?: boolean
-    support?: boolean
-  }
 }
 
 function parseDuoduoCodes(src: string): DuoduoCodesInfo {
@@ -53,79 +59,65 @@ function parseDuoduoCodes(src: string): DuoduoCodesInfo {
   return result
 }
 
-export const platDuoduo: Platform = {
-  id: 'duoduo',
-  async load(raw) {
-    let lineno = 0
-    const result = createEmptySchema()
-    result.cfg.plat = 'duoduo'
-    const text = await raw.getText()
-    for (const i of genEachLine(text)) {
-      lineno++
-      const line = i.trimEnd()
-      // jump empty line
-      if (!line)
-        continue
-        // jump header
-      if (line.startsWith('---config@'))
-        continue
-      const lineSplit = i.split('\t')
-      if (lineSplit.length !== 2)
-        throw new FormatError(`码表第${lineno}行，不是两列。`)
-      try {
-        const codeParsed = parseDuoduoCodes(lineSplit[1])
-        pushFirstDict(result, [
-          lineSplit[0],
-          codeParsed.codes,
-          lineno,
-          codeParsed.meta,
-        ])
-      }
-      catch (error) {
-        if (error instanceof Error)
-          throw new FormatError(`码表第${lineno}行，编码错误\n${error.message}`)
-      }
+/** 读取文件，转成码表对象 */
+export async function loadPlatDuoduo(raw: RawFile) {
+  const result = createEmptyMabiao() as MbDuoduo
+  result.plat = 'duoduo'
+  const text = await raw.getText()
+  let header = ''
+  for (const [line, lineno] of genEachLine2(text)) {
+    // jump header
+    if (line.startsWith('---config@')) {
+      header += `${line}\n`
+      continue
     }
-    return result
-  },
+    const lineSplit = line.split('\t')
+    if (lineSplit.length !== 2)
+      throw new FormatError(`码表第${lineno}行，不是两列。`)
+    try {
+      const codeParsed = parseDuoduoCodes(lineSplit[1])
+      result.items.push([lineSplit[0], codeParsed.codes, lineno, codeParsed.meta])
+    }
+    catch (error) {
+      if (error instanceof Error)
+        throw new FormatError(`码表第${lineno}行，编码错误\n${error.message}`)
+    }
+  }
+  result.header = header
+  return result
+}
 
-  dump(schema): string {
-    let result = ''
-    for (const item of schema.dicts[0].items)
-      result += `${item[0]}\t${item[1]}\n`
-    return result
-  },
+/** 快速判断文件是不是多多格式 */
+export async function validatePlatDuoduo(raw: RawFile) {
+  const text = await raw.getText()
 
-  async validate(raw) {
-    const text = await raw.getText()
+  // Match table file header.
+  if (text.startsWith('---config@'))
+    return true
 
-    // Match table file header.
-    if (text.startsWith('---config@'))
+  // Match code table
+  for (const [line, lineno] of genEachLine2(text)) {
+    // No need to check whole file. 200 lines are enough.
+    if (lineno > 200)
       return true
 
-    let lineNo = 0
-    // Match code table
-    for (let line of genEachLine(text)) {
-      // No need to check whole file. 200 lines are enough.
-      if (++lineNo > 200)
-        return true
+    const lineSplit = line.split('\t')
 
-      line = line.trim()
+    // There must be 2 columns.
+    if (lineSplit.length !== 2)
+      return false
 
-      // jump empty line
-      if (!line)
-        continue
+    // the second column must be codes.
+    if (!validateDuoduoCodes(lineSplit[1]))
+      return false
+  }
+  return true
+}
 
-      const lineSplit = line.split('\t')
-
-      // There must be 2 columns.
-      if (lineSplit.length !== 2)
-        return false
-
-      // the second column must be codes.
-      if (!validateDuoduoCodes(lineSplit[1]))
-        return false
-    }
-    return true
-  },
+/** 把码表对象转成字符串 */
+export function dumpPlatDuoduo(mb: MbDuoduo): string {
+  let result = mb.header ? `${mb.header}\n` : ''
+  for (const item of mb.items)
+    result += `${item[0]}\t${item[1]}\n`
+  return result
 }

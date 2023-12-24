@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import TopTooltip from 'components/custom/TopTooltip.vue'
 import BarChart from 'components/custom/BarChart.vue'
-import type { Schema } from 'src/libs/schema'
-import type { AnalysisResult } from 'src/libs/evaluate/simulator/analysisResult'
 import { formatFloat, formatTimeSpan } from 'libs/utils/format'
 import { inject } from 'vue'
 import { makeLabelAndDatas } from './utils'
+import { jMabiao, jMabiao2, jResult, jResult2 } from './inject'
 
-const schema = inject('schema') as Schema
-const result = inject('result') as AnalysisResult
-const schema2 = inject('schema2') as Schema
-const result2 = inject('result2') as AnalysisResult
+const mabiao = inject(jMabiao)!
+const result = inject(jResult)!
+const mabiao2 = inject(jMabiao2)!
+const result2 = inject(jResult2)!
 
 const wordsDistLabelAndDatas = makeLabelAndDatas([result.wordsDist, result2.wordsDist], '字词', '单字')
 const codeLenLabelAndDatas = makeLabelAndDatas([result.codeLengthDist, result2.codeLengthDist], '码')
@@ -27,10 +26,10 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
             测试项目
           </th>
           <th class="text-left">
-            {{ schema.cfg?.name }}
+            {{ mabiao?.name }}
           </th>
           <th class="text-left">
-            {{ schema2.cfg?.name }}
+            {{ mabiao2?.name }}
           </th>
         </tr>
       </thead>
@@ -150,10 +149,10 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
         title="上屏词语长度分布"
         :labels="wordsDistLabelAndDatas.label"
         :datasets="[{
-          label: schema.cfg!.name!,
+          label: mabiao.name!,
           data: wordsDistLabelAndDatas.data[0],
         }, {
-          label: schema2.cfg!.name!,
+          label: mabiao2.name!,
           data: wordsDistLabelAndDatas.data[1],
         }]"
       />
@@ -163,10 +162,10 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
         title="选重分布"
         :labels="collisionLabelAndDatas.label"
         :datasets="[{
-          label: schema.cfg!.name!,
+          label: mabiao.name!,
           data: collisionLabelAndDatas.data[0],
         }, {
-          label: schema2.cfg!.name!,
+          label: mabiao2.name!,
           data: collisionLabelAndDatas.data[1],
         }]"
       />
@@ -176,10 +175,10 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
         title="码长分布"
         :labels="codeLenLabelAndDatas.label"
         :datasets="[{
-          label: schema.cfg!.name!,
+          label: mabiao.name!,
           data: codeLenLabelAndDatas.data[0],
         }, {
-          label: schema2.cfg!.name!,
+          label: mabiao2.name!,
           data: codeLenLabelAndDatas.data[1],
         }]"
       />

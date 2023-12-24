@@ -3,17 +3,17 @@ import { shallowRef, watchEffect } from 'vue'
 import { mdiPlusBoxOutline, mdiScale, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import RawFile from 'src/libs/platforms/rawFile'
-import { type Schema, countDictItems, createEmptySchema } from 'libs/schema'
+import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
-import { platAuto } from 'src/libs/platforms/autoplat'
+import { loadPlatAuto, validatePlatAuto } from 'src/libs/platforms/autoplat'
 
 const emits = defineEmits<{
-  value: [value: Schema | null]
+  value: [value: Mabiao | null]
 }>()
 
 const openDialog = shallowRef(false)
 
-const dataRef = shallowRef<Schema | null>(null)
+const dataRef = shallowRef<Mabiao | null>(null)
 
 watchEffect(() => {
   emits('value', dataRef.value)
@@ -25,20 +25,20 @@ function onDrop(e: DragEvent) {
     throw new Error('无法识别文件')
   const rawfile = new RawFile(f)
   rawfile.getText().then((txt) => {
-    const result = createEmptySchema()
-    result.cfg.name = removeFileNameExt(rawfile.name)
-    result.cfg.txt = txt
+    const result = createEmptyMabiao()
+    result.name = removeFileNameExt(rawfile.name)
+    result.txt = txt
     dataRef.value = result
   })
 }
 
-async function onGetNewSchema(sch: Schema) {
-  const raw = sch.cfg.raw!
-  const isDict = await platAuto.validate(raw)
-  if (!isDict)
-    throw new TypeError(`无法解析码表${sch.cfg.name}`)
-  dataRef.value = await platAuto.load(raw)
-  dataRef.value.cfg = sch.cfg
+async function onGetNewSchema(mb: Mabiao) {
+  const raw = mb.raw!
+  const dictfmt = await validatePlatAuto(raw)
+  if (!dictfmt)
+    throw new TypeError(`无法解析码表${mb.name}`)
+  const tmpMb = await loadPlatAuto(raw, dictfmt)
+  dataRef.value = Object.assign(mb, tmpMb)
   openDialog.value = false
 }
 </script>
@@ -80,11 +80,11 @@ async function onGetNewSchema(sch: Schema) {
         <div class="row justify-evenly">
           <div>
             <div class="text-overline">
-              {{ dataRef.cfg.name }}
+              {{ dataRef.name }}
             </div>
             <!-- 显示码表前几行 -->
             <div class="font-monospace text-grey text-truncate" style="max-width: 14rem;">
-              <div v-for="i of dataRef.dicts[0].items.slice(0, 6)" :key="i[0]">
+              <div v-for="i of dataRef.items.slice(0, 6)" :key="i[0]">
                 {{ `${i[1]}\t${i[0]}` }}
               </div>
             </div>
@@ -93,13 +93,13 @@ async function onGetNewSchema(sch: Schema) {
           <!-- 展示方案的基本信息 -->
           <div class="column justify-end" style="height: 9.7rem;">
             <div class="text-blue-grey-9">
-              共 {{ countDictItems(dataRef) }} 行
+              共 {{ dataRef.items.length }} 行
             </div>
             <div class="text-blue-grey-9">
-              上屏码长 {{ dataRef.cfg.cmLen }}
+              上屏码长 {{ dataRef.cmLen }}
             </div>
             <div class="text-blue-grey-9">
-              选重键 <kbd>{{ dataRef.cfg.selectKeys }}</kbd>
+              选重键 <kbd>{{ dataRef.selectKeys }}</kbd>
             </div>
           </div>
         </div>

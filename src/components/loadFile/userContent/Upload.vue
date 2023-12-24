@@ -1,12 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { mdiFolderOpen } from '@quasar/extras/mdi-v7'
 import { inject, ref, watch } from 'vue'
 import RawFile from 'libs/platforms/rawFile'
+import { jResultRef } from '../inject'
 
 const fileRef = ref()
 const hintRef = ref('可以拖动文件到这里')
 
-const res = inject('result')
+const res = inject(jResultRef)!
 
 const fileEncodings = [
   'UTF-8',
@@ -21,9 +22,9 @@ watch(fileRef, async () => {
   const t = await rawData.getText()
   hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
   encodingRef.value = rawData.encoding
-  res.value.cfg.raw = rawData
-  res.value.cfg.txt = t
-  res.value.cfg.name = rawData.name.replace(/\.\w+$/, '')
+  res.value.raw = rawData
+  res.value.txt = t
+  res.value.name = rawData.name.replace(/\.\w+$/, '')
 })
 
 watch(encodingRef, async () => {
@@ -32,9 +33,9 @@ watch(encodingRef, async () => {
     rawData.encoding = encodingRef.value
     const t = await rawData.getText()
     hintRef.value = `读到「${t.slice(0, 25)} …」共${t.length}个字符。`
-    res.value.cfg.raw = rawData
-    res.value.cfg.txt = t
-    res.value.cfg.name = rawData.name.replace(/\.\w+$/, '')
+    res.value.raw = rawData
+    res.value.txt = t
+    res.value.name = rawData.name.replace(/\.\w+$/, '')
   }
 })
 </script>

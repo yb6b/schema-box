@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import type { Schema } from 'libs/schema'
+import type { Mabiao } from 'libs/schema'
 
 import { computed, defineAsyncComponent, onErrorCaptured, onMounted, shallowRef } from 'vue'
 import { mdiCog, mdiHelpCircle } from '@quasar/extras/mdi-v7'
-import { platDuoduo } from 'libs/platforms/duoduo'
+
+// import { platDuoduo } from 'libs/platforms/duoduo'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
 import RawFile from 'src/libs/platforms/rawFile'
@@ -14,6 +15,7 @@ import RawFile from 'src/libs/platforms/rawFile'
 import { useQuasar } from 'quasar'
 import SchemaCard from './SchemaCard.vue'
 import ArticleCard from './ArticleCard.vue'
+import type { ArticleInfo } from './visualize/inject'
 
 const $q = useQuasar()
 onErrorCaptured((err) => {
@@ -23,15 +25,15 @@ onErrorCaptured((err) => {
 const Visualize = defineAsyncComponent(() => import('./visualize/Visualize.vue'))
 const openVisualizeDialog = shallowRef(false)
 
-const articleData = shallowRef({
+const articleData = shallowRef<ArticleInfo>({
   name: '',
   txt: '',
 })
 
-const schemaData = shallowRef<Schema | null>(null)
-const schemaData2 = shallowRef<Schema | null>(null)
+const mabiaoData = shallowRef<Mabiao | null>(null)
+const mabiaoData2 = shallowRef<Mabiao | null>(null)
 
-const readyToRun = computed(() => !!(articleData.value.txt && schemaData.value && schemaData2.value))
+const readyToRun = computed(() => !!(articleData.value.txt && mabiaoData.value && mabiaoData2.value))
 
 // // 开发模式下，直接提供一些方案
 // if (process.env.DEV) {
@@ -82,14 +84,14 @@ const readyToRun = computed(() => !!(articleData.value.txt && schemaData.value &
           <h2 class="text-h6 text-blue-grey-6">
             主码表
           </h2>
-          <SchemaCard @value="sch => schemaData = sch" />
+          <SchemaCard @value="sch => mabiaoData = sch" />
         </div>
         <!-- 副码表卡片 -->
         <div class="col-12 col-md q-pa-sm">
           <h2 class="text-h6 text-blue-grey-6">
             副码表
           </h2>
-          <SchemaCard @value="sch => schemaData2 = sch" />
+          <SchemaCard @value="sch => mabiaoData2 = sch" />
         </div>
       </div>
       <!-- 开始赛码按钮 -->
@@ -107,8 +109,8 @@ const readyToRun = computed(() => !!(articleData.value.txt && schemaData.value &
       <Visualize
         v-if="readyToRun"
         :article="articleData"
-        :schema="schemaData!"
-        :schema2="schemaData2!"
+        :mb="mabiaoData!"
+        :mb2="mabiaoData2!"
       />
     </QDialog>
   </OnlyTitlebarLayout>

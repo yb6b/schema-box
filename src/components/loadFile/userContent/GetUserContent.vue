@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
 import { inject, ref, watch } from 'vue'
 import { mdiClipboardOutline, mdiContentCopy, mdiFileDocument } from '@quasar/extras/mdi-v7'
-import type { Schema } from 'libs/schema'
 
+import { jDictMode, jResultRef } from '../inject'
 import Upload from './Upload.vue'
 import Clipboard from './Clipboard.vue'
 import TextareaContent from './Textarea.vue'
 
-const dictMode = inject('dictMode') as boolean
-const res = inject('result') as Ref<Schema>
+const dictMode = inject(jDictMode)!
+const res = inject(jResultRef)!
 
 interface SelectOption {
   label: string
@@ -27,8 +26,8 @@ const selectOptions: SelectOption[] = [
 
 const selectOptRef = ref(selectOptions[0])
 watch(selectOptRef, () => {
-  res.value.cfg.txt = ''
-  res.value.cfg.raw = undefined
+  res.value.txt = ''
+  res.value.raw = undefined
 })
 </script>
 
