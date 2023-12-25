@@ -1,3 +1,6 @@
+import type { Mabiao } from 'libs/schema'
+import type { PlatTypes } from 'libs/platforms'
+
 export { checkCodes, validateCodes } from '../schema/keys'
 
 export function* genEachLine(src: string) {
@@ -16,7 +19,7 @@ export function* genEachLine(src: string) {
  * 迭代每一行，会过滤空行，同时返回每一行的行数
  * @param src
  */
-export function* genEachLine2(src: string) {
+export function* genEachLineJump(src: string) {
   let lineNumber = 0
   for (const line of genEachLine(src)) {
     lineNumber++
@@ -40,4 +43,10 @@ export function saveFile<T extends Blob>(aFile: T, filename: string) {
   downloadElement.click()
   document.body.removeChild(downloadElement)
   URL.revokeObjectURL(href)
+}
+
+export function getMabiaoHeader(mb: Mabiao, plat: PlatTypes) {
+  if (mb.plat === plat && mb.header)
+    return `${mb.header}\n`
+  return ''
 }

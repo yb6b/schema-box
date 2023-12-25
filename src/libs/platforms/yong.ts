@@ -1,13 +1,15 @@
 import type { Mabiao } from '../schema'
-import { createEmptyMabiao, getCodeToWordsDict, getMabiaoHeader } from '../schema'
+import { createEmptyMabiao, getCodeToWordsDict } from '../schema'
 
-import { genEachLine, genEachLine2, validateCodes } from './utils'
+import { genEachLine, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
 import type RawFile from './rawFile'
 import { FormatError } from './index'
 
 export interface MbYong extends Mabiao {
   plat: 'yong'
   header: string
+  raw: RawFile
+  yongObj?: Record<string, string>
 }
 
 /** 快速验证文件是不是小小格式 */
@@ -25,10 +27,12 @@ export async function loadPlatYong(raw: RawFile) {
   let txt = await raw.getText()
   const result = createEmptyMabiao() as MbYong
   result.plat = 'yong'
+  result.raw = raw
   const match = txt.match(/(.*)\n\[DATA\]\W*\n(.*)/is)
   let lineno = 0
   if (match) {
     result.header = match[1]
+    const yongOptions: Record<string, string> = {}
     // 解析码表头
     for (const line of genEachLine(match[1])) {
       lineno++
@@ -39,6 +43,7 @@ export async function loadPlatYong(raw: RawFile) {
         continue
       const fieldKey = line.slice(0, equalSigIndex)
       const fieldValue = line.slice(equalSigIndex + 1)
+      yongOptions[fieldKey] = fieldValue
       switch (fieldKey) {
         case 'name':
           result.name = fieldValue
@@ -50,6 +55,7 @@ export async function loadPlatYong(raw: RawFile) {
     }
     lineno += 1
     txt = match[2]
+    result.yongObj = yongOptions
   }
   // 读取小小码表
   for (const line of genEachLine(txt)) {
@@ -72,8 +78,8 @@ export async function loadPlatYong(raw: RawFile) {
 }
 
 /** 把小小的码表转换成字符串 */
-export function dumpPlatYong(mb: MbYong): string {
-  let result = getMabiaoHeader(mb)
+export function dumpPlatYong(mb: Mabiao | MbYong): string {
+  let result = getMabiaoHeader(mb, 'yong')
   result += '[DATA]\n'
   const d = getCodeToWordsDict(mb.items)
   for (const [code, words] of d.entries())
@@ -82,7 +88,7 @@ export function dumpPlatYong(mb: MbYong): string {
 }
 
 function validateTable(txt: string) {
-  for (const [line, lno] of genEachLine2(txt)) {
+  for (const [line, lno] of genEachLineJump(txt)) {
     if (lno > 40)
       return true
     if (!validateTableLine(line))

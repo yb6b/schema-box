@@ -9,7 +9,7 @@
 import type { Mabiao } from 'libs/schema'
 import { createEmptyMabiao, getCodeToWordsDict } from 'libs/schema'
 
-import { checkCodes, genEachLine, genEachLine2, validateCodes } from './utils'
+import { checkCodes, genEachLine, genEachLineJump, validateCodes } from './utils'
 import type RawFile from './rawFile'
 import { FormatError } from './index'
 
@@ -63,9 +63,9 @@ export async function loadPlatAuto(raw: RawFile, format: AutoFormat) {
 }
 
 /** 自动检查码表的格式，返回推测的格式，如果返回null，则无法推断出来 */
-export async function validatePlatAuto(raw: RawFile) {
+export async function detectPlatAuto(raw: RawFile) {
   const text = await raw.getText()
-  for (const [line] of genEachLine2(text)) {
+  for (const [line] of genEachLineJump(text)) {
     // 只担心词条是纯英文的
     const tabindex = line.indexOf('\t')
     const spaceindex = line.indexOf(' ')
@@ -102,16 +102,19 @@ export async function validatePlatAuto(raw: RawFile) {
   return null
 }
 
-/** 把自动推测的码表转成字符串， */
+/**
+ * 把自动推测的码表转成字符串，
+ * @param [fold] 是否一行多个词语？
+ */
 export function dumpPlatAuto(mb: MbAuto, fold = false): string {
   const format = mb.format
   if (!format)
     throw new FormatError('fail: dump platAuto - no format')
   let res = ''
-  if (fold) {
-    const r = [...getCodeToWordsDict(mb.items).entries()]
-    for (const [codes, items] of r) {
-      const words = items.map(v => v[0]).join(format.split)
+
+  // 每行只有一条词
+  if (!fold) {
+    for (const [words, codes] of mb.items) {
       if (format.ahead)
         res += `${codes}${format.split}${words}\n`
       else
@@ -119,8 +122,17 @@ export function dumpPlatAuto(mb: MbAuto, fold = false): string {
     }
     return res
   }
-  for (const [words, codes] of mb.items)
-    res += format.ahead ? `${codes}${format.split}${words}\n` : `${words}${format.split}${codes}\n`
+
+  // 每行多词
+
+  const r = [...getCodeToWordsDict(mb.items).entries()]
+  for (const [codes, items] of r) {
+    const words = items.map(v => v[0]).join(format.split)
+    if (format.ahead)
+      res += `${codes}${format.split}${words}\n`
+    else
+      res += `${words}${format.split}${codes}\n`
+  }
   return res
 }
 

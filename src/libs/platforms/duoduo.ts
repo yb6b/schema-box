@@ -1,5 +1,5 @@
 import { type Mabiao, createEmptyMabiao } from '../schema'
-import { checkCodes, genEachLine2, validateCodes } from './utils'
+import { checkCodes, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
 import type RawFile from './rawFile'
 import { FormatError } from './index'
 
@@ -19,6 +19,7 @@ interface DuoduoCodesInfo {
 export interface MbDuoduo extends Mabiao<DuoduoMeta> {
   plat: 'duoduo'
   header: string
+  raw: RawFile
 }
 
 const sharpControlZi = new Set('固用辅次类序')
@@ -61,11 +62,12 @@ function parseDuoduoCodes(src: string): DuoduoCodesInfo {
 
 /** 读取文件，转成码表对象 */
 export async function loadPlatDuoduo(raw: RawFile) {
+  const text = await raw.getText()
   const result = createEmptyMabiao() as MbDuoduo
   result.plat = 'duoduo'
-  const text = await raw.getText()
+  result.raw = raw
   let header = ''
-  for (const [line, lineno] of genEachLine2(text)) {
+  for (const [line, lineno] of genEachLineJump(text)) {
     // jump header
     if (line.startsWith('---config@')) {
       header += `${line}\n`
@@ -96,7 +98,7 @@ export async function validatePlatDuoduo(raw: RawFile) {
     return true
 
   // Match code table
-  for (const [line, lineno] of genEachLine2(text)) {
+  for (const [line, lineno] of genEachLineJump(text)) {
     // No need to check whole file. 200 lines are enough.
     if (lineno > 200)
       return true
@@ -115,8 +117,8 @@ export async function validatePlatDuoduo(raw: RawFile) {
 }
 
 /** 把码表对象转成字符串 */
-export function dumpPlatDuoduo(mb: MbDuoduo): string {
-  let result = mb.header ? `${mb.header}\n` : ''
+export function dumpPlatDuoduo(mb: Mabiao | MbDuoduo): string {
+  let result = getMabiaoHeader(mb, 'duoduo')
   for (const item of mb.items)
     result += `${item[0]}\t${item[1]}\n`
   return result

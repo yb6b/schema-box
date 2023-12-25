@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { shallowRef, watchEffect } from 'vue'
+import { shallowRef, toValue, watchEffect } from 'vue'
 import { mdiPlusBoxOutline, mdiScale, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import RawFile from 'src/libs/platforms/rawFile'
 import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
-import { loadPlatAuto, validatePlatAuto } from 'src/libs/platforms/autoplat'
+import { loadPlatAuto, detectPlatAuto } from 'src/libs/platforms/autoplat'
+import { loadPlatRime, validatePlatRime } from 'libs/platforms/rime'
 
 const emits = defineEmits<{
   value: [value: Mabiao | null]
@@ -34,10 +35,10 @@ function onDrop(e: DragEvent) {
 
 async function onGetNewSchema(mb: Mabiao) {
   const raw = mb.raw!
-  const dictfmt = await validatePlatAuto(raw)
+  const dictfmt = await validatePlatRime(raw)
   if (!dictfmt)
     throw new TypeError(`无法解析码表${mb.name}`)
-  const tmpMb = await loadPlatAuto(raw, dictfmt)
+  const tmpMb = await loadPlatRime(raw)
   dataRef.value = Object.assign(mb, tmpMb)
   openDialog.value = false
 }
@@ -48,7 +49,7 @@ async function onGetNewSchema(mb: Mabiao) {
   <QDialog v-model="openDialog">
     <LoadFile
       dict-mode
-      :preset="dataRef!"
+      :preset="toValue(dataRef)!"
       @value="onGetNewSchema"
     />
   </QDialog>

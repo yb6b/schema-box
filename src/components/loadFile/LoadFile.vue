@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, ref } from 'vue'
+import { provide, ref, toValue } from 'vue'
 import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import RawFile from 'libs/platforms/rawFile'
 import GetUserContent from './userContent/GetUserContent.vue'
@@ -32,9 +32,10 @@ function handlePrimaryBtn() {
     stepPageRef.value = 2
     return
   }
+  // 非上传文件的方式获取码表，没有raw
   if (dictMode && !resultRef.value.raw)
     resultRef.value.raw = new RawFile(resultRef.value.txt!)
-  emits('value', resultRef.value)
+  emits('value', toValue(resultRef))
 }
 </script>
 
@@ -59,7 +60,7 @@ function handlePrimaryBtn() {
       />
       <QBtn
         color="primary"
-        :disable="stepPageRef === 1 && !resultRef?.txt"
+        :disable="stepPageRef === 1 && !resultRef"
         :label="stepPageRef < 2 ? '下一步' : '完 成'"
         @click="handlePrimaryBtn"
       />

@@ -2,6 +2,7 @@
  * 码表数据以及一些工具函数
  */
 import type RawFile from '../platforms/rawFile'
+import type { PlatTypes } from '../platforms'
 
 /** 为了减少储存体积，用元组储存每一对词条数据 */
 export type MabiaoItem<T = unknown> = [
@@ -18,7 +19,7 @@ export interface Mabiao<T = unknown> {
   /** 码表数据原始文件 */
   raw?: RawFile
   /** 原文件平台 */
-  plat?: string
+  plat?: PlatTypes
   /** 码表原始文件里的码表头内容 */
   header?: string
   /** 最大码长 */
@@ -88,8 +89,4 @@ export function codeSet(items: MabiaoItem[]) {
       result.add(c)
   }
   return result
-}
-
-export function getMabiaoHeader(mb: Mabiao) {
-  return mb.header ? `${mb.header}\n` : ''
 }
