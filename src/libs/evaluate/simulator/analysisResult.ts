@@ -53,7 +53,7 @@ export class AnalysisResult {
     }
 
     const keysDist = dropNanInRecord(this.keysDist)
-    const kbdRowDist: Dist = [0, 0, 0, 0]
+    const kbdRowDist: Dist = [0, 0, 0, 0, 0]
     const finDist: Dist = Array(11).fill(0)
     let keys = 0
     for (const [k, n] of Object.entries(keysDist)) {

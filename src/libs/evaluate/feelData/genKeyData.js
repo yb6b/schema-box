@@ -3,10 +3,10 @@ import { KEYS } from '../../constants'
 
 /** 每一排的按键 */
 export const KEYS_BY_LINE = [
-  '`1234567890-=',
-  'qwertyuiop[]',
-  'asdfghjkl;\'\\',
-  'zxcvbnm,./',
+  '`1234567890-=←',
+  '→qwertyuiop[]',
+  'asdfghjkl;\'\\↩',
+  '↑zxcvbnm,./',
 ]
 
 const key2line = new Map(KEYS_BY_LINE.map((v, i) => [...v].map(v2 => [v2, i])).flat())
@@ -69,8 +69,10 @@ const keyToFinger = {
 
 const result = [];
 [...KEYS].forEach((v) => {
-  const r = keyToFinger[v] << 2 | (key2line.get(v))
+  console.log(v, keyToFinger[v], key2line.get(v))
+  const r = keyToFinger[v] << 2 | key2line.get(v)
   result.push(r)
 })
+
 const resultJson = JSON.stringify(result)
 writeFileSync('keyFeelData.js', `export default "${resultJson}"`)
