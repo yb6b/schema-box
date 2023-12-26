@@ -6,10 +6,13 @@ import { RawFile } from 'src/libs/platforms/rawFile'
 import type { Mabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
 import { detectAndFillMabiao, platToName } from 'libs/platforms'
+import { useQuasar } from 'quasar'
 
 const emits = defineEmits<{
   value: [value: Mabiao | null]
 }>()
+
+const $q = useQuasar()
 
 const openDialog = shallowRef(false)
 
@@ -27,12 +30,11 @@ function onDrop(e: DragEvent) {
   detectAndFillMabiao(raw).then((mb) => {
     mb.name = removeFileNameExt(raw.name)
     dataRef.value = mb
-  })
+  }).catch((r) => { $q.notify(r.message) })
 }
 
 async function onGetNewSchema(mb: Mabiao) {
   // loadFile 组件内部已经推断过了
-
   dataRef.value = mb
   openDialog.value = false
 }
@@ -73,13 +75,13 @@ async function onGetNewSchema(mb: Mabiao) {
     <!-- 有数据之后显示卡片 -->
     <template v-else>
       <QCardSection>
-        <div class="row justify-evenly">
+        <div class="row justify-evenly ">
           <div>
             <div class="text-overline">
               {{ dataRef.name }}
             </div>
             <!-- 显示码表前几行 -->
-            <div class="font-monospace text-grey text-truncate" style="max-width: 14rem;">
+            <div class="font-monospace text-grey text-truncate" style="max-width: 14rem;max-height: 7.8rem;">
               <div v-for="i of dataRef.items!.slice(0, 6)" :key="i[0]">
                 {{ `${i[1]}\t${i[0]}` }}
               </div>
@@ -87,7 +89,7 @@ async function onGetNewSchema(mb: Mabiao) {
           </div>
           <QSeparator vertical class="q-mx-sm" />
           <!-- 展示方案的基本信息 -->
-          <div class="column justify-end" style="height: 9.7rem;">
+          <div class="column justify-end" style="height: 9.5rem;">
             <div class="text-blue-grey-9">
               码表格式:{{ platToName[dataRef.plat!] }}
             </div>

@@ -78,7 +78,7 @@ export async function detectAndFillMabiao(raw: RawFile) {
   }
   // 有了码表之后, 推断各项数据
   mb.maxCodeLen = maxCodeLen(mb.items)
-  mb.cmLen = mb.maxCodeLen
+  mb.cmLen = mb.cmLen ?? mb.maxCodeLen
   mb.selectKeys = detectSellectKeys(keysSet(mb.items))
   mb.raw = raw // 防错
   return mb

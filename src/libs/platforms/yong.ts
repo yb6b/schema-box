@@ -15,10 +15,11 @@ export interface MbYong extends Mabiao {
 /** 快速验证文件是不是小小格式 */
 export async function validatePlatYong(raw: RawFile) {
   let txt = await raw.getText()
-  const match = txt.match(/(.*)\n\[DATA\]\W*\n(.*)/is)
-  // 如果有 [DATA] 标志，那就需要处理码表头
-  if (match)
-    txt = match[2]
+  const sigIndex = txt.indexOf('\n[DATA]')
+  const sigIndex2 = txt.indexOf('\n[data]')
+  const index = sigIndex === -1 ? sigIndex2 : sigIndex
+  if (index !== -1)
+    txt = txt.slice(index + 8)
   return validateTable(txt)
 }
 
@@ -31,14 +32,16 @@ export async function loadPlatYong(raw: RawFile) {
     raw,
     header: '',
   }
+  const sigIndex = txt.indexOf('\n[DATA]')
+  const sigIndex2 = txt.indexOf('\n[data]')
+  const index = sigIndex === -1 ? sigIndex2 : sigIndex
 
-  const match = txt.match(/(.*)\n\[DATA\]\W*\n(.*)/is)
   let lineno = 0
-  if (match) {
-    result.header = match[1]
+  if (index !== -1) {
+    result.header = txt.slice(0, index)
     const yongOptions: Record<string, string> = {}
     // 解析码表头
-    for (const line of genEachLine(match[1])) {
+    for (const line of genEachLine(result.header)) {
       lineno++
       if (!line.trim())
         continue
@@ -58,7 +61,7 @@ export async function loadPlatYong(raw: RawFile) {
       }
     }
     lineno += 1
-    txt = match[2]
+    txt = txt.slice(index + 8)
     result.yongObj = yongOptions
   }
   // 读取小小码表

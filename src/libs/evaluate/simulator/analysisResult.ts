@@ -264,5 +264,5 @@ function dropLastFalsyItems(d: Dist) {
 }
 
 function dropNanInRecord(d: Record<string, number>) {
-  return Object.fromEntries(Object.entries(d).filter(([_, n]) => !Number.isNaN(n)))
+  return Object.fromEntries(Object.entries(d).filter(([_, n]) => !!n))
 }
