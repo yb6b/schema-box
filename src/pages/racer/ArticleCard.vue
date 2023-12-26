@@ -2,7 +2,7 @@
 import { computed, shallowRef, watchEffect } from 'vue'
 import { mdiCounter, mdiPlusBoxOutline, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
-import RawFile from 'src/libs/platforms/rawFile'
+import { RawFile } from 'src/libs/platforms/rawFile'
 import { formatYiWan } from 'libs/utils/format'
 import { createEmptyMabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'

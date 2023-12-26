@@ -6,7 +6,7 @@ import DetectFileEncoding from 'detect-file-encoding-and-language'
 
 // import { createTextBlob } from './utils'
 
-export default class RawFile {
+export class RawFile {
   constructor(src: Blob | File | string, name = '') {
     this.name = name
     if (typeof src === 'string') {

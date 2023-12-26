@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provide, ref, toValue } from 'vue'
 import { type Mabiao, createEmptyMabiao } from 'libs/schema'
-import RawFile from 'libs/platforms/rawFile'
+import { RawFile } from 'libs/platforms/rawFile'
 import GetUserContent from './userContent/GetUserContent.vue'
 import DictOptions from './options/DictOptions.vue'
 import ArticleOptions from './options/ArticleOptions.vue'

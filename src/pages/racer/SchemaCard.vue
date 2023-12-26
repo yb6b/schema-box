@@ -2,10 +2,10 @@
 import { shallowRef, toValue, watchEffect } from 'vue'
 import { mdiPlusBoxOutline, mdiScale, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
-import RawFile from 'src/libs/platforms/rawFile'
+import { RawFile } from 'src/libs/platforms/rawFile'
 import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
-import { loadPlatAuto, detectPlatAuto } from 'src/libs/platforms/autoplat'
+import { detectPlatAuto, loadPlatAuto } from 'src/libs/platforms/autoplat'
 import { loadPlatRime, validatePlatRime } from 'libs/platforms/rime'
 
 const emits = defineEmits<{

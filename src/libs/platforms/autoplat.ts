@@ -10,7 +10,7 @@ import type { Mabiao } from 'libs/schema'
 import { createEmptyMabiao, getCodeToWordsDict } from 'libs/schema'
 
 import { checkCodes, genEachLine, genEachLineJump, validateCodes } from './utils'
-import type RawFile from './rawFile'
+import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 
 type SplitSpace = ' ' | '\t'

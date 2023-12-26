@@ -1,6 +1,6 @@
-import type RawFile from './rawFile'
+import type { RawFile } from './rawFile'
 import type { PlatTypes } from './index'
-import { detectPlatAuto, validatePlatDuoduo, validatePlatRime, validatePlatYong } from './index'
+import { validatePlatDuoduo, validatePlatRime, validatePlatYong } from './index'
 
 /**
  * 自动识别各种平台的格式

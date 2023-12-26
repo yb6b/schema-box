@@ -1,6 +1,6 @@
 import { type Mabiao, createEmptyMabiao } from '../schema'
 import { checkCodes, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
-import type RawFile from './rawFile'
+import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 
 interface DuoduoMeta {

@@ -1,4 +1,4 @@
-import type RawFile from '../platforms/rawFile'
+import type { RawFile } from '../platforms/rawFile'
 import type { Mabiao } from './mabiao'
 
 export interface Schema {

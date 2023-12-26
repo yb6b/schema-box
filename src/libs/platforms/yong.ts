@@ -2,7 +2,7 @@ import type { Mabiao } from '../schema'
 import { createEmptyMabiao, getCodeToWordsDict } from '../schema'
 
 import { genEachLine, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
-import type RawFile from './rawFile'
+import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 
 export interface MbYong extends Mabiao {

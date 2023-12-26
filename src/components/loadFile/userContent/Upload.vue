@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mdiFolderOpen } from '@quasar/extras/mdi-v7'
 import { inject, ref, watch } from 'vue'
-import RawFile from 'libs/platforms/rawFile'
+import { RawFile } from 'libs/platforms/rawFile'
 import { jResultRef } from '../inject'
 
 const fileRef = ref()

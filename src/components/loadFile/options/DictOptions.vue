@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue'
+import { inject, onMounted, shallowRef } from 'vue'
 import { nanoid6 } from 'libs/utils'
 import { mdiLightbulbQuestionOutline } from '@quasar/extras/mdi-v7'
+import type { PlatTypes } from 'libs/platforms'
+import { detectPlatAuto } from 'libs/platforms'
+import { detectPlatform } from 'libs/platforms/detectPlat'
+import { RawFile } from 'src/libs/platforms/rawFile'
 import { jResultRef } from '../inject'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
@@ -15,37 +19,60 @@ import RimePng from './assets/rime.png'
 // @ts-expect-error picture
 import YongPng from './assets/yong.png'
 
+// @ts-expect-error picture
+import DuoduoJpg from './assets/duoduo.jpg'
+
 interface DictFormat {
   label: string
-  value: string
-  icon?: string
-  mdi?: string
+  value: PlatTypes
+  icon: string
 }
+
 const dictFormats: DictFormat[] = [
   {
-    label: '自动判断',
+    label: '通用码表',
     value: 'auto',
     icon: mdiLightbulbQuestionOutline,
   },
+  // {
+  //   label: '极速赛码表',
+  //   value: 'jisu',
+  //   icon: `img:${JisuPng}`,
+  // },
   {
-    label: '极速赛码表',
-    value: 'jisu',
-    icon: `img:${JisuPng}`,
-  },
-  {
-    label: 'Rime / 多多',
+    label: 'Rime',
     value: 'rime',
     icon: `img:${RimePng}`,
   },
   {
-    label: '小小 / 极点',
+    label: '多多',
+    value: 'duoduo',
+    icon: `img:${DuoduoJpg}`,
+  },
+  {
+    label: '小小',
     value: 'yong',
     icon: `img:${YongPng}`,
   },
 ]
-const tmpFormat = ref(dictFormats[0])
+const tmpFormat = shallowRef(dictFormats[0])
 
 const res = inject(jResultRef) !
+
+onMounted(() => {
+  const raw = res.value.raw || new RawFile(res.value.txt!)
+  detectPlatform(raw).then((resultType) => {
+    // 找不到确定的格式, 则只能选择 auto
+    if (resultType === null)
+      return
+    const formatItem = dictFormats.find(v => v.value === resultType)
+    // 防错, 找不到的话, 用通用规则
+    if (!formatItem)
+      return
+    res.value.plat = resultType
+    tmpFormat.value = formatItem
+  })
+})
 
 if (!res.value.name)
   res.value.name = `码表_${nanoid6()}`

@@ -7,7 +7,7 @@ import { mdiCog, mdiHelpCircle } from '@quasar/extras/mdi-v7'
 // import { platDuoduo } from 'libs/platforms/duoduo'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
-import RawFile from 'src/libs/platforms/rawFile'
+import { RawFile } from 'src/libs/platforms/rawFile'
 
 // import moc_article from 'app/dist/xinqing_jueding.js'
 // import moc_qqwb from 'app/dist/qqwb.js'

@@ -4,7 +4,7 @@ import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import { load } from 'js-yaml'
 import { checkCodes, genEachLineJump, getMabiaoHeader } from './utils'
 
-import type RawFile from './rawFile'
+import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 
 export interface MbRime extends Mabiao {

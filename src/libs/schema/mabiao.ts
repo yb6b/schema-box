@@ -1,7 +1,7 @@
 /**
  * 码表数据以及一些工具函数
  */
-import type RawFile from '../platforms/rawFile'
+import type { RawFile } from '../platforms/rawFile'
 import type { PlatTypes } from '../platforms'
 
 /** 为了减少储存体积，用元组储存每一对词条数据 */
