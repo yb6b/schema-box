@@ -7,7 +7,7 @@
  */
 
 import type { Mabiao } from 'libs/schema'
-import { createEmptyMabiao, getCodeToWordsDict } from 'libs/schema'
+import { getCodeToWordsDict } from 'libs/schema'
 
 import { checkCodes, genEachLine, genEachLineJump, validateCodes } from './utils'
 import type { RawFile } from './rawFile'
@@ -24,13 +24,12 @@ interface AutoFormat {
 export interface MbAuto extends Mabiao {
   format: AutoFormat
   plat: 'auto'
+  raw: RawFile
 }
 
 /** 读取自动判断格式的码表，要提供格式对象，可以通过 validatePlatAuto 获得 */
 export async function loadPlatAuto(raw: RawFile, format: AutoFormat) {
-  const mb = createEmptyMabiao() as MbAuto
-  mb.plat = 'auto'
-  mb.format = format
+  const mb = { plat: 'auto', format, items: [], raw } as MbAuto
   const text = await raw.getText()
   let lineno = 0
   for (const line of genEachLine(text)) {
@@ -104,6 +103,7 @@ export async function detectPlatAuto(raw: RawFile) {
 
 /**
  * 把自动推测的码表转成字符串，
+ * @param mb 输入的码表, 必须是MbAuto类型
  * @param [fold] 是否一行多个词语？
  */
 export function dumpPlatAuto(mb: MbAuto, fold = false): string {
@@ -139,12 +139,20 @@ export function dumpPlatAuto(mb: MbAuto, fold = false): string {
 /** 返回null暗示了词语是英文 */
 function detectFormat(line: string, firstIndex: number, space: SplitSpace): AutoFormat | null {
   const lastIndex = line.lastIndexOf(space)
-  const firstIsCode = validateCodes(line.slice(0, firstIndex))
+  const codeAhead = validateCodes(line.slice(0, firstIndex))
   const lastIsCode = validateCodes(line.slice(lastIndex + 1))
-  if (firstIsCode && !lastIsCode)
+  if (codeAhead && !lastIsCode)
     return { split: space, ahead: true }
 
-  if (!firstIsCode && lastIsCode)
+  if (!codeAhead && lastIsCode)
     return { split: space, ahead: false }
   return null
+}
+
+/** 快速转换码表 */
+export async function loadPlatAutoDirectly(raw: RawFile) {
+  const fmt = await detectPlatAuto(raw)
+  if (!fmt)
+    throw new FormatError(`无法推断出${raw.name}的分隔符`)
+  return await loadPlatAuto(raw, fmt)
 }

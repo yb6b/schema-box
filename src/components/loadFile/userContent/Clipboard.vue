@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 import { mdiClipboardOutline } from '@quasar/extras/mdi-v7'
-import { nanoid6 } from 'libs/utils'
 import { sliceString } from 'libs/utils/string'
 import { jResultRef } from '../inject'
 
@@ -11,7 +10,7 @@ function readClipboard() {
   (async () => {
     const text = await navigator.clipboard.readText()
     res.value.txt = text
-    res.value.name = `剪切_${sliceString(text, 0, 6)}_${nanoid6()}`
+    res.value.name = `剪切_${sliceString(text, 0, 6)}`
   })()
 }
 </script>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { inject, onMounted, shallowRef } from 'vue'
+import { inject, onMounted, onUnmounted, shallowRef, toValue, watch } from 'vue'
 import { nanoid6 } from 'libs/utils'
 import { mdiLightbulbQuestionOutline } from '@quasar/extras/mdi-v7'
 import type { PlatTypes } from 'libs/platforms'
-import { detectPlatAuto } from 'libs/platforms'
-import { detectPlatform } from 'libs/platforms/detectPlat'
+import { detectAndFillMabiao, loadPlatAutoDirectly, platToLoader, platToName } from 'libs/platforms'
 import { RawFile } from 'src/libs/platforms/rawFile'
 import { jResultRef } from '../inject'
 
@@ -55,36 +54,61 @@ const dictFormats: DictFormat[] = [
     icon: `img:${YongPng}`,
   },
 ]
+const valueToDictFormat = Object.fromEntries(dictFormats.map(v => [v.value, v]))
 const tmpFormat = shallowRef(dictFormats[0])
 
 const res = inject(jResultRef) !
 
+// 初始化参数
+if (!res.value.name)
+  res.value.name = `码表_${nanoid6()}`
+if (!res.value.plat)
+  res.value.plat = 'auto'
+if (!res.value.selectKeys)
+  res.value.selectKeys = ' 23456789'
+if (!res.value.cmLen)
+  res.value.cmLen = 4
+
+let stopWatchPlat: Function
 onMounted(() => {
-  const raw = res.value.raw || new RawFile(res.value.txt!)
-  detectPlatform(raw).then((resultType) => {
-    // 找不到确定的格式, 则只能选择 auto
-    if (resultType === null)
-      return
-    const formatItem = dictFormats.find(v => v.value === resultType)
-    // 防错, 找不到的话, 用通用规则
-    if (!formatItem)
-      return
-    res.value.plat = resultType
-    tmpFormat.value = formatItem
+  // 如果已经存在码表数据了, 是preset组件属性传来的, 可以跳过推断
+  if (res.value.items.length === 0) {
+    let raw = res.value.raw || new RawFile(res.value.txt!)
+    raw = toValue(raw)
+    // 分析码表 格式
+    detectAndFillMabiao(raw).then((mb) => {
+      res.value.items = mb.items
+      res.value.name = mb.name
+      res.value.plat = mb.plat
+      tmpFormat.value = valueToDictFormat[mb.plat!]
+      res.value.selectKeys = mb.selectKeys
+      res.value.cmLen = mb.cmLen
+    })
+  }
+  stopWatchPlat = watch(() => res.value.plat, async (plat, oldplat) => {
+    try {
+      if (plat === 'auto') {
+        const mb = await loadPlatAutoDirectly(res.value.raw!)
+        res.value.items = mb.items
+        return
+      }
+      const loader = platToLoader[plat!]
+      const mb = await loader(res.value.raw!)
+      res.value.items = mb.items
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        res.value.plat = oldplat
+        tmpFormat.value = valueToDictFormat[oldplat!]
+        throw new Error(`码表${res.value.name}无法解析成${platToName[plat]}格式。因为：${error.message}`)
+      }
+    }
   })
 })
 
-if (!res.value.name)
-  res.value.name = `码表_${nanoid6()}`
-
-if (!res.value.plat)
-  res.value.plat = 'auto'
-
-if (!res.value.selectKeys)
-  res.value.selectKeys = ' 23456789'
-
-if (!res.value.cmLen)
-  res.value.cmLen = 4
+onUnmounted(() => {
+  stopWatchPlat()
+})
 </script>
 
 <template>

@@ -3,10 +3,9 @@ import { shallowRef, toValue, watchEffect } from 'vue'
 import { mdiPlusBoxOutline, mdiScale, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import { RawFile } from 'src/libs/platforms/rawFile'
-import { type Mabiao, createEmptyMabiao } from 'libs/schema'
+import type { Mabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
-import { detectPlatAuto, loadPlatAuto } from 'src/libs/platforms/autoplat'
-import { loadPlatRime, validatePlatRime } from 'libs/platforms/rime'
+import { detectAndFillMabiao, platToName } from 'libs/platforms'
 
 const emits = defineEmits<{
   value: [value: Mabiao | null]
@@ -24,22 +23,17 @@ function onDrop(e: DragEvent) {
   const f = e.dataTransfer?.files[0]
   if (!f)
     throw new Error('无法识别文件')
-  const rawfile = new RawFile(f)
-  rawfile.getText().then((txt) => {
-    const result = createEmptyMabiao()
-    result.name = removeFileNameExt(rawfile.name)
-    result.txt = txt
-    dataRef.value = result
+  const raw = new RawFile(f)
+  detectAndFillMabiao(raw).then((mb) => {
+    mb.name = removeFileNameExt(raw.name)
+    dataRef.value = mb
   })
 }
 
 async function onGetNewSchema(mb: Mabiao) {
-  const raw = mb.raw!
-  const dictfmt = await validatePlatRime(raw)
-  if (!dictfmt)
-    throw new TypeError(`无法解析码表${mb.name}`)
-  const tmpMb = await loadPlatRime(raw)
-  dataRef.value = Object.assign(mb, tmpMb)
+  // loadFile 组件内部已经推断过了
+
+  dataRef.value = mb
   openDialog.value = false
 }
 </script>
@@ -48,6 +42,7 @@ async function onGetNewSchema(mb: Mabiao) {
   <!-- 编码码表的弹窗 -->
   <QDialog v-model="openDialog">
     <LoadFile
+      v-if="openDialog"
       dict-mode
       :preset="toValue(dataRef)!"
       @value="onGetNewSchema"
@@ -85,7 +80,7 @@ async function onGetNewSchema(mb: Mabiao) {
             </div>
             <!-- 显示码表前几行 -->
             <div class="font-monospace text-grey text-truncate" style="max-width: 14rem;">
-              <div v-for="i of dataRef.items.slice(0, 6)" :key="i[0]">
+              <div v-for="i of dataRef.items!.slice(0, 6)" :key="i[0]">
                 {{ `${i[1]}\t${i[0]}` }}
               </div>
             </div>
@@ -94,7 +89,10 @@ async function onGetNewSchema(mb: Mabiao) {
           <!-- 展示方案的基本信息 -->
           <div class="column justify-end" style="height: 9.7rem;">
             <div class="text-blue-grey-9">
-              共 {{ dataRef.items.length }} 行
+              码表格式:{{ platToName[dataRef.plat!] }}
+            </div>
+            <div class="text-blue-grey-9">
+              共 {{ dataRef.items!.length }} 行
             </div>
             <div class="text-blue-grey-9">
               上屏码长 {{ dataRef.cmLen }}

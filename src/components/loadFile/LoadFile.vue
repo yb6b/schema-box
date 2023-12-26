@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, ref, toValue } from 'vue'
+import { provide, ref, shallowRef, toValue } from 'vue'
 import { type Mabiao, createEmptyMabiao } from 'libs/schema'
 import { RawFile } from 'libs/platforms/rawFile'
 import GetUserContent from './userContent/GetUserContent.vue'
@@ -24,17 +24,16 @@ const resultRef = ref<Mabiao>(props.preset || createEmptyMabiao())
 
 provide(jResultRef, resultRef)
 
-const hasPreset = !!props.preset?.txt
+const hasPreset = !!props.preset?.name
 const stepPageRef = ref(hasPreset ? 2 : 1)
 
 function handlePrimaryBtn() {
+  // 第一页 翻页
   if (stepPageRef.value === 1) {
     stepPageRef.value = 2
     return
   }
-  // 非上传文件的方式获取码表，没有raw
-  if (dictMode && !resultRef.value.raw)
-    resultRef.value.raw = new RawFile(resultRef.value.txt!)
+  // 第二页
   emits('value', toValue(resultRef))
 }
 </script>

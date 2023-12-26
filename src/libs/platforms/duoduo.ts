@@ -1,4 +1,4 @@
-import { type Mabiao, createEmptyMabiao } from '../schema'
+import type { Mabiao } from '../schema'
 import { checkCodes, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
 import type { RawFile } from './rawFile'
 import { FormatError } from './index'
@@ -63,9 +63,8 @@ function parseDuoduoCodes(src: string): DuoduoCodesInfo {
 /** 读取文件，转成码表对象 */
 export async function loadPlatDuoduo(raw: RawFile) {
   const text = await raw.getText()
-  const result = createEmptyMabiao() as MbDuoduo
-  result.plat = 'duoduo'
-  result.raw = raw
+  const result = { items: [], plat: 'duoduo', raw, header: '' } as MbDuoduo
+
   let header = ''
   for (const [line, lineno] of genEachLineJump(text)) {
     // jump header

@@ -12,7 +12,7 @@ export interface MbRime extends Mabiao {
   name: string
   raw: RawFile
   /** 码表数据里编码在前 还是词语在前 */
-  codeFirst: boolean
+  codeAhead: boolean
   header?: string
   rimeObj?: object
 }
@@ -33,11 +33,13 @@ export async function validatePlatRime(raw: RawFile) {
 export async function loadPlatRime(raw: RawFile) {
   // 提取出码表头
   let txt = await raw.getText()
-  const result = createEmptyMabiao() as unknown as MbRime
-  result.plat = 'rime'
-  result.name = raw.name
-  result.raw = raw
-  result.codeFirst = false
+  const result: MbRime = {
+    items: [],
+    plat: 'rime',
+    name: raw.name,
+    codeAhead: false,
+    raw,
+  }
   const match = txt.match(/^(.*\n---(.*)\n\.\.\.)(.*)/is)
 
   if (match && match[2]) {
@@ -52,7 +54,7 @@ export async function loadPlatRime(raw: RawFile) {
     if (yamlObj.columns) {
       const col = yamlObj.columns
       if (col.length > 1 && yamlObj.columns[0] === 'code' && yamlObj.columns[1] === 'text')
-        result.codeFirst = true
+        result.codeAhead = true
     }
     result.header = match[1]
     txt = match[3]
@@ -67,9 +69,9 @@ export async function loadPlatRime(raw: RawFile) {
     const lineSplit = line.split('\t')
     if (lineSplit.length < 2)
       throw new FormatError(`Rime码表 ${raw.name} 中的第 ${realLineNo} 行缺少tab`)
-    let cd = result.codeFirst ? lineSplit[0] : lineSplit[1]
+    let cd = result.codeAhead ? lineSplit[0] : lineSplit[1]
     cd = checkCodes(cd)
-    const wd = result.codeFirst ? lineSplit[1] : lineSplit[0]
+    const wd = result.codeAhead ? lineSplit[1] : lineSplit[0]
     result.items.push([wd, cd, realLineNo])
   }
   return result
@@ -78,14 +80,14 @@ export async function loadPlatRime(raw: RawFile) {
 /** 把码表对象转换成rime格式的字符串 */
 export function dumpPlatRime(mb: Mabiao | MbRime): string {
   let result = getMabiaoHeader(mb, 'rime')
-  let codeFirst = false
+  let codeAhead = false
 
   // 处理码表头
   if (mb.plat === 'rime')
-    codeFirst = !!(mb as MbRime).codeFirst
+    codeAhead = !!(mb as MbRime).codeAhead
 
   // 添加码表数据
-  if (codeFirst) {
+  if (codeAhead) {
     for (const e of mb.items)
       result += `${e[1]}\t${e[0]}\n`
   }

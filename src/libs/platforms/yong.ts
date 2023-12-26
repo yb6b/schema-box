@@ -25,9 +25,13 @@ export async function validatePlatYong(raw: RawFile) {
 /** 把原始文件转换成小小码表 */
 export async function loadPlatYong(raw: RawFile) {
   let txt = await raw.getText()
-  const result = createEmptyMabiao() as MbYong
-  result.plat = 'yong'
-  result.raw = raw
+  const result: MbYong = {
+    items: [],
+    plat: 'yong',
+    raw,
+    header: '',
+  }
+
   const match = txt.match(/(.*)\n\[DATA\]\W*\n(.*)/is)
   let lineno = 0
   if (match) {

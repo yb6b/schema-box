@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, watchEffect } from 'vue'
-import { nanoid6 } from 'libs/utils'
+import { sliceString } from 'libs/utils/string'
 import { jDictMode, jResultRef } from '../inject'
 
 const dictMode = inject(jDictMode)!
@@ -8,7 +8,7 @@ const res = inject(jResultRef)!
 
 watchEffect(() => {
   if (res.value.txt)
-    res.value.name = `用户输入_${nanoid6()}`
+    res.value.name = `键入_${sliceString(res.value.txt, 0, 6)}`
 })
 </script>
 
