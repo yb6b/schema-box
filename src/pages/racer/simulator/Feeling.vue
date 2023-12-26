@@ -75,16 +75,16 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             <td>
               <TopTooltip>
                 总当量：{{ result.Eq }}<br>
-                上屏字数：{{ result.combo }}
+                上屏字符总数：{{ result.char }}
               </TopTooltip>
-              {{ formatFloat(result.Eq / result.hanzi, 3) }}
+              {{ formatFloat(result.Eq / result.char, 3) }}
             </td>
             <td>
               <TopTooltip>
                 总当量：{{ result2.Eq }}<br>
-                上屏字数：{{ result2.combo }}
+                上屏字符总数：{{ result2.char }}
               </TopTooltip>
-              {{ formatFloat(result2.Eq / result2.hanzi, 3) }}
+              {{ formatFloat(result2.Eq / result2.char, 3) }}
             </td>
           </tr>
 
@@ -185,25 +185,6 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           </tr>
           <tr>
             <td class="text-right">
-              三连击比例
-            </td>
-            <td>
-              <TopTooltip>
-                三连击次数：{{ result.trible }}<br>
-                三键组合数：{{ result.combo - 1 }}
-              </TopTooltip>
-              {{ formatPercentButZero(result.trible / (result.combo - 1)) }}
-            </td>
-            <td>
-              <TopTooltip>
-                三连击次数：{{ result2.trible }}<br>
-                三键组合数：{{ result2.combo - 1 }}
-              </TopTooltip>
-              {{ formatPercentButZero(result2.trible / (result2.combo - 1)) }}
-            </td>
-          </tr>
-          <tr>
-            <td class="text-right">
               同指组合比例
             </td>
             <td>
@@ -227,19 +208,19 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                先左手再右手的组合次数：{{ result.LeftRight }}<br>
-                先右手再左手的组合次数：{{ result.RightLeft }}<br>
+                先左手再右手的组合次数：{{ result.leftRight }}<br>
+                先右手再左手的组合次数：{{ result.rightLeft }}<br>
                 组合数：{{ result.combo }}
               </TopTooltip>
-              {{ formatPercentButZero((result.LeftRight + result.RightLeft) / (result.combo)) }}
+              {{ formatPercentButZero(result.diffHand / result.combo) }}
             </td>
             <td>
               <TopTooltip>
-                先左手再右手的组合次数：{{ result2.LeftRight }}<br>
-                先右手再左手的组合次数：{{ result2.RightLeft }}<br>
+                先左手再右手的组合次数：{{ result2.leftRight }}<br>
+                先右手再左手的组合次数：{{ result2.rightLeft }}<br>
                 组合数：{{ result2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero((result2.LeftRight + result2.RightLeft) / (result2.combo)) }}
+              {{ formatPercentButZero(result2.diffHand / result2.combo) }}
             </td>
           </tr>
         </tbody>
@@ -253,11 +234,11 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           :labels="['大拇指', '左手小指', '左手无名指', '左手中指', '左手食指', '右手食指', '右手中指', '右手无名指', '右手小指']"
           :datasets="[{
                         label: mabiao!.name!,
-                        data: splice(result.fingersDist, 5, 2, []),
+                        data: splice(result.finDist, 5, 2, []),
                       },
                       {
                         label: mabiao2!.name!,
-                        data: splice(result2.fingersDist, 5, 2, []),
+                        data: splice(result2.finDist, 5, 2, []),
                       }]"
         />
       </div>

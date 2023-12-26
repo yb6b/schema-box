@@ -2,33 +2,48 @@
  * 按键组合的手感的数据
  */
 
-import { KEYS_NO_SHIFT } from '../../constants'
+import { KEYS_MAIN } from 'libs/constants'
 import ComboDataJson from './comboFeelData.js'
 
 // JSON.parse解析速度比js对象更快。
 const comboData: number[][] = JSON.parse(ComboDataJson)
-const key40 = [...KEYS_NO_SHIFT.substring(0, 40)]
+/** 共46键的数据 */
+export const KEYS = [...`${KEYS_MAIN} `]
+const LEFT_SET = new Set(KEYS.slice(0, 20))
 
- type KeyPairMagicNumber = number
- type KeyPairMagicNumberData = Record<string, KeyPairMagicNumber>
-const _tmpKeyPair: KeyPairMagicNumberData = {}
+interface ComboFeelValue {
+  /** 当量 */
+  eq: number
+  /** 错手 */
+  lfd: boolean
+  /** 小指干扰 */
+  pd: boolean
+  /** 同指小跨排 */
+  ss: boolean
+  /** 同指大跨排 */
+  ms: boolean
+  /** 左右手互击 */
+  dh: boolean
+  /** 二连击 */
+  dc: boolean
+}
 
-key40.forEach((v, i) => {
-  key40.forEach((v2, i2) => {
-    _tmpKeyPair[v + v2] = comboData[i][i2]
+/** 两键组合的手感数据, 共46键, 包括空格 */
+const comboFeelData: Record<string, ComboFeelValue> = {}
+
+KEYS.forEach((v, i) => {
+  KEYS.forEach((v2, i2) => {
+    const magic = comboData[i][i2]
+    comboFeelData[v + v2] = {
+      eq: (magic & 0x1F) / 10,
+      dc: v === v2,
+      dh: (LEFT_SET.has(v) && !LEFT_SET.has(v2)) || (!LEFT_SET.has(v) && LEFT_SET.has(v2)),
+      pd: !!((magic >> 5) & 1),
+      ss: !!((magic >> 6) & 1),
+      lfd: !!((magic >> 7) & 1),
+      ms: !!((magic >> 8) & 1),
+    }
   })
 })
-/**
- * 这个对象的键是按键组合（只有40个键，且没有大写的），
- * 数据量大, 请使用异步import
- *
- * 对象的值是组合的手感数据，压缩进一个数字里，从低位开始分别指：
- * - 1~5位：陈一凡当量表的数据乘以10，是个整数
- * - 6位：组合是不是左右互击？
- * - 7位：组合是不是二连击？
- * - 8位：组合是不是小指干扰？
- * - 9位：组合是不是同指小跨排？
- * - 10位：组合是不是错手？
- * - 11位：组合是不是同指大跨排？
- */
-export const comboFeelData: KeyPairMagicNumberData = _tmpKeyPair
+
+export { comboFeelData }

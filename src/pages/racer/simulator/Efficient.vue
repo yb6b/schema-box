@@ -12,7 +12,7 @@ const mabiao2 = inject(jMabiao2)!
 const result2 = inject(jResult2)!
 
 const wordsDistLabelAndDatas = makeLabelAndDatas([result.wordsDist, result2.wordsDist], '字词', '单字')
-const codeLenLabelAndDatas = makeLabelAndDatas([result.codeLengthDist, result2.codeLengthDist], '码')
+const codeLenLabelAndDatas = makeLabelAndDatas([result.codeLenDist, result2.codeLenDist], '码')
 const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.collisionDist], '重', '首选')
 </script>
 
@@ -40,15 +40,15 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
           </td>
           <td>
             <TopTooltip v-if="result.lackCounter.size">
-              {{ [...result.lackCounter.keys()].join('') }}
+              {{ result.lackString }}
             </TopTooltip>
-            {{ result.lack }}
+            {{ result.lacks }}
           </td>
           <td>
             <TopTooltip v-if="result2.lackCounter.size">
-              {{ [...result2.lackCounter.keys()].join('') }}
+              {{ result2.lackString }}
             </TopTooltip>
-            {{ result2.lack }}
+            {{ result2.lacks }}
           </td>
         </tr>
 
@@ -66,25 +66,13 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
 
         <tr>
           <td class="text-right">
-            上屏词语次数
+            上屏单字次数
           </td>
           <td>
-            {{ result.words }}
+            {{ result.singleCount }}
           </td>
           <td>
-            {{ result2.words }}
-          </td>
-        </tr>
-
-        <tr>
-          <td class="text-right">
-            上屏词语字数
-          </td>
-          <td>
-            {{ result.wordsChar }}
-          </td>
-          <td>
-            {{ result2.wordsChar }}
+            {{ result2.singleCount }}
           </td>
         </tr>
 
@@ -94,15 +82,15 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
           </td>
           <td>
             <TopTooltip>
-              总码长：{{ result.codeLength }} <br> 总上屏：{{ result.commit }}
+              总码长：{{ result.codeLen }} <br> 总上屏：{{ result.commit }}
             </TopTooltip>
-            {{ formatFloat(result.codeLength / result.commit) }}
+            {{ formatFloat(result.codeLen / result.commit) }}
           </td>
           <td>
             <TopTooltip>
-              总码长：{{ result2.codeLength }} <br> 总上屏：{{ result2.commit }}
+              总码长：{{ result2.codeLen }} <br> 总上屏：{{ result2.commit }}
             </TopTooltip>
-            {{ formatFloat(result2.codeLength / result2.commit) }}
+            {{ formatFloat(result2.codeLen / result2.commit) }}
           </td>
         </tr>
         <tr>
@@ -111,15 +99,15 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
           </td>
           <td>
             <TopTooltip>
-              总码长：{{ result.codeLength }} <br> 总字数：{{ result.hanzi }}
+              总码长：{{ result.codeLen }} <br> 总字符数：{{ result.char }}
             </TopTooltip>
-            {{ formatFloat(result.codeLength / result.hanzi) }}
+            {{ formatFloat(result.codeLen / result.char) }}
           </td>
           <td>
             <TopTooltip>
-              总码长：{{ result2.codeLength }} <br> 总字数：{{ result2.hanzi }}
+              总码长：{{ result2.codeLen }} <br> 总字符数：{{ result2.char }}
             </TopTooltip>
-            {{ formatFloat(result2.codeLength / result2.hanzi) }}
+            {{ formatFloat(result2.codeLen / result2.char) }}
           </td>
         </tr>
         <tr>
@@ -128,13 +116,13 @@ const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.
           </td>
           <td>
             <TopTooltip>
-              按键总次数：{{ result.keys }}
+              击键次数：{{ result.keys }}
             </TopTooltip>
             {{ formatTimeSpan(result.keys / 8) }}
           </td>
           <td>
             <TopTooltip>
-              按键总次数：{{ result2.keys }}
+              击键次数：{{ result2.keys }}
             </TopTooltip>
             {{ formatTimeSpan(result2.keys / 8) }}
           </td>

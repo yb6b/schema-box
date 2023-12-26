@@ -6,7 +6,7 @@ import { CollisionCounter } from './collisionCounter'
 import { Segment } from './segmentation'
 import { AnalysisResult } from './analysisResult'
 
-export function simulateSchema(mb: Mabiao, article: string): AnalysisResult {
+export function simulateSchema(mb: Mabiao, article: string) {
   const tree: UniqueTrieTree = new Map()
   const collisionCounter = new CollisionCounter()
   const dictItems = mb.items
@@ -28,6 +28,5 @@ export function simulateSchema(mb: Mabiao, article: string): AnalysisResult {
     result.add(segment)
     n = segment.next()
   }
-  result.reform()
-  return result
+  return result.reform()
 }

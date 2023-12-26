@@ -31,6 +31,5 @@ function run() {
     ar.add(seg)
     i = seg.next()
   }
-  ar.reform()
-  return ar
+  return ar.reform()
 }

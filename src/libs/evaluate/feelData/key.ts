@@ -21,17 +21,22 @@ const dataArray = JSON.parse(Data)
  */
 export type Fingers = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
-type KeyFeelMagicNumber = number
-const result: Record<string, KeyFeelMagicNumber> = {};
+interface KeyFeelValue {
+  /** 普通键盘上的第几行 */
+  row: number
+  /**  这个按键是哪根手指. 手指编号见 Fingers 类型 */
+  fin: number
+}
+
+/** 每个按键的数据，主键盘上51个键。是个对象 */
+const keyFeelData: Record<string, KeyFeelValue> = {};
+
 [...KEYS].forEach((v, i) => {
-  result[v] = dataArray[i]
+  const magic = dataArray[i]
+  keyFeelData[v] = {
+    row: magic & 3,
+    fin: magic >>> 2,
+  }
 })
 
-/**
- * 每个按键的数据，主键盘上51个键。是个对象
- * - key —— 按键的名称，一个字母
- * - value —— 包含手指信息和键盘第几排, 保存在一个数字里
- *     - 1~2 位, 普通键盘上的第几行
- *     - 3~7 位, 这个按键是哪根手指. 手指编号见 Fingers 类型
- */
-export const keyFeelData = result
+export { keyFeelData }
