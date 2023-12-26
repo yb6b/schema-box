@@ -19,7 +19,7 @@ import type { ArticleInfo } from './simulator/inject'
 
 const $q = useQuasar()
 onErrorCaptured((err) => {
-  $q.notify(err.message)
+  $q.notify({ type: 'negative', message: err.message })
 })
 
 const Visualize = defineAsyncComponent(() => import('./simulator/Visualize.vue'))

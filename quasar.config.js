@@ -105,6 +105,11 @@ module.exports = configure((ctx) => {
       plugins: [
         'Notify',
       ],
+      config: {
+        notify: {
+          timeout: 1400,
+        },
+      },
     },
 
     vendor: {

@@ -30,7 +30,7 @@ function onDrop(e: DragEvent) {
   detectAndFillMabiao(raw).then((mb) => {
     mb.name = removeFileNameExt(raw.name)
     dataRef.value = mb
-  }).catch((r) => { $q.notify(r.message) })
+  }).catch((r) => { $q.notify({ type: 'negative', message: r.message }) })
 }
 
 async function onGetNewSchema(mb: Mabiao) {
