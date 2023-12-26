@@ -33,6 +33,13 @@ const keyFeelData: Record<string, KeyFeelValue> = {};
 
 [...KEYS].forEach((v, i) => {
   const magic = dataArray[i]
+  if (v === ' ') {
+    keyFeelData[v] = {
+      row: 4,
+      fin: 0,
+    }
+    return
+  }
   keyFeelData[v] = {
     row: magic & 3,
     fin: magic >>> 2,

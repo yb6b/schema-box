@@ -56,13 +56,12 @@ export class AnalysisResult {
     const kbdRowDist: Dist = [0, 0, 0, 0]
     const finDist: Dist = Array(11).fill(0)
     let keys = 0
-    for (const k in keysDist) {
-      const e = keysDist[k]
-      keys += e
+    for (const [k, n] of Object.entries(keysDist)) {
+      keys += n
       const row = keyFeelData[k].row
-      kbdRowDist[row] += e
+      kbdRowDist[row] += n
       const fin = keyFeelData[k].fin
-      finDist[fin] += e
+      finDist[fin] += n
     }
 
     const comboDist = dropNanInRecord(this.comboDist)
