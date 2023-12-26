@@ -6,7 +6,7 @@ import { RawFile } from 'src/libs/platforms/rawFile'
 import { formatYiWan } from 'libs/utils/format'
 import { createEmptyMabiao } from 'libs/schema'
 import { removeFileNameExt } from 'src/libs/utils/string'
-import type { ArticleInfo } from './visualize/inject'
+import type { ArticleInfo } from './simulator/inject'
 
 const emits = defineEmits<{
   value: [value: ArticleInfo]

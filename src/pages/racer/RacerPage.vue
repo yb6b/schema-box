@@ -15,14 +15,14 @@ import { RawFile } from 'src/libs/platforms/rawFile'
 import { useQuasar } from 'quasar'
 import SchemaCard from './SchemaCard.vue'
 import ArticleCard from './ArticleCard.vue'
-import type { ArticleInfo } from './visualize/inject'
+import type { ArticleInfo } from './simulator/inject'
 
 const $q = useQuasar()
 onErrorCaptured((err) => {
   $q.notify(err.message)
 })
 
-const Visualize = defineAsyncComponent(() => import('./visualize/Visualize.vue'))
+const Visualize = defineAsyncComponent(() => import('./simulator/Visualize.vue'))
 const openVisualizeDialog = shallowRef(false)
 
 const articleData = shallowRef<ArticleInfo>({

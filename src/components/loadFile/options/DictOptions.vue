@@ -100,7 +100,7 @@ onMounted(() => {
       if (error instanceof Error) {
         res.value.plat = oldplat
         tmpFormat.value = valueToDictFormat[oldplat!]
-        throw new Error(`码表${res.value.name}无法解析成${platToName[plat]}格式。因为：${error.message}`)
+        throw new Error(`码表${res.value.name}无法解析成${platToName[plat!]}格式。因为：${error.message}`)
       }
     }
   })
