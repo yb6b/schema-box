@@ -7,9 +7,9 @@
  */
 
 import type { Mabiao } from 'libs/schema'
-import { getCodeToWordsDict } from 'libs/schema'
+import { checkCodes, getCodeToWordsDict, validateCodes } from 'libs/schema'
+import { genEachLine, genEachLineJump } from '../utils'
 
-import { checkCodes, genEachLine, genEachLineJump, validateCodes } from './utils'
 import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 

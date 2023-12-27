@@ -1,8 +1,8 @@
-import { type Mabiao, createEmptyMabiao } from 'libs/schema'
+import { type Mabiao, checkCodes, getMabiaoHeader } from 'libs/schema'
 
 // @ts-expect-error special import of js-yaml
 import { load } from 'js-yaml'
-import { checkCodes, genEachLineJump, getMabiaoHeader } from './utils'
+import { genEachLineJump } from '../utils'
 
 import type { RawFile } from './rawFile'
 import { FormatError } from './index'

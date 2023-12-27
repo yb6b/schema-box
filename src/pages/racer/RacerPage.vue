@@ -4,14 +4,9 @@ import type { Mabiao } from 'libs/schema'
 import { computed, defineAsyncComponent, onErrorCaptured, onMounted, shallowRef } from 'vue'
 import { mdiCog, mdiHelpCircle } from '@quasar/extras/mdi-v7'
 
-// import { platDuoduo } from 'libs/platforms/duoduo'
-
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
 import { RawFile } from 'src/libs/platforms/rawFile'
 
-// import moc_article from 'app/dist/xinqing_jueding.js'
-// import moc_qqwb from 'app/dist/qqwb.js'
-// import moc_xima from 'app/dist/xima.js'
 import { useQuasar } from 'quasar'
 import SchemaCard from './SchemaCard.vue'
 import ArticleCard from './ArticleCard.vue'
@@ -34,23 +29,6 @@ const mabiaoData = shallowRef<Mabiao | null>(null)
 const mabiaoData2 = shallowRef<Mabiao | null>(null)
 
 const readyToRun = computed(() => !!(articleData.value.txt && mabiaoData.value && mabiaoData2.value))
-
-// // 开发模式下，直接提供一些方案
-// if (process.env.DEV) {
-//   onMounted(async () => {
-//     articleData.value = {
-//       name: '心情决定事情',
-//       txt: moc_article,
-//     }
-//     const raw_qqwb = new RawFile(moc_qqwb)
-//     const raw = await platDuoduo.load(raw_qqwb)
-//     schemaData.value = raw
-//     schemaData.value.cfg = { name: 'QQ五笔', cmLen: 4, raw: raw_qqwb, plat: 'duoduo', selectKeys: ' ;3456789' }
-//     const raw_xima = new RawFile(moc_xima)
-//     schemaData2.value = await platDuoduo.load(raw_xima)
-//     schemaData2.value.cfg = { name: '希码', cmLen: 4, raw: raw_xima, plat: 'duoduo', selectKeys: ' ,./56789' }
-//   })
-// }
 </script>
 
 <template>

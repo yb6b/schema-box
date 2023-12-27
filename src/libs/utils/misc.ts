@@ -52,3 +52,19 @@ export function functionBody(fn: Function) {
     str.lastIndexOf('}'),
   )
 }
+
+export function createTextBlob(content: string) {
+  return new Blob([content], { type: 'text/plain;charset=utf-8' })
+}
+
+export function saveFile<T extends Blob>(aFile: T, filename: string) {
+  const href = window.URL.createObjectURL(aFile)
+  const downloadElement = document.createElement('a')
+  downloadElement.style.display = 'none'
+  downloadElement.href = href
+  downloadElement.download = filename
+  document.body.appendChild(downloadElement)
+  downloadElement.click()
+  document.body.removeChild(downloadElement)
+  URL.revokeObjectURL(href)
+}

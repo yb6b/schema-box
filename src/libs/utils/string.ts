@@ -42,3 +42,40 @@ export function countHanzi(src: string): number {
 export function removeFileNameExt(filename: string) {
   return filename.replace(/\.\w+$/, '')
 }
+
+export function* genEachLine(src: string) {
+  const lineBreakerPattern = /\r?\n|\r/g
+  let last = 0
+  let match = lineBreakerPattern.exec(src)
+  while (match) {
+    yield src.slice(last, match.index)
+    last = match.index + match[0].length
+    match = lineBreakerPattern.exec(src)
+  }
+  yield src.slice(last)
+}
+
+/**
+ * 迭代每一行，会过滤空行，同时返回每一行的行数
+ * @param src
+ */
+export function* genEachLineJump(src: string) {
+  let lineNumber = 0
+  for (const line of genEachLine(src)) {
+    lineNumber++
+    if (!line.trim())
+      continue
+    yield [line, lineNumber] as const
+  }
+}
+
+/** 解析TSV格式 */
+export function parseTsv(txt: string) {
+  const rs = []
+  for (const e of genEachLine(txt)) {
+    if (e.trim() === '')
+      continue
+    rs.push(e.split('\t'))
+  }
+  return rs
+}

@@ -110,3 +110,9 @@ export function detectSellectKeys(keysSet: Set<string>) {
     return ' ;\'456789'
   return ' 23456789'
 }
+
+export function getMabiaoHeader(mb: Mabiao, plat: PlatTypes) {
+  if (mb.plat === plat && mb.header)
+    return `${mb.header}\n`
+  return ''
+}

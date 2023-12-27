@@ -1,5 +1,5 @@
-import type { Mabiao } from '../schema'
-import { checkCodes, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
+import { type Mabiao, checkCodes, getMabiaoHeader, validateCodes } from '../schema'
+import { genEachLineJump } from '../utils'
 import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 

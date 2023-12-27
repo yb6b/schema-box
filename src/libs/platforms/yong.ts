@@ -1,7 +1,6 @@
 import type { Mabiao } from '../schema'
-import { createEmptyMabiao, getCodeToWordsDict } from '../schema'
-
-import { genEachLine, genEachLineJump, getMabiaoHeader, validateCodes } from './utils'
+import { createEmptyMabiao, getCodeToWordsDict, getMabiaoHeader, validateCodes } from '../schema'
+import { genEachLine, genEachLineJump } from '../utils'
 import type { RawFile } from './rawFile'
 import { FormatError } from './index'
 
