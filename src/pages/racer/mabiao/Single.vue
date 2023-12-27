@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { Mabiao } from 'libs/schema'
-import { type EvaluateItems, calcWeightedEvalItems, quickEvaluate, zipEvaluationItems } from 'libs/evaluate/hanzi'
+import { calcWeightedEvalItems, quickEvaluate, zipEvaluationItems } from 'libs/evaluate/hanzi'
 import type { QTableProps } from 'quasar'
-import { ref, shallowRef } from 'vue'
 import SingleNormalRow from './SingleNormalRow.vue'
 import SingleSumRow from './SingleSumRow.vue'
 
@@ -11,20 +10,19 @@ const props = defineProps<{
   mabiao: Mabiao
 }>()
 
+defineEmits<{
+  table: [data:{
+    title: QTableProps['title']
+    columns: QTableProps['columns']
+    rows: QTableProps['rows']
+  }]
+}>()
+
 const result = quickEvaluate(props.mabiao)
 const resultSum1 = zipEvaluationItems(result.slice(0, 3))
 const weightedEvalItems1 = calcWeightedEvalItems(resultSum1)
 const resultSum2 = zipEvaluationItems(result.slice(0, 5))
 const weightedEvalItems2 = calcWeightedEvalItems(resultSum2)
-
-const openDrawer = shallowRef(false)
-const drawerTableRef = shallowRef<{
-  title: QTableProps['title']
-  columns: QTableProps['columns']
-  rows: QTableProps['rows']
-}>()
-
-const pagination = ref({ rowsPerPage: 20 })
 
 const itemsName = ['1~300', '301~500', '501~1500', '1501~3000', '3001~6000']
 const itemsName2 = ['1501~3000', '3001~6000']
@@ -35,7 +33,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
     <QMarkupTable separator="horizontal" bordered dense class="sticky-first-column-table">
       <thead class="bg-teal-2 text-grey-10">
         <tr>
-          <td class="text-right bg-teal-1 ">
+          <td class="text-right bg-teal-2">
             统计范围
           </td>
           <td>1 码</td>
@@ -68,7 +66,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           :range-label="itemsName[i - 1]"
           :mb-name="mabiao.name!"
           :eva-item="result[i - 1]"
-          @click="v => { drawerTableRef = v; openDrawer = true }"
+          @click="v => $emit('table', v)"
         />
 
         <SingleNormalRow
@@ -77,7 +75,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           class="bg-teal-1"
           :mb-name="mabiao.name!"
           :eva-item="resultSum1"
-          @click="v => { drawerTableRef = v; openDrawer = true }"
+          @click="v => $emit('table', v)"
         />
         <SingleSumRow
           class="bg-teal-1"
@@ -91,7 +89,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           :range-label="itemsName2[i - 1]"
           :mb-name="mabiao.name!"
           :eva-item="result[i + 2]"
-          @click="v => { drawerTableRef = v; openDrawer = true }"
+          @click="v => $emit('table', v)"
         />
 
         <SingleNormalRow
@@ -100,7 +98,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           class="bg-teal-1"
           :mb-name="mabiao.name!"
           :eva-item="resultSum2"
-          @click="v => { drawerTableRef = v; openDrawer = true }"
+          @click="v => $emit('table', v)"
         />
 
         <SingleSumRow
@@ -113,16 +111,4 @@ const itemsName2 = ['1501~3000', '3001~6000']
   </div>
 
   <!-- 详细列表 -->
-  <QDrawer v-model="openDrawer" show-if-above :width="400" elevated>
-    <QScrollArea class="fit q-pa-md">
-      <QTable
-        v-model:pagination="pagination"
-        dense
-        title-class="text-truncate text-center text-blue-grey-9 text-body1"
-        v-bind="drawerTableRef"
-        row-key="index"
-        :rows-per-page-options="[20, 50, 100]"
-      />
-    </QScrollArea>
-  </QDrawer>
 </template>

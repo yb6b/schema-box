@@ -2,19 +2,29 @@
 /** 测评一个码表 */
 import { mdiClose } from '@quasar/extras/mdi-v7'
 import type { Mabiao } from 'libs/schema'
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import { useSetTitle } from 'libs/hooks'
+import type { QTableProps } from 'quasar'
 import EvaluateZi from './Single.vue'
 import EvaluateWords from './Words.vue'
 import EvaluateMabiao from './Mabiao.vue'
 
-defineProps<{
+const p = defineProps<{
   mabiao: Mabiao
 }>()
 
-const title = '方案测评'
+const title = `${p.mabiao.name}方案测评`
 useSetTitle(title)
 const tabRef = ref('zi')
+
+const openDrawer = shallowRef(false)
+const drawerTableRef = shallowRef<{
+  title: QTableProps['title']
+  columns: QTableProps['columns']
+  rows: QTableProps['rows']
+}>()
+
+const pagination = ref({ rowsPerPage: 20 })
 </script>
 
 <template>
@@ -44,7 +54,7 @@ const tabRef = ref('zi')
         class="container-lg"
       >
         <QTabPanel name="zi">
-          <EvaluateZi :mabiao="mabiao" />
+          <EvaluateZi :mabiao="mabiao" @table="tb => { drawerTableRef = tb; openDrawer = true }" />
         </QTabPanel>
         <QTabPanel name="wd">
           <EvaluateWords />
@@ -55,4 +65,17 @@ const tabRef = ref('zi')
       </QTabPanels>
     </QCardSection>
   </QCard>
+  <!-- 详细列表 -->
+  <QDrawer v-model="openDrawer" show-if-above :width="400" elevated>
+    <QScrollArea class="fit q-pa-md">
+      <QTable
+        v-model:pagination="pagination"
+        dense
+        title-class="text-truncate text-center text-blue-grey-9 text-body1"
+        v-bind="drawerTableRef"
+        row-key="index"
+        :rows-per-page-options="[20, 50, 100]"
+      />
+    </QScrollArea>
+  </QDrawer>
 </template>
