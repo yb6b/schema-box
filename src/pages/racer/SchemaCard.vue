@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef, toValue, watchEffect } from 'vue'
+import { defineAsyncComponent, shallowRef, toValue, watchEffect } from 'vue'
 import { mdiPlusBoxOutline, mdiScale, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import { RawFile } from 'src/libs/platforms/rawFile'
@@ -13,8 +13,10 @@ const emits = defineEmits<{
 }>()
 
 const $q = useQuasar()
+const MabiaoEvaluator = defineAsyncComponent(() => import('./mabiao/Visualize.vue'))
 
 const openDialog = shallowRef(false)
+const openEvaluateDialog = shallowRef(false)
 
 const dataRef = shallowRef<Mabiao | null>(null)
 
@@ -44,11 +46,14 @@ async function onGetNewSchema(mb: Mabiao) {
   <!-- 编码码表的弹窗 -->
   <QDialog v-model="openDialog">
     <LoadFile
-      v-if="openDialog"
       dict-mode
       :preset="toValue(dataRef)!"
       @value="onGetNewSchema"
     />
+  </QDialog>
+  <!-- 测评码表的弹窗 -->
+  <QDialog v-model="openEvaluateDialog" maximized>
+    <MabiaoEvaluator :mabiao="dataRef!" />
   </QDialog>
   <!-- 赛码文章卡片 -->
   <QCard
@@ -82,7 +87,7 @@ async function onGetNewSchema(mb: Mabiao) {
             </div>
             <!-- 显示码表前几行 -->
             <div class="font-monospace text-grey text-truncate" style="max-width: 14rem;max-height: 7.8rem;">
-              <div v-for="i of dataRef.items!.slice(0, 6)" :key="i[0]">
+              <div v-for="i of dataRef.items!.slice(0, 6)" v-once :key="i.join('')">
                 {{ `${i[1]}\t${i[0]}` }}
               </div>
             </div>
@@ -107,7 +112,7 @@ async function onGetNewSchema(mb: Mabiao) {
       </QCardSection>
 
       <QCardActions class="col-2 justify-around bg-blue-grey-1 collumn">
-        <QBtn :icon="mdiScale" flat class="col ">
+        <QBtn :icon="mdiScale" flat class="col" @click="e => openEvaluateDialog = true">
           <QTooltip>单字测评、组词测评、码表分析</QTooltip>
           测 评
         </QBtn>

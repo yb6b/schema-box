@@ -78,3 +78,22 @@
 .font-monospace{
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;;
 }
+
+.hover-dark:hover {
+  background-color: #0011011f;
+}
+
+.sticky-first-column-table{
+    max-width: 100rem;
+}
+ 
+.sticky-first-column-table th:first-child{
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+.sticky-first-column-table td:first-child{
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
