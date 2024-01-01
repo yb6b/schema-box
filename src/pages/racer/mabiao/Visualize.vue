@@ -4,12 +4,13 @@ import { mdiClose } from '@quasar/extras/mdi-v7'
 import type { Mabiao } from 'libs/schema'
 import { ref, shallowRef } from 'vue'
 import { useSetTitle } from 'libs/hooks'
-import type { QTableProps } from 'quasar'
+
 import { writeStringToClipboard } from 'libs/utils'
 import InfoTooltip from 'components/custom/InfoTooltip.vue'
 import EvaluateZi from './Single.vue'
 import EvaluateWords from './Words.vue'
 import EvaluateMabiao from './Mabiao.vue'
+import type { TableRef } from './types'
 
 const p = defineProps<{
   mabiao: Mabiao
@@ -20,11 +21,7 @@ useSetTitle(title)
 const tabRef = ref('zi')
 
 const openTableDialog = shallowRef(false)
-interface TableRef {
-  title: QTableProps['title']
-  columns: QTableProps['columns']
-  rows: QTableProps['rows']
-}
+
 const tableRef = shallowRef<TableRef>()
 
 const pagination = ref({ rowsPerPage: 20 })

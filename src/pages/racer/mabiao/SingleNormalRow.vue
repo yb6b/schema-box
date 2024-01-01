@@ -1,81 +1,26 @@
 <script setup lang="ts">
 import type { EvaluateItems } from 'libs/evaluate/hanzi'
-import type { QTableProps } from 'quasar'
 import { formatFloat } from 'libs/utils'
+import type { TableRef } from './types'
+import { singleActions } from './evaluateItemsAction'
 
-defineProps<{
+const p = defineProps<{
   rangeLabel: string
+  indexLabel?: string
   mbName: string
   evaItem: EvaluateItems
-  indexLabel?: string
-
 }>()
 defineEmits<{
-  click: [result:{
-    title: QTableProps['title']
-    columns: QTableProps['columns']
-    rows: QTableProps['rows']
-  }]
+  click: [result: TableRef]
 }>()
 
-const normalCollumns: QTableProps['columns'] = [
-  {
-    name: 'index',
-    label: '汉字',
-    field: 'wd',
-  },
-  {
-    name: 'code',
-    label: '编码',
-    field: 'code',
-    classes: 'font-monospace',
-  },
-  {
-    name: 'line',
-    label: '码表行数',
-    field: 'line',
-  },
-  {
-    name: 'freqRank',
-    label: '字频次序',
-    field: 'freqRank',
-  },
-  {
-    name: 'freq',
-    label: '字频',
-    field: 'reFreq',
-    format: v => formatFloat(v, 5, true),
-  },
-]
-const lackCollumns: QTableProps['columns'] = [
-  {
-    name: 'index',
-    label: '汉字',
-    field: 'wd',
-  },
-  {
-    name: 'freq',
-    label: '字频',
-    field: 'freq',
-  },
-]
-const eachRow1 = [
-  ['L1', '一码字'],
-  ['L2', '二码字'],
-  ['L3', '三码字'],
-  ['L4', '四码字'],
-  ['collision', '选重'],
-  ['brief2', '理论二简'],
-] as const
-const eachRow2 = [
-  ['dh', '左右互击'],
-  ['ms', '同指大跨排'],
-  ['ss', '同指小跨排'],
-  ['pd', '小指干扰'],
-  ['lfd', '错手'],
-  ['trible', '三连击'],
-  ['overKey', '超标键位'],
-] as const
+function fmtCountOrLen(action: typeof singleActions[0]) {
+  const eval_item = p.evaItem
+  if (action.kind === 'len')
+    return (eval_item[action.field] as object[]).length
+  else
+    return (eval_item[action.field] as EvaluateItems['dh']).reduce((pv, cv) => pv + cv.count, 0)
+}
 </script>
 
 <template>
@@ -83,80 +28,34 @@ const eachRow2 = [
     <td class="text-right bg-teal-1">
       {{ indexLabel || rangeLabel }}
     </td>
-    <template
-      v-for="j of eachRow1"
-      :key="j[0]"
-    >
+    <template v-for="action in singleActions" :key="action.zhName">
+      <template v-if="action.kind === 'len' || action.kind === 'count'">
+        <td
+          v-if="(evaItem[action.field] as object[]).length === 0"
+          class="text-right"
+        >
+          0
+        </td>
+        <td
+          v-else
+          class="cursor-pointer hover-dark text-right"
+          @click="() => {
+            $emit('click', {
+              title: `${mbName}中的第 ${rangeLabel} 条的${action.zhName}`,
+              columns: action.tableCollumn,
+              rows: evaItem[action.field] as object[],
+            })
+          }"
+        >
+          {{ fmtCountOrLen(action) }}
+        </td>
+      </template>
       <td
-        v-if="evaItem[j[0]].length"
-        class="cursor-pointer hover-dark text-right" @click="() => {
-          $emit('click', {
-            title: `${mbName} 第 ${rangeLabel} 条的${j[1]}`,
-            columns: normalCollumns,
-            rows: evaItem[j[0]],
-          })
-        }"
+        v-else-if="action.kind === 'weight'"
+        class="text-right"
       >
-        {{ evaItem[j[0]].length }}
-      </td>
-      <td v-else class="text-right">
-        {{ evaItem[j[0]].length }}
+        {{ formatFloat(evaItem[action.field] as number / evaItem.freq) }}
       </td>
     </template>
-    <td class="text-right">
-      {{ formatFloat(evaItem.CL / evaItem.freq) }}
-    </td>
-    <td class="text-right">
-      {{ formatFloat(evaItem.ziEq / evaItem.freq) }}
-    </td>
-    <td class="text-right">
-      {{ formatFloat(evaItem.keyEq / evaItem.freq) }}
-    </td>
-    <template
-      v-for="j of eachRow2"
-      :key="j[0]"
-    >
-      <td
-        v-if="evaItem[j[0]].length"
-        class="cursor-pointer hover-dark text-right" @click="() => {
-          $emit('click', {
-            title: `${mbName} 第 ${rangeLabel} 条的${j[1]}`,
-            columns: [
-              normalCollumns[0],
-              normalCollumns[1],
-              {
-                name: j[0],
-                label: `${j[1]}计数`,
-                field: 'count',
-              }, normalCollumns[2],
-              normalCollumns[3],
-              normalCollumns[4],
-            ],
-            rows: evaItem[j[0]],
-          })
-        }"
-      >
-        {{ evaItem[j[0]].length }}
-      </td>
-      <td v-else class="text-right">
-        {{ evaItem[j[0]].length }}
-      </td>
-    </template>
-
-    <td
-      v-if="evaItem.lack.length"
-      class="cursor-pointer hover-dark text-right" @click="() => {
-        $emit('click', {
-          title: `${mbName} 第 ${rangeLabel} 条的缺字`,
-          columns: lackCollumns,
-          rows: evaItem.lack,
-        })
-      }"
-    >
-      {{ evaItem.lack.length }}
-    </td>
-    <td v-else class="text-right">
-      {{ evaItem.lack.length }}
-    </td>
   </tr>
 </template>

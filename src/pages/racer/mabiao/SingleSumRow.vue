@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { formatFloat } from 'libs/utils'
+import { singleActions } from './evaluateItemsAction'
 
-defineProps<{
+const p = defineProps<{
   evaItem: object
   indexLabel: string
 }>()
 
-const arrKeys = ['L1', 'L2', 'L3', 'L4', 'collision', 'brief2', '/', '/', '/', 'dh', 'ms', 'ss', 'pd', 'lfd', 'trible', 'overKey', 'lack'] as const
+function fmt(action: typeof singleActions[0]) {
+  const eva = p.evaItem
+  if (action.kind === 'weight')
+    return '/'
+  if ((eva as any)[action.field] === 0)
+    return 0
+  const field = (eva as any)[action.field]
+  return formatFloat(field, 2, true)
+}
 </script>
 
 <template>
@@ -15,11 +24,11 @@ const arrKeys = ['L1', 'L2', 'L3', 'L4', 'collision', 'brief2', '/', '/', '/', '
       {{ indexLabel }}
     </td>
     <template
-      v-for="j of arrKeys"
-      :key="j"
+      v-for="action in singleActions"
+      :key="action.zhName"
     >
       <td class="text-right">
-        {{ j === '/' ? '/' : (evaItem as any)[j] === 0 ? '0' : formatFloat((evaItem as any)[j], 2, true) }}
+        {{ fmt(action) }}
       </td>
     </template>
   </tr>

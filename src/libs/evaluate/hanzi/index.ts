@@ -1,10 +1,9 @@
 /** 根据字频表数据测评, 即科学形码测评系统 */
-
-import { parseTsv } from 'libs/utils'
-import type { Mabiao, MabiaoItem } from '../schema'
-import { comboFeelData } from './feelData'
-import { CollisionCounter } from './simulator/collisionCounter'
-import { KEYS } from './feelData/combo'
+import { parseTsv } from '../../utils'
+import type { Mabiao, MabiaoItem } from '../../schema'
+import { comboFeelData } from '../feelData'
+import { KEYS } from '../feelData/combo'
+import { CollisionCounter } from '../simulator/collisionCounter'
 
 const keys46Set = new Set(KEYS)
 
@@ -101,7 +100,8 @@ export function calcWeightedEvalItems(item: EvaluateItems) {
       let f = 0
       for (const e of v) {
         const x = 'count' in e ? e.count : 1
-        f += (e.freq * x) / totalFreq
+        const keyLen = e.code.length + e.selectKey.length - 1
+        f += (e.freq * x) / (totalFreq * keyLen)
       }
       rs[k] = f
     }
@@ -201,17 +201,17 @@ export interface EvaluateItems {
   /** 总频数 */
   freq: number
   /** 1码 */
-  L1: Array<PurifiedMbItem>
+  L1: Array<PurifiedMbItemNormal>
   /** 2码 */
-  L2: Array<PurifiedMbItem>
+  L2: Array<PurifiedMbItemNormal>
   /** 3码 */
-  L3: Array<PurifiedMbItem>
+  L3: Array<PurifiedMbItemNormal>
   /** 4码 */
-  L4: Array<PurifiedMbItem>
+  L4: Array<PurifiedMbItemNormal>
   /** 更多 */
-  LMore: Array<PurifiedMbItem>
+  LMore: Array<PurifiedMbItemNormal>
   /** 选重 */
-  collision: Array<PurifiedMbItem>
+  collision: Array<PurifiedMbItemNormal>
   /** 理论二简 */
   brief2: Array<PurifiedMbItem>
   /** 加权键长, 使用时要除以总频数 */
