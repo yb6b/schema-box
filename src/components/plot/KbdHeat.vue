@@ -17,7 +17,7 @@ function fmtUsageFreq(key: string) {
   const freq = usage.get(key)
   if (!freq || freq <= 0)
     return ''
-  return formatFloat(freq, 2)
+  return formatFloat(freq * 100, 2)
 }
 
 function bgColor(freq?: number) {
