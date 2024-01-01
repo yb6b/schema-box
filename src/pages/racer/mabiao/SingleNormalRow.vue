@@ -17,6 +17,7 @@ defineEmits<{
     rows: QTableProps['rows']
   }]
 }>()
+
 const normalCollumns: QTableProps['columns'] = [
   {
     name: 'index',
@@ -30,14 +31,20 @@ const normalCollumns: QTableProps['columns'] = [
     classes: 'font-monospace',
   },
   {
-    name: 'freq',
-    label: '字频',
-    field: 'freq',
-  },
-  {
     name: 'line',
     label: '码表行数',
     field: 'line',
+  },
+  {
+    name: 'freqRank',
+    label: '字频次序',
+    field: 'freqRank',
+  },
+  {
+    name: 'freq',
+    label: '字频',
+    field: 'reFreq',
+    format: v => formatFloat(v, 5, true),
   },
 ]
 const lackCollumns: QTableProps['columns'] = [
@@ -114,7 +121,17 @@ const eachRow2 = [
         class="cursor-pointer hover-dark text-right" @click="() => {
           $emit('click', {
             title: `${mbName} 第 ${rangeLabel} 条的${j[1]}`,
-            columns: normalCollumns,
+            columns: [
+              normalCollumns[0],
+              normalCollumns[1],
+              {
+                name: j[0],
+                label: `${j[1]}计数`,
+                field: 'count',
+              }, normalCollumns[2],
+              normalCollumns[3],
+              normalCollumns[4],
+            ],
             rows: evaItem[j[0]],
           })
         }"

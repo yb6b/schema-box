@@ -68,3 +68,7 @@ export function saveFile<T extends Blob>(aFile: T, filename: string) {
   document.body.removeChild(downloadElement)
   URL.revokeObjectURL(href)
 }
+
+export async function writeStringToClipboard(str: string) {
+  await navigator.clipboard.writeText(str)
+}

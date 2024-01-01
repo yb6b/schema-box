@@ -31,7 +31,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
 <template>
   <div class="columns justify-center">
     <QMarkupTable separator="horizontal" bordered dense class="sticky-first-column-table">
-      <thead class="bg-teal-2 text-grey-10">
+      <thead class="bg-teal-2 text-grey-10 text-right">
         <tr>
           <td class="text-right bg-teal-2">
             统计范围
@@ -44,19 +44,19 @@ const itemsName2 = ['1501~3000', '3001~6000']
             选重
           </td>
           <td class="text-red-8">
-            理论二简
+            理论<br>二简
           </td>
-          <td>加权键长</td>
-          <td>加权字均当量</td>
-          <td>加权键均当量</td>
-          <td>左右互击</td>
-          <td>同指大跨排</td>
-          <td>同指小跨排</td>
-          <td>小指干扰</td>
+          <td>加权<br>键长</td>
+          <td>加权<br>字均当量</td>
+          <td>加权<br>键均当量</td>
+          <td>左右<br>互击</td>
+          <td>同指<br>大跨排</td>
+          <td>同指<br>小跨排</td>
+          <td>小指<br>干扰</td>
           <td>错手</td>
           <td>三连击</td>
-          <td>超标键位</td>
-          <td>缺字标记</td>
+          <td>超标<br>键位</td>
+          <td>缺字<br>标记</td>
         </tr>
       </thead>
       <tbody>

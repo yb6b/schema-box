@@ -5,6 +5,7 @@ import type { Mabiao } from 'libs/schema'
 import { ref, shallowRef } from 'vue'
 import { useSetTitle } from 'libs/hooks'
 import type { QTableProps } from 'quasar'
+import { writeStringToClipboard } from 'libs/utils'
 import EvaluateZi from './Single.vue'
 import EvaluateWords from './Words.vue'
 import EvaluateMabiao from './Mabiao.vue'
@@ -17,14 +18,26 @@ const title = `${p.mabiao.name}方案测评`
 useSetTitle(title)
 const tabRef = ref('zi')
 
-const openDrawer = shallowRef(false)
-const drawerTableRef = shallowRef<{
+const openTableDialog = shallowRef(false)
+interface TableRef {
   title: QTableProps['title']
   columns: QTableProps['columns']
   rows: QTableProps['rows']
-}>()
+}
+const tableRef = shallowRef<TableRef>()
 
 const pagination = ref({ rowsPerPage: 20 })
+
+function getTsv(data: TableRef) {
+  if (!data.columns || !data.rows)
+    return ''
+  const format = (v: number | string) => typeof v === 'number' && v < 1 && v > 0 ? v.toFixed(8) : v
+  // 标题行
+  let rs = data.columns.map(v => v.label).join('\t')
+  for (const e of data.rows)
+    rs += `\n${data.columns.map(v => format(e[v.field as string])).join('\t')}`
+  return rs
+}
 </script>
 
 <template>
@@ -54,7 +67,7 @@ const pagination = ref({ rowsPerPage: 20 })
         class="container-lg"
       >
         <QTabPanel name="zi">
-          <EvaluateZi :mabiao="mabiao" @table="tb => { drawerTableRef = tb; openDrawer = true }" />
+          <EvaluateZi :mabiao="mabiao" @table="tb => { tableRef = tb; openTableDialog = true }" />
         </QTabPanel>
         <QTabPanel name="wd">
           <EvaluateWords />
@@ -66,16 +79,33 @@ const pagination = ref({ rowsPerPage: 20 })
     </QCardSection>
   </QCard>
   <!-- 详细列表 -->
-  <QDrawer v-model="openDrawer" show-if-above :width="400" elevated>
-    <QScrollArea class="fit q-pa-md">
-      <QTable
-        v-model:pagination="pagination"
-        dense
-        title-class="text-truncate text-center text-blue-grey-9 text-body1"
-        v-bind="drawerTableRef"
-        row-key="index"
-        :rows-per-page-options="[20, 50, 100]"
-      />
-    </QScrollArea>
-  </QDrawer>
+  <QDialog v-model="openTableDialog">
+    <QCard>
+      <div class="overflow-auto" style="max-height: min(30rem,80vh);">
+        <QTable
+          v-model:pagination="pagination"
+          flat
+          dense
+          title-class="text-truncate text-center text-blue-grey-9 text-body1"
+          v-bind="tableRef"
+          row-key="index"
+          :rows-per-page-options="[20, 50, 100]"
+        />
+      </div>
+
+      <QSeparator />
+      <QCardActions align="right">
+        <QBtn
+          label="复制TSV数据" flat color="primary" @click="async (e) => {
+            const txt = getTsv(tableRef!)
+            await writeStringToClipboard(txt)
+            $q.notify({ type: 'success', message: `已写入${tableRef?.rows?.length}行表格到系统剪切板` })
+          }"
+        >
+          <QTooltip>复制上文的表格为纯文本，你可以在别的文本编辑器、Excel、通讯软件里粘贴这个tsv</QTooltip>
+        </QBtn>
+        <QBtn label="关闭" flat color="primary" @click="e => openTableDialog = false" />
+      </QCardActions>
+    </QCard>
+  </QDialog>
 </template>
