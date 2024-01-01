@@ -39,7 +39,7 @@ export function hanziMapFromMb(mb: Mabiao, hanzi: Iterable<string>, shortCode = 
     const oldItem = rs.get(wd)
     // 没有数据时, 添加数据
     if (!oldItem) {
-      rs.set(wd, { item, collision: 0 })
+      rs.set(wd, { item, collision: 1 })
       continue
     }
     // 有数据时
@@ -109,6 +109,29 @@ export function calcWeightedEvalItems(item: EvaluateItems) {
   return rs
 }
 
+export function keysUsage<T extends { code: string; selectKey: string; freq: number }>(purifiedMabiao: T[]) {
+  const keyUsage = new Map<string, number>()
+  for (const e of purifiedMabiao) {
+    for (const key of e.code) {
+      const oldUsage = keyUsage.get(key) ?? 0
+      keyUsage.set(key, oldUsage + e.freq)
+    }
+    if (e.selectKey.length) {
+      const key = e.selectKey[0]
+      const oldUsage = keyUsage.get(key) ?? 0
+      keyUsage.set(key, oldUsage + e.freq)
+    }
+  }
+  return keyUsage
+}
+
+export function totalFreqFromKeysUsages(usage: Map<string, number>) {
+  let rs = 0
+  for (const e of usage.values())
+    rs += e
+  return rs
+}
+
 ///  单字测评专用的  ///
 
 interface PurifiedMbItemBase {
@@ -134,8 +157,7 @@ interface PurifiedMbItemNormal extends PurifiedMbItemBase {
 }
 
 type PurifiedMbItem = PurifiedMbItemBase | PurifiedMbItemNormal
-/** 带有计数, 用于收集手感 */
-type PurifiedMbItemAndCount = PurifiedMbItemNormal & { count: number }
+
 /** 提取单字测评用的数据 */
 export function purifyMabiao(hanziMap: HanziMap, freqMatrix: FreqMatrix): PurifiedMbItem[] {
   const rs: PurifiedMbItem[] = []
@@ -173,6 +195,8 @@ export function purifyMabiao(hanziMap: HanziMap, freqMatrix: FreqMatrix): Purifi
   return rs
 }
 
+/** 带有计数, 用于收集手感 */
+type PurifiedMbItemAndCount = PurifiedMbItemNormal & { count: number }
 export interface EvaluateItems {
   /** 总频数 */
   freq: number
@@ -237,7 +261,7 @@ function createEmptyEvaluateItems(): EvaluateItems {
     lack: [],
   }
 }
-/** 测评5个区间 */
+/** 测评5个区间，会修改purifiedMb里的selectKey数据 */
 export function evaluateSections(purifiedMb: PurifiedMbItem[], mb: Mabiao) {
   // 用于选重键
   const { maxCodeLen, selectKeys } = mb
@@ -256,9 +280,12 @@ export function evaluateSections(purifiedMb: PurifiedMbItem[], mb: Mabiao) {
       }
 
       const cd = el.code
+      const cdLen = cd.length
+
       // 补齐el的键长数据
-      if (maxCodeLen! < cd.length || el.collision > 1) {
-        const coll = el.collision > selectKeys!.length ? selectKeys!.length : el.collision
+      const selectKeyLen = selectKeys!.length
+      if (maxCodeLen! > cdLen || el.collision > 1) {
+        const coll = el.collision > selectKeyLen ? selectKeyLen : el.collision
         el.selectKey = selectKeys![coll - 1]
       }
 
@@ -275,7 +302,6 @@ export function evaluateSections(purifiedMb: PurifiedMbItem[], mb: Mabiao) {
 
       // 区间字频合计
       sectionRs.freq += el.freq
-      const cdLen = cd.length
 
       // 1码 2码 3码 4码 更多码长
       switch (cdLen) {
@@ -361,5 +387,12 @@ export function quickEvaluate(mb: Mabiao) {
   const freqTsv = parseFreqTsv(presetHanziFreq)
   const hanzi_map = hanziMapFromMb(mb, freqTsv.map(v => v[0]))
   const purifiedMb = purifyMabiao(hanzi_map, freqTsv)
-  return evaluateSections(purifiedMb, mb)
+  const evaluate = evaluateSections(purifiedMb, mb)
+  const normalPurified = purifiedMb.filter(v => ('code' in v)) as PurifiedMbItemNormal[]
+  const usage = keysUsage(normalPurified)
+  const total_usage_count = totalFreqFromKeysUsages(usage)
+  for (const [k, v] of usage.entries())
+    usage.set(k, v / total_usage_count)
+
+  return { evaluate, usage }
 }
