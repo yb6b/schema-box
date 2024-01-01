@@ -323,7 +323,7 @@ export function evaluateSections(purifiedMb: PurifiedMbItem[], mb: Mabiao) {
       }
 
       // 选重
-      if (el.collision > 0)
+      if (el.collision > 1)
         sectionRs.collision.push(el)
 
       // 理论二简
