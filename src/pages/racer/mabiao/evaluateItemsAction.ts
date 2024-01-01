@@ -1,3 +1,8 @@
+/**
+ * 测评每一项的行为,
+ * 如果要添加新的测评项目, 先修改 hanzi/index.ts 里的 evaluateSections()
+ */
+
 import type { QTableProps } from 'quasar'
 import { formatFloat } from 'libs/utils'
 import type { EvaluateItems } from 'libs/evaluate/hanzi/index'
@@ -39,6 +44,16 @@ function countCollumns(name: string): TableCollumn {
     name: 'count',
     label: `${name}计数`,
     field: 'count',
+  })
+  return rs
+}
+
+function collisionCollumns() {
+  const rs = [...normalCollumns]
+  rs.splice(2, 0, {
+    name: 'collision',
+    label: '选重',
+    field: 'collision',
   })
   return rs
 }
@@ -107,7 +122,7 @@ export const singleActions: EvaluateItemAction[] = [
     headHtml: '<span class="text-red-8">选重</span>',
     headInfoHtml: '码表取最短码长的单字之后，如果要选重（不能顶字上屏，只能按选重键），则统计它。',
     kind: 'len',
-    tableCollumn: [...normalCollumns].splice(2, 0, { name: 'collision', label: '选重', field: 'collision' }),
+    tableCollumn: collisionCollumns(),
   },
   {
     field: 'brief2',
