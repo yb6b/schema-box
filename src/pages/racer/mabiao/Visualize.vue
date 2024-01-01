@@ -6,6 +6,7 @@ import { ref, shallowRef } from 'vue'
 import { useSetTitle } from 'libs/hooks'
 import type { QTableProps } from 'quasar'
 import { writeStringToClipboard } from 'libs/utils'
+import InfoTooltip from 'components/custom/InfoTooltip.vue'
 import EvaluateZi from './Single.vue'
 import EvaluateWords from './Words.vue'
 import EvaluateMabiao from './Mabiao.vue'
@@ -96,13 +97,13 @@ function getTsv(data: TableRef) {
       <QSeparator />
       <QCardActions align="right">
         <QBtn
-          label="复制TSV数据" flat color="primary" @click="async (e) => {
+          label="复制数据" flat @click="async (e) => {
             const txt = getTsv(tableRef!)
             await writeStringToClipboard(txt)
             $q.notify({ type: 'success', message: `已写入${tableRef?.rows?.length}行表格到系统剪切板` })
           }"
         >
-          <QTooltip>复制上文的表格为纯文本，你可以在别的文本编辑器、Excel、通讯软件里粘贴这个tsv</QTooltip>
+          <InfoTooltip><p>复制上文的表格为TSV格式的纯文本。</p>你可以在其他文本编辑器、Excel、通讯软件里粘贴TSV数据。</InfoTooltip>
         </QBtn>
         <QBtn label="关闭" flat color="primary" @click="e => openTableDialog = false" />
       </QCardActions>

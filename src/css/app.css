@@ -17,6 +17,10 @@
     margin-left: auto;
 }
 
+.container-sm{
+    max-width: 18rem;
+}
+
 .font-monospace{
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;;
 }
