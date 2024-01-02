@@ -9,7 +9,7 @@ const p = defineProps<{
 
 function fmt(action: typeof singleActions[0]) {
   const eva = p.evaItem
-  if (action.kind === 'weight')
+  if (action.kind === 'weight' || action.kind === 'load')
     return '/'
   if ((eva as any)[action.field] === 0)
     return 0

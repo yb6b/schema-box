@@ -1,7 +1,9 @@
 /** 根据字频表数据测评, 即科学形码测评系统 */
-import { parseTsv } from '../../utils'
+import { freqToRelativeFreq, intersectionBetweenSets, objectKeysToSet, parseTsv, pickObject } from '../../utils'
 import type { Mabiao, MabiaoItem } from '../../schema'
 import { comboFeelData } from '../feelData'
+import { fingerLoad } from '../feelData/fingerLoad'
+import { keysSet } from '../../schema'
 import { KEYS } from '../feelData/combo'
 import { CollisionCounter } from '../simulator/collisionCounter'
 
@@ -74,19 +76,27 @@ export function calcEq(cd: string) {
 export function zipEvaluationItems<T extends object>(items: T[]): T {
   if (items.length < 2)
     return items[0]
-  const rs = { ...items[0] }
-  for (let i = 1; i < items.length; i++) {
-    const e = items[i]
-    for (const [k, v] of Object.entries(e)) {
+  const mergeObjectToBase = (base: object, other: object) => {
+    for (const [k, v] of Object.entries(other)) {
       if (Array.isArray(v)) {
         // @ts-expect-error magic
-        rs[k] = rs[k].concat(v)
+        base[k] = base[k].concat(v)
       }
-      if (typeof v === 'number') {
+      else if (typeof v === 'number') {
         // @ts-expect-error magic
-        rs[k] += v
+        base[k] += v
+      }
+      // 对象
+      else {
+        // @ts-expect-error magic
+        mergeObjectToBase(base[k], v)
       }
     }
+  }
+  const rs = structuredClone(items[0])
+  for (let i = 1; i < items.length; i++) {
+    const e = items[i]
+    mergeObjectToBase(rs, e)
   }
   return rs
 }
@@ -100,7 +110,11 @@ export function calcWeightedEvalItems(item: EvaluateItems) {
       let f = 0
       for (const e of v) {
         const x = 'count' in e ? e.count : 1
-        const keyLen = e.code.length + e.selectKey.length - 1
+        let keyLen = 1
+        if (k !== 'lack')
+          keyLen = e.code.length + e.selectKey.length - 1
+        if (keyLen < 1)
+          keyLen = 1
         f += (e.freq * x) / (totalFreq * keyLen)
       }
       rs[k] = f
@@ -236,6 +250,8 @@ export interface EvaluateItems {
   overKey: Array<PurifiedMbItemAndCount>
   /** 缺字 */
   lack: Array<PurifiedMbItemBase>
+  /** 用指负荷的数据， 每个按键的使用次数 */
+  finLoad: Record<string, number>
 }
 
 function createEmptyEvaluateItems(): EvaluateItems {
@@ -259,12 +275,14 @@ function createEmptyEvaluateItems(): EvaluateItems {
     trible: [],
     overKey: [],
     lack: [],
+    finLoad: {},
   }
 }
 /** 测评5个区间，会修改purifiedMb里的selectKey数据 */
 export function evaluateSections(purifiedMb: PurifiedMbItem[], mb: Mabiao) {
   // 用于选重键
   const { maxCodeLen, selectKeys } = mb
+
   const sections = [[0, 300], [300, 500], [500, 1500], [1500, 3000], [3000, 6000]] as const
   const rs: EvaluateItems[] = []
   // 用于计算理论二简
@@ -356,6 +374,17 @@ export function evaluateSections(purifiedMb: PurifiedMbItem[], mb: Mabiao) {
         sectionRs.trible.push({ ...el, count })
 
       const freq = el.freq
+
+      // 用指平衡
+      for (const k of cd) {
+        if (k in fingerLoad) {
+          if (k in sectionRs.finLoad)
+            sectionRs.finLoad[k] += freq
+          else
+            sectionRs.finLoad[k] = freq
+        }
+      }
+
       // 字均当量
       // 1 码字的当量为 1
       const ziEq = cdLen < 2 ? 1 : calcEq(cd)
@@ -394,5 +423,11 @@ export function quickEvaluate(mb: Mabiao) {
   for (const [k, v] of usage.entries())
     usage.set(k, v / total_usage_count)
 
-  return { evaluate, usage }
+  const keysInFingerLoad = intersectionBetweenSets(
+    keysSet(mb.items),
+    objectKeysToSet(fingerLoad),
+  )
+  const customFingerLoad = pickObject(fingerLoad, keysInFingerLoad)
+  const baseFinLoadRate = freqToRelativeFreq(customFingerLoad)
+  return { evaluate, usage, baseFinLoadRate }
 }

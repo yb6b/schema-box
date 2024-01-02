@@ -6,6 +6,7 @@
 import type { QTableProps } from 'quasar'
 import { formatFloat } from 'libs/utils'
 import type { EvaluateItems } from 'libs/evaluate/hanzi/index'
+import { workmanWeightSrc } from './photoBase64'
 
 type TableCollumn = Exclude<QTableProps['columns'], undefined>
 const normalCollumns: TableCollumn = [
@@ -65,9 +66,15 @@ const lackCollumns: QTableProps['columns'] = [
     field: 'wd',
   },
   {
+    name: 'freqRank',
+    label: '字频次序',
+    field: 'freqRank',
+  },
+  {
     name: 'freq',
     label: '字频',
-    field: 'freq',
+    field: 'reFreq',
+    format: v => formatFloat(v, 5, true),
   },
 ]
 
@@ -82,7 +89,7 @@ interface EvaluateItemAction {
   /** 弹出说明要不要取消限制宽度 */
   headInfoHtmlNoContainer?: boolean
   /** 数据处理方式 */
-  kind: 'len' | 'count' | 'weight'
+  kind: 'len' | 'count' | 'weight' | 'load'
   tableCollumn?: QTableProps['columns']
 }
 
@@ -154,6 +161,13 @@ export const singleActions: EvaluateItemAction[] = [
     headInfoHtmlNoContainer: true,
     headInfoHtml: '加权键均当量 = （键均当量 × 字频值）之和 ÷ 字频值之和<br>键均当量 = 单字当量 ÷ (键长 - 1)<br>键长 = 编码 + 选重键<br>',
     kind: 'weight',
+  },
+  {
+    field: 'finLoad',
+    zhName: '用指平衡',
+    headHtml: '用指<br>平衡',
+    headInfoHtml: `<p>各按键使用频率，与Workman布局的按键权重的均方根误差</p><img width='280' src="${workmanWeightSrc}" alt="workman 布局的按键权重" />`,
+    kind: 'load',
   },
   {
     field: 'dh',

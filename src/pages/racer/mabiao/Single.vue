@@ -17,7 +17,7 @@ defineEmits<{
   table: [data: TableRef]
 }>()
 
-const { evaluate, usage } = quickEvaluate(props.mabiao)
+const { evaluate, usage, baseFinLoadRate } = quickEvaluate(props.mabiao)
 const resultSum1 = zipEvaluationItems(evaluate.slice(0, 3))
 const weightedEvalItems1 = calcWeightedEvalItems(resultSum1)
 const resultSum2 = zipEvaluationItems(evaluate.slice(0, 5))
@@ -51,6 +51,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           :range-label="itemsName[i - 1]"
           :mb-name="mabiao.name!"
           :eva-item="evaluate[i - 1]"
+          :base-fin-load-rate="baseFinLoadRate"
           @click="v => $emit('table', v)"
         />
 
@@ -60,6 +61,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           class="bg-teal-1"
           :mb-name="mabiao.name!"
           :eva-item="resultSum1"
+          :base-fin-load-rate="baseFinLoadRate"
           @click="v => $emit('table', v)"
         />
         <SingleSumRow
@@ -74,6 +76,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           :range-label="itemsName2[i - 1]"
           :mb-name="mabiao.name!"
           :eva-item="evaluate[i + 2]"
+          :base-fin-load-rate="baseFinLoadRate"
           @click="v => $emit('table', v)"
         />
 
@@ -83,6 +86,7 @@ const itemsName2 = ['1501~3000', '3001~6000']
           class="bg-teal-1"
           :mb-name="mabiao.name!"
           :eva-item="resultSum2"
+          :base-fin-load-rate="baseFinLoadRate"
           @click="v => $emit('table', v)"
         />
 

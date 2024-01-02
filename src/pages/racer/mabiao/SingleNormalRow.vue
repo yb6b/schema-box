@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EvaluateItems } from 'libs/evaluate/hanzi'
-import { formatFloat } from 'libs/utils'
+import { formatFloat, freqToRelativeFreq } from 'libs/utils'
 import type { TableRef } from './types'
 import { singleActions } from './evaluateItemsAction'
 
@@ -9,6 +9,7 @@ const p = defineProps<{
   indexLabel?: string
   mbName: string
   evaItem: EvaluateItems
+  baseFinLoadRate: Record<string, number>
 }>()
 defineEmits<{
   click: [result: TableRef]
@@ -20,6 +21,23 @@ function fmtCountOrLen(action: typeof singleActions[0]) {
     return (eval_item[action.field] as object[]).length
   else
     return (eval_item[action.field] as EvaluateItems['dh']).reduce((pv, cv) => pv + cv.count, 0)
+}
+
+function calcMse() {
+  const finLoad = freqToRelativeFreq(p.evaItem.finLoad)
+  const baseFinLoadRate = p.baseFinLoadRate
+  let a = 0
+  let b = 0
+
+  for (const [key, freq] of Object.entries(baseFinLoadRate)) {
+    if (key in finLoad) {
+      const dist = finLoad[key] - freq
+      a += dist * dist
+    }
+    b++
+  }
+  const rs = Math.sqrt(a / b)
+  return formatFloat(rs, 3, true)
 }
 </script>
 
@@ -55,6 +73,12 @@ function fmtCountOrLen(action: typeof singleActions[0]) {
         class="text-right"
       >
         {{ formatFloat(evaItem[action.field] as number / evaItem.freq) }}
+      </td>
+      <td
+        v-else-if="action.kind === 'load'"
+        class="text-right"
+      >
+        {{ calcMse() }}
       </td>
     </template>
   </tr>
