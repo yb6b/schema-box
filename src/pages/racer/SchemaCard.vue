@@ -20,10 +20,6 @@ const openEvaluateDialog = shallowRef(false)
 
 const dataRef = shallowRef<Mabiao | null>(null)
 
-watchEffect(() => {
-  emits('value', dataRef.value)
-})
-
 function onDrop(e: DragEvent) {
   const f = e.dataTransfer?.files[0]
   if (!f)
@@ -32,12 +28,14 @@ function onDrop(e: DragEvent) {
   detectAndFillMabiao(raw).then((mb) => {
     mb.name = removeFileNameExt(raw.name)
     dataRef.value = mb
+    emits('value', mb)
   }).catch((r) => { $q.notify({ type: 'negative', message: r.message }) })
 }
 
 async function onGetNewSchema(mb: Mabiao) {
   // loadFile 组件内部已经推断过了
   dataRef.value = mb
+  emits('value', mb)
   openDialog.value = false
 }
 </script>
@@ -53,7 +51,7 @@ async function onGetNewSchema(mb: Mabiao) {
   </QDialog>
   <!-- 测评码表的弹窗 -->
   <QDialog v-model="openEvaluateDialog" maximized>
-    <MabiaoEvaluator :mabiao="dataRef!" />
+    <MabiaoEvaluator v-if="openEvaluateDialog" :mabiao="toValue(dataRef!)" />
   </QDialog>
   <!-- 赛码文章卡片 -->
   <QCard

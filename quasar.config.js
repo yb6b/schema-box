@@ -113,8 +113,7 @@ module.exports = configure((ctx) => {
     },
 
     vendor: {
-      disable: true,
-      // remove: ['.*vueuse.*', '@quasar'],
+      remove: ['.*vueuse.*', '@quasar', 'remeda'],
     },
 
     // animations: 'all', // --- includes all animations

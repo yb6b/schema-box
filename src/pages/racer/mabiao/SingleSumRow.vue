@@ -1,30 +1,32 @@
 <script setup lang="ts">
 import { formatFloat } from 'libs/utils'
-import { singleActions } from './evaluateItemsAction'
+import type { EvaluateLineHanzi, EvaluateLineWords } from 'libs/evaluate/hanzi'
+import type { EvaluateItemAction } from './evaluateItemsAction'
 
 const p = defineProps<{
-  evaItem: object
   indexLabel: string
+  evaluateResult: EvaluateLineWords | EvaluateLineHanzi
+  actions: EvaluateItemAction<EvaluateLineWords | EvaluateLineHanzi>[]
+  color: string
 }>()
 
-function fmt(action: typeof singleActions[0]) {
-  const eva = p.evaItem
-  if (action.kind === 'weight' || action.kind === 'load')
+function fmt(action: any) {
+  if (!('displayWeight' in action))
     return '/'
-  if ((eva as any)[action.field] === 0)
-    return 0
-  const field = (eva as any)[action.field]
-  return formatFloat(field, 2, true)
+  const dw = action.displayWeight(p.evaluateResult)
+  if (dw === 0)
+    return '0'
+  return formatFloat(dw)
 }
 </script>
 
 <template>
   <tr>
-    <td class="text-right bg-teal-1">
+    <td class="text-right" :class="[color]">
       {{ indexLabel }}
     </td>
     <template
-      v-for="action in singleActions"
+      v-for="action in actions"
       :key="action.zhName"
     >
       <td class="text-right">

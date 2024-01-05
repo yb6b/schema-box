@@ -4,82 +4,14 @@
  */
 
 import type { QTableProps } from 'quasar'
-import { formatFloat } from 'libs/utils'
-import type { EvaluateItems } from 'libs/evaluate/hanzi/index'
+import type { EvaluateHanziItem, EvaluateLineHanzi, EvaluateLineWords } from 'libs/evaluate/hanzi'
+import { isNormal } from 'libs/evaluate/hanzi'
+import type { Mabiao } from 'src/libs/schema'
+import { formatFloat, freqToRelativeFreq } from 'libs/utils'
 import { workmanWeightSrc } from './photoBase64'
+import * as col from './collumns'
 
-type TableCollumn = Exclude<QTableProps['columns'], undefined>
-const normalCollumns: TableCollumn = [
-  {
-    name: 'index',
-    label: '汉字',
-    field: 'wd',
-  },
-  {
-    name: 'code',
-    label: '编码',
-    field: 'code',
-    classes: 'font-monospace',
-  },
-  {
-    name: 'line',
-    label: '码表行数',
-    field: 'line',
-  },
-  {
-    name: 'freqRank',
-    label: '字频次序',
-    field: 'freqRank',
-  },
-  {
-    name: 'freq',
-    label: '字频',
-    field: 'reFreq',
-    format: v => formatFloat(v, 5, true),
-  },
-]
-
-function countCollumns(name: string): TableCollumn {
-  const rs = [...normalCollumns]
-  rs.splice(2, 0, {
-    name: 'count',
-    label: `${name}计数`,
-    field: 'count',
-  })
-  return rs
-}
-
-function collisionCollumns() {
-  const rs = [...normalCollumns]
-  rs.splice(2, 0, {
-    name: 'collision',
-    label: '选重',
-    field: 'collision',
-  })
-  return rs
-}
-
-const lackCollumns: QTableProps['columns'] = [
-  {
-    name: 'index',
-    label: '汉字',
-    field: 'wd',
-  },
-  {
-    name: 'freqRank',
-    label: '字频次序',
-    field: 'freqRank',
-  },
-  {
-    name: 'freq',
-    label: '字频',
-    field: 'reFreq',
-    format: v => formatFloat(v, 5, true),
-  },
-]
-
-interface EvaluateItemAction {
-  field: keyof EvaluateItems
+export interface EvaluateItemAction<T> {
   /** 中文名 */
   zhName: string
   /** 表格头里的名称 */
@@ -88,150 +20,303 @@ interface EvaluateItemAction {
   headInfoHtml?: string
   /** 弹出说明要不要取消限制宽度 */
   headInfoHtmlNoContainer?: boolean
-  /** 数据处理方式 */
-  kind: 'len' | 'count' | 'weight' | 'load'
-  tableCollumn?: QTableProps['columns']
+  /** 显示单元格里的内容 */
+  display: (line: T, other?: any) => string | number
+  /** 显示加权单元格的内容, 不填则显示 /  */
+  displayWeight?: (line: T, other?: any) => number
+  table?: {
+    /**
+     * 详细表格的标题
+     *
+     * 如果不填,会自动补充成 《五笔》中第0~500行的zhName
+     */
+    title?: (line: T, mb: Mabiao) => string
+    /** 表格的每一列 */
+    collumn: (line: T) => QTableProps['columns']
+    /** 表格里的每一行，通常要filter items */
+    rows: (line: T) => QTableProps['rows']
+  }
 }
 
-export const singleActions: EvaluateItemAction[] = [
+/** 单字测评 */
+export const singleActions: EvaluateItemAction<EvaluateLineHanzi>[] = [
   {
-    field: 'L1',
     zhName: '一码',
     headHtml: '1 码',
-    kind: 'len',
-    tableCollumn: normalCollumns,
+    display: makeDisplayByCount(v => v.cdLen === 1),
+    displayWeight: makeDisplayWeightCodeLen(1),
+    table: {
+      collumn: col.getNormalCollumns,
+      rows: makeTableRow(v => v.cdLen === 1),
+    },
   },
   {
-    field: 'L2',
     zhName: '二码',
     headHtml: '2 码',
-    kind: 'len',
-    tableCollumn: normalCollumns,
+    display: makeDisplayByCount(v => v.cdLen === 2),
+    displayWeight: makeDisplayWeightCodeLen(2),
+    table: {
+      collumn: col.getNormalCollumns,
+      rows: makeTableRow(v => v.cdLen === 2),
+    },
   },
-
   {
-    field: 'L3',
     zhName: '三码',
     headHtml: '3 码',
-    kind: 'len',
-    tableCollumn: normalCollumns,
+    display: makeDisplayByCount(v => v.cdLen === 3),
+    displayWeight: makeDisplayWeightCodeLen(3),
+    table: {
+      collumn: col.getNormalCollumns,
+      rows: makeTableRow(v => v.cdLen === 3),
+    },
   },
   {
-    field: 'L4',
     zhName: '四码',
     headHtml: '4 码',
-    kind: 'len',
-    tableCollumn: normalCollumns,
+    display: makeDisplayByCount(v => v.cdLen === 4),
+    displayWeight: makeDisplayWeightCodeLen(4),
+    table: {
+      collumn: col.getNormalCollumns,
+      rows: makeTableRow(v => v.cdLen === 4),
+    },
   },
   {
-    field: 'collision',
     zhName: '选重',
     headHtml: '<span class="text-red-8">选重</span>',
     headInfoHtml: '码表取最短码长的单字之后，如果要选重（不能顶字上屏，只能按选重键），则统计它。',
-    kind: 'len',
-    tableCollumn: collisionCollumns(),
+    display: makeDisplayByCount(v => v.selectKey !== ''),
+    displayWeight: makeDisplayWeightByCount(v => v.selectKey === '' ? 0 : v.collision),
+    table: {
+      collumn: col.getNormalCollumns,
+      rows: makeTableRow(v => v.selectKey !== ''),
+    },
   },
   {
-    field: 'brief2',
     zhName: '理论二简',
     headHtml: '理论<br>二简',
     headInfoHtml: '统计已取出编码中最大、无重的二简的数量，并计算其加权比重。',
-    kind: 'len',
-    tableCollumn: normalCollumns,
+    display: makeDisplayByCount(v => v.brief2),
+    displayWeight: makeDisplayWeightByCount(v => Number(v.brief2)),
+    table: {
+      collumn: col.getNormalCollumns,
+      rows: makeTableRow(v => v.brief2),
+    },
   },
   {
-    field: 'CL',
     zhName: '加权键长',
     headHtml: '加权<br>键长',
     headInfoHtml: '键长 = 编码 + 选重键',
-    kind: 'weight',
+    display: makeDisplayByWeight(v => v.CL),
   },
   {
-    field: 'ziEq',
     zhName: '加权字均当量',
     headHtml: '加权<br>字均当量',
     headInfoHtmlNoContainer: true,
     headInfoHtml: '加权字均当量 = （每字当量 × 字频值）之和 ÷ （字频值之和）<br>单字当量 = 各按键组合的陈一凡当量之和',
-    kind: 'weight',
+    display: makeDisplayByWeight(v => v.ziEq),
   },
   {
-    field: 'keyEq',
-    zhName: '加权字均当量',
-    headHtml: '加权<br>字均当量',
+    zhName: '加权键均当量',
+    headHtml: '加权<br>键均当量',
     headInfoHtmlNoContainer: true,
     headInfoHtml: '加权键均当量 = （键均当量 × 字频值）之和 ÷ 字频值之和<br>键均当量 = 单字当量 ÷ (键长 - 1)<br>键长 = 编码 + 选重键<br>',
-    kind: 'weight',
+    display: makeDisplayByWeight(v => v.keyEq),
   },
   {
-    field: 'finLoad',
     zhName: '用指平衡',
     headHtml: '用指<br>平衡',
-    headInfoHtml: `<p>各按键使用频率，与Workman布局的按键权重的均方根误差</p><img width='280' src="${workmanWeightSrc}" alt="workman 布局的按键权重" />`,
-    kind: 'load',
+    headInfoHtml: `<p>各按键使用频率，与Workman布局的按键权重的均方根误差</p>
+    <p><b class="text-negative">注意：</b>用指平衡只适合在<b>相同码元</b>的方案之间比较。</p>
+    <img width='280' src="${workmanWeightSrc}" alt="workman 布局的按键权重" />`,
+    display: (line, baseFinLoadRate: Record<string, number>) => {
+      const finLoad = freqToRelativeFreq(line.usage)
+      let a = 0
+      let b = 0
+      for (const [key, freq] of Object.entries(baseFinLoadRate)) {
+        if (key in finLoad) {
+          const dist = finLoad[key] - freq
+          a += dist * dist
+        }
+        b++
+      }
+      const rs = Math.sqrt(a / b)
+      return formatFloat(rs, 4, true)
+    },
   },
   {
-    field: 'dh',
     zhName: '左右互击',
     headHtml: '左右<br>互击',
     headInfoHtml: '两个按键不在同一个手区域。',
-    kind: 'count',
-    tableCollumn: countCollumns('左右互击'),
+    display: makeDisplayByCount(v => v.dh),
+    displayWeight: makeDisplayWeightByCount(v => v.dh),
+    table: {
+      collumn: col.makeCountCollumns('左右互击', 'dh'),
+      rows: makeTableRow(v => v.dh),
+    },
   },
   {
-    field: 'ms',
     zhName: '同指大跨排',
     headHtml: '同指<br>大跨排',
     headInfoHtml: '<p>两个按键需要用相同手指，但不是同一键。<br>两键相距 <b>两排或多排</b>。</p>例如：<kbd>ce</kbd>',
-    kind: 'count',
-    tableCollumn: countCollumns('同指大跨排'),
+    display: makeDisplayByCount(v => v.ms),
+    displayWeight: makeDisplayWeightByCount(v => v.ms),
+    table: {
+      collumn: col.makeCountCollumns('同指大跨排', 'ms'),
+      rows: makeTableRow(v => v.ms),
+    },
   },
   {
-    field: 'ss',
     zhName: '同指小跨排',
     headHtml: '同指<br>小跨排',
     headInfoHtml: '<p>两个按键需要用相同手指，但不是同一键。<br>两键相距 <b>一排或一列</b>。</p>例如：<kbd>de</kbd>',
-    kind: 'count',
-    tableCollumn: countCollumns('同指小跨排'),
+    display: makeDisplayByCount(v => v.ss),
+    displayWeight: makeDisplayWeightByCount(v => v.ss),
+    table: {
+      collumn: col.makeCountCollumns('同指小跨排', 'ss'),
+      rows: makeTableRow(v => v.ss),
+    },
   },
   {
-    field: 'pd',
     zhName: '小指干扰',
     headHtml: '小指<br>干扰',
     headInfoHtml: '<p>在两个按键中，小指的使用对其它手指产生神经干扰。</p>例如: <kbd>aw pk</kbd>',
-    kind: 'count',
-    tableCollumn: countCollumns('小指干扰'),
+    display: makeDisplayByCount(v => v.pd),
+    displayWeight: makeDisplayWeightByCount(v => v.pd),
+    table: {
+      collumn: col.makeCountCollumns('小指干扰', 'pd'),
+      rows: makeTableRow(v => v.pd),
+    },
   },
   {
-    field: 'lfd',
     zhName: '错手',
     headHtml: '错手',
     headInfoHtml: '<p>因为中指、无名指下沉带动手掌下沉，导致高位按键难以按下的情况。</p>例如: <kbd>xe cr</kbd>',
-    kind: 'count',
-    tableCollumn: countCollumns('错手'),
+    display: makeDisplayByCount(v => v.lfd),
+    displayWeight: makeDisplayWeightByCount(v => v.lfd),
+    table: {
+      collumn: col.makeCountCollumns('错手', 'lfd'),
+      rows: makeTableRow(v => v.lfd),
+    },
   },
   {
-    field: 'trible',
+
     zhName: '三连击',
     headHtml: '三连击',
     headInfoHtml: '连续三个键相同',
-    kind: 'count',
-    tableCollumn: countCollumns('三连击'),
+    display: makeDisplayByCount(v => v.trible),
+    displayWeight: makeDisplayWeightByCount(v => v.trible),
+    table: {
+      collumn: col.makeCountCollumns('三连击', 'trible'),
+      rows: makeTableRow(v => v.trible),
+    },
   },
   {
-    field: 'overKey',
     zhName: '超标键位',
     headHtml: '超标<br>键位',
     headInfoHtml: '<p>该字的编码使用到了46个按键以外的按键。</p>46个按键指主键盘区所有能打出字符的按键（包括空格），再排除<kbd>`\\</kbd>两键。',
-    kind: 'count',
-    tableCollumn: countCollumns('超标键位'),
+    display: line => line.items.reduce(
+      (p, c) => p + ('overKey' in c ? c.overKey : 0),
+      0,
+    ),
+    displayWeight: (line) => {
+      let totalWeight = 0
+      for (const e of line.items) {
+        if ('overKey' in e)
+          totalWeight += e.freq * e.overKey
+      }
+      return totalWeight / line.freq
+    },
+    table: {
+      collumn: col.makeCountCollumns('超标键位', 'overKey'),
+      rows: line => line.items.filter(v => 'overKey' in v && v.overKey > 0),
+    },
   },
   {
-    field: 'lack',
     zhName: '缺字标记',
     headHtml: '缺字<br>标记',
     headInfoHtml: '码表中缺少某字',
-    kind: 'len',
-    tableCollumn: lackCollumns,
+    displayWeight: (line) => {
+      let totalWeight = 0
+      for (const e of line.items) {
+        if (!('overKey' in e))
+          totalWeight += e.freq
+      }
+      return totalWeight / line.freq
+    },
+    display: line => line.items.reduce(
+      (p, c) => p + Number(!('overKey' in c)),
+      0,
+    ),
+    table: {
+      collumn: col.getLackCollumns,
+      rows: line => line.items.filter(v => !('overKey' in v)),
+    },
   },
-
 ]
+
+/** 组词测评 */
+
+/**
+ * 辅助生成Display, 用于整数求和的场景
+ * @param handler 如何提取每一项的求和数据
+ */
+function makeDisplayByCount(handler: (v: any) => number | boolean) {
+  return (line: any) => {
+    let result = 0
+    for (const e of line.items) {
+      if (isNormal(e))
+        result += handler(e) as number
+    }
+    return result
+  }
+}
+
+/**
+ * 辅助生成Display, 用于加权求和的项
+ * @param handler 如何提取每一项的求和数据
+ */
+function makeDisplayByWeight(handler: (v: any) => number | boolean) {
+  return (line: any) => {
+    let result = 0
+    for (const e of line.items) {
+      if (isNormal(e))
+        result += handler(e) as number
+    }
+    result /= line.freq
+    return formatFloat(result)
+  }
+}
+
+/**
+ * 辅助生成表格行, 会过滤缺字和超标
+ * @param handler 如何过滤每一个item
+ */
+function makeTableRow(handler: (v: any) => boolean) {
+  return (line: any) => line.items.filter((v: any) => isNormal(v) && handler(v))
+}
+
+function makeDisplayWeightCodeLen(cdLen: number) {
+  return (line: EvaluateLineHanzi) => {
+    let totalWeight = 0
+    for (const it of line.items) {
+      if (isNormal(it) && (it as EvaluateHanziItem).cdLen === cdLen)
+        totalWeight += it.freq
+    }
+    return totalWeight / line.freq
+  }
+}
+
+/**
+ * 辅助生成小计列
+ * @param handler 如何处理每一项的被加权值
+ */
+function makeDisplayWeightByCount(handler: (v: EvaluateHanziItem) => number) {
+  return (line: EvaluateLineHanzi) => {
+    let totalWeight = 0
+    for (const it of line.items) {
+      if (isNormal(it))
+        totalWeight += handler(it as EvaluateHanziItem) * it.freq
+    }
+    return totalWeight / line.freq
+  }
+}

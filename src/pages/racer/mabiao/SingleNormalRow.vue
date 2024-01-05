@@ -1,84 +1,47 @@
 <script setup lang="ts">
-import type { EvaluateItems } from 'libs/evaluate/hanzi'
-import { formatFloat, freqToRelativeFreq } from 'libs/utils'
+import type { EvaluateLineHanzi, EvaluateLineWords } from 'libs/evaluate/hanzi'
+import { formatFloat } from 'libs/utils'
+import type { Mabiao } from 'libs/schema'
 import type { TableRef } from './types'
-import { singleActions } from './evaluateItemsAction'
+import type { EvaluateItemAction } from './evaluateItemsAction'
 
 const p = defineProps<{
-  rangeLabel: string
+  /** 如果不填, 则显示行数范围 */
   indexLabel?: string
-  mbName: string
-  evaItem: EvaluateItems
+  mb: Mabiao
+  evaluateResult: EvaluateLineWords | EvaluateLineHanzi
+  actions: EvaluateItemAction<EvaluateLineWords | EvaluateLineHanzi>[]
   baseFinLoadRate: Record<string, number>
+  color: string
 }>()
 defineEmits<{
   click: [result: TableRef]
 }>()
 
-function fmtCountOrLen(action: typeof singleActions[0]) {
-  const eval_item = p.evaItem
-  if (action.kind === 'len')
-    return (eval_item[action.field] as object[]).length
-  else
-    return (eval_item[action.field] as EvaluateItems['dh']).reduce((pv, cv) => pv + cv.count, 0)
-}
-
-function calcMse() {
-  const finLoad = freqToRelativeFreq(p.evaItem.finLoad)
-  const baseFinLoadRate = p.baseFinLoadRate
-  let a = 0
-  let b = 0
-
-  for (const [key, freq] of Object.entries(baseFinLoadRate)) {
-    if (key in finLoad) {
-      const dist = finLoad[key] - freq
-      a += dist * dist
-    }
-    b++
-  }
-  const rs = Math.sqrt(a / b)
-  return formatFloat(rs, 3, true)
-}
+const displays = p.actions.map(act => act.display(p.evaluateResult, p.baseFinLoadRate))
 </script>
 
 <template>
   <tr>
-    <td class="text-right bg-teal-1">
-      {{ indexLabel || rangeLabel }}
+    <td class="text-right" :class="[color]">
+      {{ indexLabel || `${evaluateResult.start + 1}~${evaluateResult.end}` }}
     </td>
-    <template v-for="action in singleActions" :key="action.zhName">
-      <template v-if="action.kind === 'len' || action.kind === 'count'">
-        <td
-          v-if="(evaItem[action.field] as object[]).length === 0"
-          class="text-right"
-        >
-          0
-        </td>
-        <td
-          v-else
-          class="cursor-pointer hover-dark text-right"
-          @click="() => {
-            $emit('click', {
-              title: `${mbName}中的第 ${rangeLabel} 条的${action.zhName}`,
-              columns: action.tableCollumn,
-              rows: evaItem[action.field] as object[],
-            })
-          }"
-        >
-          {{ fmtCountOrLen(action) }}
-        </td>
-      </template>
+    <template v-for="(action, index) in actions" :key="action.zhName">
       <td
-        v-else-if="action.kind === 'weight'"
-        class="text-right"
+        v-if="'table' in action && displays[index] !== 0"
+        class="cursor-pointer hover-dark text-right"
+        @click="_ => {
+          $emit('click', {
+            title: action.table?.title?.(evaluateResult, mb) || `《${mb.name}》中的第 ${evaluateResult.start + 1}~${evaluateResult.end} 条的${action.zhName}`,
+            columns: action.table!.collumn(evaluateResult),
+            rows: action.table!.rows(evaluateResult),
+          })
+        }"
       >
-        {{ formatFloat(evaItem[action.field] as number / evaItem.freq) }}
+        {{ displays[index] }}
       </td>
-      <td
-        v-else-if="action.kind === 'load'"
-        class="text-right"
-      >
-        {{ calcMse() }}
+      <td v-else class="text-right">
+        {{ displays[index] }}
       </td>
     </template>
   </tr>

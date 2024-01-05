@@ -2,7 +2,7 @@
 import { formatFloat } from '../../libs/utils'
 
 const p = defineProps<{
-  keyMap: Map<string, number>
+  keyMap: Record<string, number>
 }>()
 
 const kbd = [
@@ -14,7 +14,7 @@ const kbd = [
 
 function fmtUsageFreq(key: string) {
   const usage = p.keyMap
-  const freq = usage.get(key)
+  const freq = usage[key]
   if (!freq || freq <= 0)
     return ''
   return formatFloat(freq * 100, 2)
@@ -46,7 +46,7 @@ function bgColor(freq?: number) {
         <div
           v-else
           class="q-pa-sm fit key"
-          :style="{ backgroundColor: bgColor(keyMap.get(k)) }"
+          :style="{ backgroundColor: bgColor(keyMap[k] ?? 0) }"
         >
           <div class="text-uppercase text-bold text-grey-9">
             <kbd>{{ k }}</kbd>
@@ -61,7 +61,7 @@ function bgColor(freq?: number) {
       <div
         class="text-center key"
         style="width: 18rem"
-        :style="{ backgroundColor: bgColor(keyMap.get(' ')) }"
+        :style="{ backgroundColor: bgColor(keyMap[' '] ?? 0) }"
       >
         空格
         <div class="text-weight-thin">

@@ -69,7 +69,6 @@ const keyToFinger = {
 
 const result = [];
 [...KEYS].forEach((v) => {
-  console.log(v, keyToFinger[v], key2line.get(v))
   const r = keyToFinger[v] << 2 | key2line.get(v)
   result.push(r)
 })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Mabiao } from 'libs/schema'
-import { calcWeightedEvalItems, quickEvaluate, zipEvaluationItems } from 'libs/evaluate/hanzi'
+import { quickEvaluateHanzi, zipEvaluationItems } from 'libs/evaluate/hanzi'
 import InfoTooltip from 'components/custom/InfoTooltip.vue'
 import KbdHeat from 'components/plot/KbdHeat.vue'
 import { singleActions } from './evaluateItemsAction'
@@ -17,14 +17,15 @@ defineEmits<{
   table: [data: TableRef]
 }>()
 
-const { evaluate, usage, baseFinLoadRate } = quickEvaluate(props.mabiao)
-const resultSum1 = zipEvaluationItems(evaluate.slice(0, 3))
-const weightedEvalItems1 = calcWeightedEvalItems(resultSum1)
-const resultSum2 = zipEvaluationItems(evaluate.slice(0, 5))
-const weightedEvalItems2 = calcWeightedEvalItems(resultSum2)
+const { evaluate, usage, baseFinLoadRate } = quickEvaluateHanzi(props.mabiao)
 
-const itemsName = ['1~300', '301~500', '501~1500', '1501~3000', '3001~6000']
-const itemsName2 = ['1501~3000', '3001~6000']
+const resultSum1 = zipEvaluationItems(evaluate.slice(0, 3))
+resultSum1.start = evaluate[0].start
+resultSum1.end = evaluate[2].end
+
+const resultSum2 = zipEvaluationItems(evaluate.slice(0, 5))
+resultSum2.start = evaluate[0].start
+resultSum2.end = evaluate[4].end
 </script>
 
 <template>
@@ -48,52 +49,60 @@ const itemsName2 = ['1501~3000', '3001~6000']
         <SingleNormalRow
           v-for="i in 3"
           :key="i"
-          :range-label="itemsName[i - 1]"
-          :mb-name="mabiao.name!"
-          :eva-item="evaluate[i - 1]"
+          :mb="mabiao"
+          :evaluate-result="evaluate[i - 1]"
+          color="bg-teal-1"
           :base-fin-load-rate="baseFinLoadRate"
+          :actions="singleActions"
           @click="v => $emit('table', v)"
         />
 
         <SingleNormalRow
-          range-label="1~1500"
           index-label="小计"
           class="bg-teal-1"
-          :mb-name="mabiao.name!"
-          :eva-item="resultSum1"
+          color="bg-teal-1"
+          :mb="mabiao"
+          :evaluate-result="resultSum1"
+          :actions="singleActions"
           :base-fin-load-rate="baseFinLoadRate"
           @click="v => $emit('table', v)"
         />
         <SingleSumRow
+          :actions="singleActions"
+          color="bg-teal-1"
           class="bg-teal-1"
           index-label="加权比重"
-          :eva-item="weightedEvalItems1"
+          :evaluate-result="resultSum1"
         />
 
         <SingleNormalRow
           v-for="i in 2"
           :key="i"
-          :range-label="itemsName2[i - 1]"
-          :mb-name="mabiao.name!"
-          :eva-item="evaluate[i + 2]"
+          :mb="mabiao"
+          :evaluate-result="evaluate[i + 2]"
+          color="bg-teal-1"
           :base-fin-load-rate="baseFinLoadRate"
+          :actions="singleActions"
           @click="v => $emit('table', v)"
         />
 
         <SingleNormalRow
-          range-label="1~6000"
           index-label="总计"
           class="bg-teal-1"
-          :mb-name="mabiao.name!"
-          :eva-item="resultSum2"
+          color="bg-teal-1"
+          :mb="mabiao"
+          :evaluate-result="resultSum2"
+          :actions="singleActions"
           :base-fin-load-rate="baseFinLoadRate"
           @click="v => $emit('table', v)"
         />
 
         <SingleSumRow
+          :actions="singleActions"
+          color="bg-teal-1"
           class="bg-teal-1"
           index-label="加权比重"
-          :eva-item="weightedEvalItems2"
+          :evaluate-result="resultSum2"
         />
       </tbody>
     </QMarkupTable>
