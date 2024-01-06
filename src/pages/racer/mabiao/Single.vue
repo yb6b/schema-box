@@ -20,12 +20,7 @@ defineEmits<{
 const { evaluate, usage, baseFinLoadRate } = quickEvaluateHanzi(props.mabiao)
 
 const resultSum1 = zipEvaluationItems(evaluate.slice(0, 3))
-resultSum1.start = evaluate[0].start
-resultSum1.end = evaluate[2].end
-
 const resultSum2 = zipEvaluationItems(evaluate.slice(0, 5))
-resultSum2.start = evaluate[0].start
-resultSum2.end = evaluate[4].end
 </script>
 
 <template>

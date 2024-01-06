@@ -1,6 +1,6 @@
 /** 字频统计和词频统计公用的方法 */
 
-import { parseTsv } from 'libs/utils'
+import { parseTsv, zipObjects } from 'libs/utils'
 import type { Mabiao, MabiaoItem } from 'libs/schema'
 import { KEYS } from '../feelData/combo'
 import { CollisionCounter } from '../simulator/collisionCounter'
@@ -74,35 +74,13 @@ export function hanziMapFromMb(mb: Mabiao, hanzi: Iterable<string>, shortCode = 
 }
 
 /** 合并多个计算结果 */
-export function zipEvaluationItems<T extends object>(items: T[]): T {
-  if (items.length < 2)
+export function zipEvaluationItems<T extends EvaluateLineHanzi | EvaluateLineWords>(items: T[]): T {
+  const len = items.length
+  if (len < 2)
     return items[0]
-  const mergeObjectToBase = (base: object, other: object) => {
-    for (const [k, v] of Object.entries(other)) {
-      if (Array.isArray(v)) {
-        // @ts-expect-error magic
-        base[k] = base[k].concat(v)
-      }
-      else if (typeof v === 'number') {
-        if (k in base)
-        // @ts-expect-error magic
-          base[k] += v
-        else
-        // @ts-expect-error magic
-          base[k] = v
-      }
-      // 对象
-      else {
-        // @ts-expect-error magic
-        mergeObjectToBase(base[k], v)
-      }
-    }
-  }
-  const rs = structuredClone(items[0])
-  for (let i = 1; i < items.length; i++) {
-    const e = items[i]
-    mergeObjectToBase(rs, e)
-  }
+  const rs = zipObjects(items)
+  rs.start = items[0].start
+  rs.end = items[len - 1].end
   return rs
 }
 

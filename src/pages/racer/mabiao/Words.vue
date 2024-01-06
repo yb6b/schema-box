@@ -25,12 +25,7 @@ defineEmits<{
 const { evaluateResult, usage } = quickEvaluateWords(props.mabiao)
 
 const resultSum1 = zipEvaluationItems(evaluateResult.slice(0, 3))
-resultSum1.start = evaluateResult[0].start
-resultSum1.end = evaluateResult[2].end
-
 const resultSum2 = zipEvaluationItems(evaluateResult.slice(3))
-resultSum2.start = evaluateResult[3].start
-resultSum2.end = evaluateResult[5].end
 </script>
 
 <template>
