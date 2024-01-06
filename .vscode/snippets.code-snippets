@@ -24,6 +24,20 @@
 			"}"
 		]
 	},
+	"defineEmits": {
+		"scope": "javascript,typescript",
+		"prefix": "defemits",
+		"body": [
+			"const emits = defineEmits<{$1}>()"
+		]
+	},
+	"defineProps": {
+		"scope": "javascript,typescript",
+		"prefix": "defprops",
+		"body": [
+			"const props = defineProps<{$1}>()"
+		]
+	},
 	"import mdi icons": {
 		"scope": "javascript,typescript",
 		"prefix": "immdi",
