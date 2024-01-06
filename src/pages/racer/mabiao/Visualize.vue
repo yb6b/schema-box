@@ -36,6 +36,11 @@ function getTsv(data: TableRef) {
     rs += `\n${data.columns.map(v => format(e[v.field as string])).join('\t')}`
   return rs
 }
+
+function onTable(table: TableRef) {
+  tableRef.value = table
+  openTableDialog.value = true
+}
 </script>
 
 <template>
@@ -60,15 +65,14 @@ function getTsv(data: TableRef) {
       <QTabPanels
         v-model="tabRef"
         animated
-        transition-next="slide-right"
-        transition-prev="slide-left"
+        keep-alive
         class="container-lg"
       >
         <QTabPanel name="zi">
-          <EvaluateZi :mabiao="mabiao" @table="tb => { tableRef = tb; openTableDialog = true }" />
+          <EvaluateZi :mabiao="mabiao" @table="onTable" />
         </QTabPanel>
         <QTabPanel name="wd">
-          <EvaluateWords />
+          <EvaluateWords :mabiao="mabiao" @table="onTable" />
         </QTabPanel>
         <QTabPanel name="mb">
           <EvaluateMabiao />

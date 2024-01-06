@@ -11,14 +11,14 @@ const p = defineProps<{
   mb: Mabiao
   evaluateResult: EvaluateLineWords | EvaluateLineHanzi
   actions: EvaluateItemAction<EvaluateLineWords | EvaluateLineHanzi>[]
-  baseFinLoadRate: Record<string, number>
+  baseFinLoadRate?: Record<string, number>
   color: string
 }>()
 defineEmits<{
   click: [result: TableRef]
 }>()
 
-const displays = p.actions.map(act => act.display(p.evaluateResult, p.baseFinLoadRate))
+const displays = p.actions.map(act => act.display(p.evaluateResult, p.baseFinLoadRate ?? {}))
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const displays = p.actions.map(act => act.display(p.evaluateResult, p.baseFinLoa
         @click="_ => {
           $emit('click', {
             title: action.table?.title?.(evaluateResult, mb) || `《${mb.name}》中的第 ${evaluateResult.start + 1}~${evaluateResult.end} 条的${action.zhName}`,
-            columns: action.table!.collumn(evaluateResult),
+            columns: action.table!.collumns(evaluateResult),
             rows: action.table!.rows(evaluateResult),
           })
         }"

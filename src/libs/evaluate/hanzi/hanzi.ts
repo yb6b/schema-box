@@ -6,7 +6,7 @@ import { freqToRelativeFreq, intersectionBetweenSets, objectKeysToSet, pickObjec
 import { comboFeelData } from '../feelData'
 import { fingerLoad } from '../feelData/fingerLoad'
 import type { FreqMatrix, HanziMap } from './share'
-import { calcEq, hanziMapFromMb, keys46Set, parseFreqTsv } from './share'
+import { calcEq, getTotalUsage, hanziMapFromMb, keys46Set, parseFreqTsv } from './share'
 
 export const presetHanziFreq = (await import('./hanziFreq')).default
 
@@ -237,16 +237,4 @@ function getBaseFinLoadRate(mb: Mabiao) {
   const customFingerLoad = pickObject(fingerLoad, keysInFingerLoad)
   const baseFinLoadRate = freqToRelativeFreq(customFingerLoad)
   return baseFinLoadRate
-}
-
-function getTotalUsage(evaluateResult: EvaluateLineHanzi[]) {
-  const totalUsage = { ...evaluateResult[0].usage }
-  for (let i = 1; i < evaluateResult.length; i++) {
-    const e = evaluateResult[i]
-    for (const [k, n] of Object.entries(e.usage)) {
-      const newFreq = totalUsage[k] ?? 0
-      totalUsage[k] = newFreq + n
-    }
-  }
-  return totalUsage
 }

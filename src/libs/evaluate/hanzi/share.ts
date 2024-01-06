@@ -5,8 +5,20 @@ import type { Mabiao, MabiaoItem } from 'libs/schema'
 import { KEYS } from '../feelData/combo'
 import { CollisionCounter } from '../simulator/collisionCounter'
 import { comboFeelData } from '../feelData'
-import type { EvaluateBaseItem, EvaluateHanziItem } from './hanzi'
-import type { EvaluateWordsItem } from './words'
+import type { EvaluateLineHanzi } from './hanzi'
+import type { EvaluateLineWords } from './words'
+
+export function getTotalUsage(evaluateResult: EvaluateLineHanzi[] | EvaluateLineWords[]) {
+  const totalUsage = { ...evaluateResult[0].usage }
+  for (let i = 1; i < evaluateResult.length; i++) {
+    const e = evaluateResult[i]
+    for (const [k, n] of Object.entries(e.usage)) {
+      const newFreq = totalUsage[k] ?? 0
+      totalUsage[k] = newFreq + n
+    }
+  }
+  return totalUsage
+}
 
 export const keys46Set = new Set(KEYS)
 

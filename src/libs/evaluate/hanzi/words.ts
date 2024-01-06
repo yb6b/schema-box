@@ -1,8 +1,9 @@
 import type { Mabiao } from 'libs/schema'
+import { freqToRelativeFreq } from 'src/libs/utils'
 import { CollisionCounter } from '../simulator/collisionCounter'
 import { comboFeelData } from '../feelData'
 import type { FreqMatrix, HanziMap } from './share'
-import { calcEq, hanziMapFromMb, keys46Set, parseFreqTsv } from './share'
+import { calcEq, getTotalUsage, hanziMapFromMb, keys46Set, parseFreqTsv } from './share'
 import type { EvaluateBaseItem } from './hanzi'
 
 /** 默认的词频表 */
@@ -12,19 +13,25 @@ export const presetWordsFreq = (await import('./wordsFreq')).default
 export function quickEvaluateWords(mb: Mabiao) {
   // 获取词频数据
   const freqTsv = parseFreqTsv(presetWordsFreq)
+  const all_zi = new Set<string>()
+  for (const e of freqTsv) {
+    for (const a of e[0])
+      all_zi.add(a)
+  }
   // TODO: 要留意词频的格式 数量 词语字数
   // 获取单字码表
-  const hanzi_map = hanziMapFromMb(mb, freqTsv.map(v => v[0]), false)
-
+  const hanzi_map = hanziMapFromMb(mb, all_zi, false)
   // 测评词库
   const evaluateResult = evaluateSections(freqTsv, hanzi_map)
-  return evaluateResult
+  return { evaluateResult, usage: freqToRelativeFreq(getTotalUsage(evaluateResult)) }
 }
 
 /** 非缺字的词条的信息 */
 export interface EvaluateWordsItem extends EvaluateBaseItem {
   /** 编码 */
   code: string
+  /** 编码长度 */
+  cdLen: number
   /** 选重数 */
   collision: number
   /** 词编码的加权当量, 已经乘了词频, 最后使用时求和再除以总频数 */
@@ -80,6 +87,7 @@ function evaluateSections(matrix: FreqMatrix, hanzimap: HanziMap) {
         sectionRs.items.push({ wd, freq, reFreq: 0, freqRank: i + 1 })
         continue
       }
+      const cdLen = cd.length
       const tmpEvaluateItem: EvaluateWordsItem = {
         wd,
         freq,
@@ -87,6 +95,7 @@ function evaluateSections(matrix: FreqMatrix, hanzimap: HanziMap) {
         freqRank: i + 1,
         collision: collisionCounter.add(cd),
         code: cd,
+        cdLen,
         eq: 0,
         dh: 0,
         ms: 0,
@@ -113,7 +122,6 @@ function evaluateSections(matrix: FreqMatrix, hanzimap: HanziMap) {
         continue
       }
 
-      const cdLen = cd.length
       // 互击 大跨排 小跨排 小指干扰 错手
       const comboKeys = ['dh', 'ms', 'ss', 'pd', 'lfd'] as const
       for (const e of comboKeys) {

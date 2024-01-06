@@ -5,6 +5,7 @@ import { mdiLightbulbQuestionOutline } from '@quasar/extras/mdi-v7'
 import type { PlatTypes } from 'libs/platforms'
 import { detectAndFillMabiao, loadPlatAutoDirectly, platToLoader, platToName } from 'libs/platforms'
 import { RawFile } from 'src/libs/platforms/rawFile'
+import { find } from 'remeda'
 import { jResultRef } from '../inject'
 
 // import { mdiPalette, mdiStarBox } from '@quasar/extras/mdi-v7'
@@ -26,6 +27,18 @@ interface DictFormat {
   value: PlatTypes
   icon: string
 }
+
+const res = inject(jResultRef) !
+
+// 初始化参数
+if (!res.value.name)
+  res.value.name = `码表_${nanoid6()}`
+if (!res.value.plat)
+  res.value.plat = 'auto'
+if (!res.value.selectKeys)
+  res.value.selectKeys = ' 23456789'
+if (!res.value.cmLen)
+  res.value.cmLen = 4
 
 const dictFormats: DictFormat[] = [
   {
@@ -55,19 +68,7 @@ const dictFormats: DictFormat[] = [
   },
 ]
 const valueToDictFormat = Object.fromEntries(dictFormats.map(v => [v.value, v]))
-const tmpFormat = shallowRef(dictFormats[0])
-
-const res = inject(jResultRef) !
-
-// 初始化参数
-if (!res.value.name)
-  res.value.name = `码表_${nanoid6()}`
-if (!res.value.plat)
-  res.value.plat = 'auto'
-if (!res.value.selectKeys)
-  res.value.selectKeys = ' 23456789'
-if (!res.value.cmLen)
-  res.value.cmLen = 4
+const tmpFormat = shallowRef(find(dictFormats, v => v.value === res.value.plat))
 
 let stopWatchPlat: Function
 onMounted(() => {

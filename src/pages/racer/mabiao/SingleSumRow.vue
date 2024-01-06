@@ -16,7 +16,7 @@ function fmt(action: any) {
   const dw = action.displayWeight(p.evaluateResult)
   if (dw === 0)
     return '0'
-  return formatFloat(dw)
+  return formatFloat(dw, 2, true)
 }
 </script>
 
