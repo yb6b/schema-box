@@ -45,27 +45,28 @@ export function hanziMapFromMb(mb: Mabiao, hanzi: Iterable<string>, shortCode = 
   const collisionCounter = new CollisionCounter()
   for (const item of mb.items) {
     const wd = item[0]
+    const cd = item[1]
     // 过滤不必要的汉字
     if (wd.length > 1 || !hanziSet.has(wd))
       continue
     const oldItem = rs.get(wd)
     // 没有数据时, 添加数据
     if (!oldItem) {
-      rs.set(wd, { item, collision: 1 })
+      rs.set(wd, { item, collision: collisionCounter.add(cd) })
       continue
     }
     // 有数据时
     // 单字测评取码长更短的
     if (shortCode) {
-      if (oldItem.item[1].length > item[1].length) {
-        const collision = collisionCounter.add(item[1])
+      if (oldItem.item[1].length > cd.length) {
+        const collision = collisionCounter.add(cd)
         rs.set(wd, { item, collision })
       }
     }
     // 词语测评取码长更长的
     else {
-      if (oldItem.item[1].length < item[1].length) {
-        const collision = collisionCounter.add(item[1])
+      if (oldItem.item[1].length < cd.length) {
+        const collision = collisionCounter.add(cd)
         rs.set(wd, { item, collision })
       }
     }
