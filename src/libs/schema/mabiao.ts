@@ -1,5 +1,6 @@
 /**
  * 码表数据以及一些工具函数
+ * get 系列函数都会在mabiao对象里缓存结果
  */
 import type { RawFile } from '../platforms/rawFile'
 import type { PlatTypes } from '../platforms'
@@ -38,6 +39,10 @@ export interface Mabiao<T = object> {
   selectKeys?: string
   /** 上屏码长 */
   cmLen?: number
+  /** 码表里所有用到的按键 */
+  keysSet?: Set<string>
+  /** 编码映射到词条组，用于小小等平台 */
+  CTI?: CodeToItemsMap
 }
 
 /** 从文件里获取到的码表, 几个字段不可省略 */
@@ -56,9 +61,11 @@ export function createEmptyMabiao(): Mabiao {
 /** 为了避免编码可能为 __proto__，这里用Map存储数据 */
 type CodeToItemsMap = Map<string, MabiaoItem[]>
 
-export function getCodeToWordsDict(items: MabiaoItem[]): CodeToItemsMap {
+export function getCodeToWordsDict(mb: Mabiao) {
+  if (mb.CTI)
+    return mb.CTI
   const result: CodeToItemsMap = new Map()
-  for (const eachItem of items) {
+  for (const eachItem of mb.items) {
     const c = eachItem[1]
     const o = result.get(c)
     if (o)
@@ -66,51 +73,55 @@ export function getCodeToWordsDict(items: MabiaoItem[]): CodeToItemsMap {
     else
       result.set(c, [eachItem])
   }
-  return result
+  return mb.CTI = result
 }
 
-/** 求一个码表里的最大码长 */
-export function maxCodeLen(items: MabiaoItem[]): number {
+export function getMaxCodeLen(mb: Mabiao) {
+  if (mb.maxCodeLen)
+    return mb.maxCodeLen
   let r = 0
-  for (const [,code] of items) {
-    if (code.length > r)
-      r = code.length
+  for (const [,code] of mb.items) {
+    const codeLen = code.length
+    if (codeLen > r)
+      r = codeLen
   }
-  return r
+  return mb.maxCodeLen = r
 }
 
-/** 求码表里最长的词的字数 */
-export function maxWordsLen(items: MabiaoItem[]): number {
+export function getMaxWordsLen(mb: Mabiao) {
+  if (mb.maxCodeLen)
+    return mb.maxCodeLen
   let r = 0
-  for (const [words] of items) {
+  for (const [words] of mb.items) {
     const l = [...words].length
     if (l > r)
       r = l
   }
-  return r
+  return mb.maxCodeLen = r
 }
 
-/** 用于求编码的按键的种类 */
-export function keysSet(items: MabiaoItem[]) {
+export function getKeysSet(mb: Mabiao) {
+  if (mb.keysSet)
+    return mb.keysSet
   const result = new Set<string>()
-  for (const [,code] of items) {
+  for (const [,code] of mb.items) {
     for (const c of code)
       result.add(c)
   }
-  return result
+  return mb.keysSet = result
 }
 
-/**
- * 推测选重键
- * @param keysSet 全部按键的 Set, 可以用 codeSet() 函数求得
- * @returns 选重键
- */
-export function detectSellectKeys(keysSet: Set<string>) {
-  if (!keysSet.has(';'))
-    return ' ;\'456789'
-  return ' 23456789'
+/** 获取选重键，如果没有设置过，则自动判断 */
+export function getSelectKeys(mb: Mabiao) {
+  if (mb.selectKeys)
+    return mb.selectKeys
+  const ks = getKeysSet(mb)
+  if (!ks.has(';'))
+    return mb.selectKeys = ' ;\'456789'
+  return mb.selectKeys = ' 23456789'
 }
 
+/** 获取码表头数据，需要匹配相应的平台 */
 export function getMabiaoHeader(mb: Mabiao, plat: PlatTypes) {
   if (mb.plat === plat && mb.header)
     return `${mb.header}\n`

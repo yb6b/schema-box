@@ -1,6 +1,6 @@
 /** 根据字频表数据测评, 即科学形码测评系统 */
 
-import { keysSet } from 'libs/schema'
+import { getKeysSet } from 'libs/schema'
 import type { Mabiao } from 'libs/schema'
 import { freqToRelativeFreq, intersectionBetweenSets, objectKeysToSet, pickObject } from 'libs/utils'
 import { comboFeelData } from '../feelData'
@@ -231,7 +231,7 @@ export function evaluateSections(matrix: FreqMatrix, hanzimap: HanziMap, mb: Mab
 
 function getBaseFinLoadRate(mb: Mabiao) {
   const keysInFingerLoad = intersectionBetweenSets(
-    keysSet(mb.items),
+    getKeysSet(mb),
     objectKeysToSet(fingerLoad),
   )
   const customFingerLoad = pickObject(fingerLoad, keysInFingerLoad)

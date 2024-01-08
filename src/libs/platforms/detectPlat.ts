@@ -1,5 +1,5 @@
 import type { Mabiao } from '../schema'
-import { createEmptyMabiao, detectSellectKeys, keysSet, maxCodeLen } from '../schema'
+import { createEmptyMabiao, getKeysSet, getMaxCodeLen, getSelectKeys } from '../schema'
 import type { RawFile } from './rawFile'
 import type { PlatTypes } from './index'
 import {
@@ -77,9 +77,9 @@ export async function detectAndFillMabiao(raw: RawFile) {
     mb = await loader(raw)
   }
   // 有了码表之后, 推断各项数据
-  mb.maxCodeLen = maxCodeLen(mb.items)
+  getMaxCodeLen(mb)
   mb.cmLen = mb.cmLen ?? mb.maxCodeLen
-  mb.selectKeys = detectSellectKeys(keysSet(mb.items))
+  getSelectKeys(mb)
   mb.raw = raw // 防错
   return mb
 }

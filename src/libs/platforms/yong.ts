@@ -87,7 +87,7 @@ export async function loadPlatYong(raw: RawFile) {
 export function dumpPlatYong(mb: Mabiao | MbYong): string {
   let result = getMabiaoHeader(mb, 'yong')
   result += '[DATA]\n'
-  const d = getCodeToWordsDict(mb.items)
+  const d = getCodeToWordsDict(mb)
   for (const [code, words] of d.entries())
     result += `${code} ${words.join(' ')}\n`
   return result

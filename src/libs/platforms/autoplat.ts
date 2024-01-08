@@ -125,7 +125,7 @@ export function dumpPlatAuto(mb: MbAuto, fold = false): string {
 
   // 每行多词
 
-  const r = [...getCodeToWordsDict(mb.items).entries()]
+  const r = [...getCodeToWordsDict(mb).entries()]
   for (const [codes, items] of r) {
     const words = items.map(v => v[0]).join(format.split)
     if (format.ahead)

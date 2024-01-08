@@ -1,5 +1,5 @@
 import type { Mabiao } from 'libs/schema'
-import { maxCodeLen, maxWordsLen } from 'libs/schema'
+import { getMaxCodeLen, getMaxWordsLen } from 'libs/schema'
 import type { UniqueTrieTree } from './uniqueTrieTree'
 import { treeAdd } from './uniqueTrieTree'
 import { CollisionCounter } from './collisionCounter'
@@ -13,8 +13,8 @@ export function simulateSchema(mb: Mabiao, article: string) {
   for (const i of dictItems)
     treeAdd(tree, i, collisionCounter.add(i[1]))
 
-  const maxCL = mb.maxCodeLen || maxCodeLen(dictItems)
-  const maxWL = mb.maxWordsLen || maxWordsLen(dictItems)
+  const maxCL = getMaxCodeLen(mb)
+  const maxWL = getMaxWordsLen(mb)
   const result = new AnalysisResult(collisionCounter.max, maxWL, maxCL)
 
   if (mb.selectKeys)

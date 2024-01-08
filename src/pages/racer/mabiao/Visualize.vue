@@ -75,7 +75,7 @@ function onTable(table: TableRef) {
           <EvaluateWords :mabiao="mabiao" @table="onTable" />
         </QTabPanel>
         <QTabPanel name="mb">
-          <EvaluateMabiao />
+          <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
         </QTabPanel>
       </QTabPanels>
     </QCardSection>
