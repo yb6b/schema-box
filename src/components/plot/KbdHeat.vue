@@ -21,7 +21,7 @@ function fmtUsageFreq(key: string) {
 }
 
 function bgColor(freq?: number) {
-  return `rgba(239,68,68,${(freq ?? 0) * 20})`
+  return `rgba(255,140,49,${(freq ?? 0) * 20})`
 }
 </script>
 

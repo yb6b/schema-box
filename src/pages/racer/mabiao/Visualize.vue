@@ -4,6 +4,7 @@ import { mdiClose } from '@quasar/extras/mdi-v7'
 import type { Mabiao } from 'libs/schema'
 import { ref, shallowRef } from 'vue'
 import { useSetTitle } from 'libs/hooks'
+import { useEvaluateStore } from 'stores/evaluate-store'
 
 import { writeStringToClipboard } from 'libs/utils'
 import InfoTooltip from 'components/custom/InfoTooltip.vue'
@@ -24,7 +25,7 @@ const openTableDialog = shallowRef(false)
 
 const tableRef = shallowRef<TableRef>()
 
-const pagination = ref({ rowsPerPage: 20 })
+const pagination = useEvaluateStore().pagination
 
 function getTsv(data: TableRef) {
   if (!data.columns || !data.rows)
@@ -75,7 +76,11 @@ function onTable(table: TableRef) {
           <EvaluateWords :mabiao="mabiao" @table="onTable" />
         </QTabPanel>
         <QTabPanel name="mb">
-          <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
+          <div class="column flex-center">
+            <div class="q-pa-sm">
+              <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
+            </div>
+          </div>
         </QTabPanel>
       </QTabPanels>
     </QCardSection>

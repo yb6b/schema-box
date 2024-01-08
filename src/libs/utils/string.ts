@@ -38,6 +38,20 @@ export function countHanzi(src: string): number {
   return m ? m.length : 0
 }
 
+/** 字符串只有一个字，会考虑unicode */
+export function isOneChar(wd: string) {
+  if (wd.length === 0)
+    return false
+  let hasFirstChar = false
+  for (const _ of wd) {
+    if (!hasFirstChar)
+      hasFirstChar = true
+    else
+      return false
+  }
+  return true
+}
+
 /** 删除文件名的后缀名 */
 export function removeFileNameExt(filename: string) {
   return filename.replace(/\.\w+$/, '')

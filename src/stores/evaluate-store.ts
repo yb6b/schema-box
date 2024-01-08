@@ -1,9 +1,12 @@
 import { defineStore } from 'pinia'
 
-export const useEvaluate = defineStore('evaluate-store', {
+export const useEvaluateStore = defineStore('evaluate-store', {
   state: () => ({
     racer: {
       singleMode: false,
+    },
+    pagination: {
+      rowsPerPage: 20,
     },
   }),
   persist: true,

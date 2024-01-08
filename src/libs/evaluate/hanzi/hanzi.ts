@@ -192,27 +192,20 @@ export function evaluateSections(matrix: FreqMatrix, hanzimap: HanziMap, mb: Mab
           tmpEvaluateItem.trible += 1
       }
 
+      const cdWithSelect = cd + selectKey
+      const keysLen = cdWithSelect.length
+
       // 字均当量
       // 1 码字的当量为 1
-      const ziEq = cdLen < 2 ? 1 : calcEq(cd)
-      tmpEvaluateItem.ziEq = ziEq * freq
+      const ziEq = keysLen < 2 ? 1 : calcEq(cdWithSelect)
 
-      const keysLen = cdLen + selectKey.length
+      tmpEvaluateItem.ziEq = ziEq * freq
+      // 键均当量
+      tmpEvaluateItem.keyEq = (ziEq / (keysLen - 1)) * freq
 
       // 加权键长
-      tmpEvaluateItem.CL += keysLen * freq
+      tmpEvaluateItem.CL = keysLen * freq
 
-      // 键均当量
-      // 1 键字的当量为 1
-      if (keysLen < 2) {
-        tmpEvaluateItem.keyEq += freq
-      }
-      else {
-        const keyEq = cdLen === keysLen
-          ? ziEq
-          : ziEq + comboFeelData[cd[cdLen - 1] + selectKey].eq
-        tmpEvaluateItem.keyEq = (keyEq / (keysLen - 1)) * freq
-      }
       sectionRs.items.push(tmpEvaluateItem)
     }
     result.push(sectionRs)

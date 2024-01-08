@@ -45,3 +45,9 @@ export function formatYiWan(positive_number: number, cas = 1, addYue = true): st
     res += ' '
   return res
 }
+
+const numberIntlFormatter = new Intl.NumberFormat('zh-Hans-CN')
+/** 添加千分位 */
+export function formatInterger(num: number | bigint) {
+  return numberIntlFormatter.format(num)
+}
