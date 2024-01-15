@@ -2,20 +2,22 @@
 /** 测评一个码表 */
 import { mdiClose } from '@quasar/extras/mdi-v7'
 import type { Mabiao } from 'libs/schema'
-import { ref, shallowRef } from 'vue'
+import { defineAsyncComponent, ref, shallowRef } from 'vue'
 import { useSetTitle } from 'libs/hooks'
 import { useEvaluateStore } from 'stores/evaluate-store'
 
 import { writeStringToClipboard } from 'libs/utils'
 import InfoTooltip from 'components/custom/InfoTooltip.vue'
-import EvaluateZi from './Single.vue'
-import EvaluateWords from './Words.vue'
-import EvaluateMabiao from './Mabiao.vue'
+import LoadSpinner from 'src/components/custom/LoadSpinner.vue'
+
 import type { TableRef } from './types'
 
 const p = defineProps<{
   mabiao: Mabiao
 }>()
+const EvaluateZi = defineAsyncComponent(() => import('./Single.vue'))
+const EvaluateWords = defineAsyncComponent(() => import('./Words.vue'))
+const EvaluateMabiao = defineAsyncComponent(() => import('./Mabiao.vue'))
 
 const title = `${p.mabiao.name}方案测评`
 useSetTitle(title)
@@ -70,15 +72,30 @@ function onTable(table: TableRef) {
         class="container-lg"
       >
         <QTabPanel name="zi">
-          <EvaluateZi :mabiao="mabiao" @table="onTable" />
+          <Suspense :timeout="200">
+            <EvaluateZi :mabiao="mabiao" @table="onTable" />
+            <template #fallback>
+              <LoadSpinner label="加载字频表………" />
+            </template>
+          </Suspense>
         </QTabPanel>
         <QTabPanel name="wd">
-          <EvaluateWords :mabiao="mabiao" @table="onTable" />
+          <Suspense :timeout="200">
+            <EvaluateWords :mabiao="mabiao" @table="onTable" />
+            <template #fallback>
+              <LoadSpinner label="加载词频数据……" />
+            </template>
+          </Suspense>
         </QTabPanel>
         <QTabPanel name="mb">
           <div class="column flex-center">
             <div class="q-pa-sm">
-              <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
+              <Suspense :timeout="200">
+                <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
+                <template #fallback>
+                  <LoadSpinner label="加载中……" />
+                </template>
+              </Suspense>
             </div>
           </div>
         </QTabPanel>
