@@ -3,6 +3,7 @@
 import { mdiClose } from '@quasar/extras/mdi-v7'
 import type { Mabiao } from 'libs/schema'
 import { defineAsyncComponent, ref, shallowRef } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useSetTitle } from 'libs/hooks'
 import { useEvaluateStore } from 'stores/evaluate-store'
 
@@ -27,7 +28,7 @@ const openTableDialog = shallowRef(false)
 
 const tableRef = shallowRef<TableRef>()
 
-const pagination = useEvaluateStore().pagination
+const { pagination } = storeToRefs(useEvaluateStore())
 
 function getTsv(data: TableRef) {
   if (!data.columns || !data.rows)
@@ -71,6 +72,18 @@ function onTable(table: TableRef) {
         keep-alive
         class="container-lg"
       >
+        <QTabPanel name="mb">
+          <div class="column flex-center">
+            <div class="q-pa-sm">
+              <Suspense :timeout="200">
+                <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
+                <template #fallback>
+                  <LoadSpinner label="加载中……" />
+                </template>
+              </Suspense>
+            </div>
+          </div>
+        </QTabPanel>
         <QTabPanel name="zi">
           <Suspense :timeout="200">
             <EvaluateZi :mabiao="mabiao" @table="onTable" />
@@ -86,18 +99,6 @@ function onTable(table: TableRef) {
               <LoadSpinner label="加载词频数据……" />
             </template>
           </Suspense>
-        </QTabPanel>
-        <QTabPanel name="mb">
-          <div class="column flex-center">
-            <div class="q-pa-sm">
-              <Suspense :timeout="200">
-                <EvaluateMabiao :mabiao="mabiao" @table="onTable" />
-                <template #fallback>
-                  <LoadSpinner label="加载中……" />
-                </template>
-              </Suspense>
-            </div>
-          </div>
         </QTabPanel>
       </QTabPanels>
     </QCardSection>
