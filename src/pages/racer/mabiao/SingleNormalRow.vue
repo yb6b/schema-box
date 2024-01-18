@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EvaluateLineHanzi, EvaluateLineWords } from 'libs/evaluate/hanzi'
-import { formatFloat } from 'libs/utils'
+import { computed } from 'vue'
 import type { Mabiao } from 'libs/schema'
 import type { TableRef } from './types'
 import type { EvaluateItemAction } from './evaluateItemsAction'
@@ -18,7 +18,7 @@ defineEmits<{
   click: [result: TableRef]
 }>()
 
-const displays = p.actions.map(act => act.display(p.evaluateResult, p.baseFinLoadRate ?? {}))
+const displays = computed(() => p.actions.map(act => act.display(p.evaluateResult, p.baseFinLoadRate ?? {})))
 </script>
 
 <template>

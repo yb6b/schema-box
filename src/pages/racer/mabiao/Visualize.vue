@@ -2,10 +2,10 @@
 /** 测评一个码表 */
 import { mdiClose } from '@quasar/extras/mdi-v7'
 import type { Mabiao } from 'libs/schema'
-import { defineAsyncComponent, ref, shallowRef } from 'vue'
-import { storeToRefs } from 'pinia'
+import { defineAsyncComponent, onErrorCaptured, ref, shallowRef, watch } from 'vue'
 import { useSetTitle } from 'libs/hooks'
 import { useEvaluateStore } from 'stores/evaluate-store'
+import { useQuasar } from 'quasar'
 
 import { writeStringToClipboard } from 'libs/utils'
 import InfoTooltip from 'components/custom/InfoTooltip.vue'
@@ -28,7 +28,11 @@ const openTableDialog = shallowRef(false)
 
 const tableRef = shallowRef<TableRef>()
 
-const { pagination } = storeToRefs(useEvaluateStore())
+const evaluateStore = useEvaluateStore()
+const pagination = ref({ rowsPerPage: evaluateStore.pagination.rowsPerPage, page:1 })
+watch(() => pagination.value.rowsPerPage, () => {
+  evaluateStore.setRowsPer(pagination.value.rowsPerPage)
+})
 
 function getTsv(data: TableRef) {
   if (!data.columns || !data.rows)
@@ -42,9 +46,15 @@ function getTsv(data: TableRef) {
 }
 
 function onTable(table: TableRef) {
+  pagination.value.page = 1
   tableRef.value = table
   openTableDialog.value = true
 }
+
+const $q = useQuasar()
+onErrorCaptured((err) => {
+  $q.notify({ type: 'negative', message: err.message })
+})
 </script>
 
 <template>

@@ -12,7 +12,7 @@ export const presetWordsFreq = (await import('./wordsFreq')).default
 /** 测评一个码表的组词性能 */
 export function quickEvaluateWords(mb: Mabiao) {
   // 获取词频数据
-  const freqTsv = parseFreqTsv(presetWordsFreq)
+  const freqTsv = parseFreqTsv(presetWordsFreq).slice(0, 60000)
   const all_zi = new Set<string>()
   for (const e of freqTsv) {
     for (const a of e[0])

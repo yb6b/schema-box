@@ -9,5 +9,10 @@ export const useEvaluateStore = defineStore('evaluate-store', {
       rowsPerPage: 20,
     },
   }),
+  actions: {
+    setRowsPer(rowsPerPage: number) {
+      this.pagination.rowsPerPage = rowsPerPage
+    },
+  },
   persist: true,
 })

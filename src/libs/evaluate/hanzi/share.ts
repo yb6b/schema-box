@@ -26,8 +26,6 @@ export const keys46Set = new Set(KEYS)
 export type FreqMatrix = [string, number][]
 export function parseFreqTsv(tsv: string): FreqMatrix {
   const matrix = parseTsv(tsv)
-  if (matrix.length < 6000)
-    throw new Error('字频数据少于6000行')
   return matrix.map(v => [v[0], Number.parseInt(v[1])])
 }
 

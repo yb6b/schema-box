@@ -10,8 +10,8 @@ import { calcEq, getTotalUsage, hanziMapFromMb, keys46Set, parseFreqTsv } from '
 
 export const presetHanziFreq = (await import('./hanziFreq')).default
 
-export function quickEvaluateHanzi(mb: Mabiao) {
-  const freq_tsv = parseFreqTsv(presetHanziFreq)
+export function quickEvaluateHanzi(mb: Mabiao, tsv?: string) {
+  const freq_tsv = parseFreqTsv(tsv ?? presetHanziFreq).slice(0, 6000)
   const hanzi_map = hanziMapFromMb(mb, freq_tsv.map(v => v[0]))
   const evaluate_result = evaluateSections(freq_tsv, hanzi_map, mb)
 
