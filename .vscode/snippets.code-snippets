@@ -44,5 +44,12 @@
 		"body": [
 			"import {$1} from \"@quasar/extras/mdi-v7\";"
 		]
+	},
+	"import * as vue": {
+		"scope": "javascript,typescript",
+		"prefix": "imvue",
+		"body": [
+			"import * as vue from \"vue\";"
+		]
 	}
 }

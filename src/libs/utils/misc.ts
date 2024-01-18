@@ -72,3 +72,4 @@ export function saveFile<T extends Blob>(aFile: T, filename: string) {
 export async function writeStringToClipboard(str: string) {
   await navigator.clipboard.writeText(str)
 }
+

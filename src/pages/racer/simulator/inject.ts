@@ -1,4 +1,4 @@
-import type { InjectionKey } from 'vue'
+import type { InjectionKey, ShallowRef } from 'vue'
 import type { Mabiao } from 'libs/schema'
 import type { FullAnalysisResult } from 'libs/evaluate/simulator/analysisResult'
 
@@ -6,6 +6,19 @@ export interface ArticleInfo {
   name: string
   txt: string
 }
+
+export interface MbInfo {
+  mb: Mabiao
+  analysis: FullAnalysisResult
+}
+
+export interface AllSimulatorInfo {
+  art: ArticleInfo
+  mb: MbInfo
+  mb2: MbInfo
+}
+
+export const jAllInfo = Symbol('everything about simulator result') as InjectionKey<ShallowRef<AllSimulatorInfo>>
 
 export const jMabiao = Symbol('main Mabiao') as InjectionKey<Mabiao>
 export const jMabiao2 = Symbol('secondary Mabiao') as InjectionKey<Mabiao>

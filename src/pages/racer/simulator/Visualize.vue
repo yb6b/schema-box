@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { Mabiao } from 'libs/schema'
-import { computed, provide, ref } from 'vue'
-import { mdiClose, mdiHandFrontRightOutline, mdiSpeedometer } from '@quasar/extras/mdi-v7'
+import { provide, ref, shallowRef } from 'vue'
+
 import { useSetTitle } from 'libs/hooks'
-import { simulateSchema } from 'libs/evaluate/simulator'
+import { mdiClose, mdiHandFrontRightOutline, mdiSpeedometer } from '@quasar/extras/mdi-v7'
+import type { Result } from './Progress.vue'
+import AnalysisProgress from './Progress.vue'
+
 import Feeling from './Feeling.vue'
 import Efficient from './Efficient.vue'
-import type { ArticleInfo } from './inject'
-import { jArticle, jMabiao, jMabiao2, jResult, jResult2 } from './inject'
+import type { AllSimulatorInfo, ArticleInfo } from './inject'
+import { jAllInfo, jArticle, jMabiao, jMabiao2, jResult, jResult2 } from './inject'
 
 const p = defineProps<{
   article: ArticleInfo
@@ -18,17 +21,21 @@ const p = defineProps<{
 const title = `《${p.mb?.name}》和《${p.mb2?.name}》赛码结果`
 useSetTitle(title)
 
-const resultRef = computed(() => simulateSchema(p.mb, p.article.txt))
+const resultRef = shallowRef<AllSimulatorInfo>()
 
-const result2Ref = computed(() => simulateSchema(p.mb2, p.article.txt))
-
-// 其他子组件都通过依赖注入获取所需的资源
-
-provide(jResult, resultRef.value)
-provide(jResult2, result2Ref.value)
-provide(jMabiao, p.mb)
-provide(jMabiao2, p.mb2)
-provide(jArticle, p.article)
+function onProgressResult(rs: Result) {
+  resultRef.value = {
+    art: p.article,
+    mb: {
+      mb: p.mb,
+      analysis: rs.analysis1,
+    },
+    mb2: {
+      mb: p.mb2,
+      analysis: rs.analysis2,
+    },
+  }
+}
 
 const tabRef = ref('feeling')
 </script>
@@ -45,7 +52,14 @@ const tabRef = ref('feeling')
         </QTooltip>
       </QBtn>
     </QBar>
-    <QCardSection class="q-px-lg">
+    <AnalysisProgress
+      v-if="!resultRef"
+      :article="article.txt"
+      :mb="mb"
+      :mb2="mb2"
+      @result="onProgressResult"
+    />
+    <QCardSection v-else class="q-px-lg">
       <QTabs v-model="tabRef" active-color="primary" class="text-blue-grey-8" inline-label>
         <QTab name="efficient" label="效率" :icon="mdiSpeedometer" />
         <QTab name="feeling" label="手感" :icon="mdiHandFrontRightOutline" />
@@ -59,10 +73,10 @@ const tabRef = ref('feeling')
         class="container-lg"
       >
         <QTabPanel name="feeling">
-          <Feeling />
+          <Feeling :all-info="resultRef" />
         </QTabPanel>
         <QTabPanel name="efficient">
-          <Efficient />
+          <Efficient :all-info="resultRef" />
         </QTabPanel>
       </QTabPanels>
     </QCardSection>

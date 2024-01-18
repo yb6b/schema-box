@@ -3,14 +3,16 @@ import TopTooltip from 'components/custom/TopTooltip.vue'
 import BarChart from 'components/custom/BarChart.vue'
 
 import { formatFloat } from 'libs/utils/format'
-import { inject } from 'vue'
+import { computed } from 'vue'
 import { splice } from 'remeda'
-import { jMabiao, jMabiao2, jResult, jResult2 } from './inject'
+import type { AllSimulatorInfo } from './inject'
 
-const mabiao = inject(jMabiao)!
-const result = inject(jResult)!
-const mabiao2 = inject(jMabiao2)!
-const result2 = inject(jResult2)!
+const props = defineProps<{
+  allInfo: AllSimulatorInfo
+}>()
+
+const analysis1 = computed(() => props.allInfo.mb.analysis)
+const analysis2 = computed(() => props.allInfo.mb2.analysis)
 
 function formatPercentButZero(n: number) {
   return n === 0 ? '0' : formatFloat(n, 2, true)
@@ -29,10 +31,10 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
               测评项目
             </th>
             <th class="text-left">
-              {{ mabiao?.name }}
+              {{ allInfo.mb.mb.name }}
             </th>
             <th class="text-left">
-              {{ mabiao2?.name }}
+              {{ allInfo.mb2.mb.name }}
             </th>
           </tr>
         </thead>
@@ -42,10 +44,10 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
               击键组合数量
             </td>
             <td>
-              {{ result.combo }}
+              {{ analysis1.combo }}
             </td>
             <td>
-              {{ result2.combo }}
+              {{ analysis2.combo }}
             </td>
           </tr>
 
@@ -55,17 +57,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                总当量：{{ result.Eq }}<br>
-                组合数：{{ result.combo }}
+                总当量：{{ analysis1.Eq }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatFloat(result.Eq / result.combo, 3) }}
+              {{ formatFloat(analysis1.Eq / analysis1.combo, 3) }}
             </td>
             <td>
               <TopTooltip>
-                总当量：{{ result2.Eq }}<br>
-                组合数：{{ result2.combo }}
+                总当量：{{ analysis2.Eq }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatFloat(result2.Eq / result2.combo, 3) }}
+              {{ formatFloat(analysis2.Eq / analysis2.combo, 3) }}
             </td>
           </tr>
           <tr>
@@ -74,17 +76,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                总当量：{{ result.Eq }}<br>
-                上屏字符总数：{{ result.char }}
+                总当量：{{ analysis1.Eq }}<br>
+                上屏字符总数：{{ analysis1.char }}
               </TopTooltip>
-              {{ formatFloat(result.Eq / result.char, 3) }}
+              {{ formatFloat(analysis1.Eq / analysis1.char, 3) }}
             </td>
             <td>
               <TopTooltip>
-                总当量：{{ result2.Eq }}<br>
-                上屏字符总数：{{ result2.char }}
+                总当量：{{ analysis2.Eq }}<br>
+                上屏字符总数：{{ analysis2.char }}
               </TopTooltip>
-              {{ formatFloat(result2.Eq / result2.char, 3) }}
+              {{ formatFloat(analysis2.Eq / analysis2.char, 3) }}
             </td>
           </tr>
 
@@ -94,17 +96,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                小跨排次数：{{ result.singleSpan }}<br>
-                组合数：{{ result.combo }}
+                小跨排次数：{{ analysis1.singleSpan }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.singleSpan / result.combo) }}
+              {{ formatPercentButZero(analysis1.singleSpan / analysis1.combo) }}
             </td>
             <td>
               <TopTooltip>
-                小跨排次数：{{ result2.singleSpan }}<br>
-                组合数：{{ result2.combo }}
+                小跨排次数：{{ analysis2.singleSpan }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.singleSpan / result2.combo) }}
+              {{ formatPercentButZero(analysis2.singleSpan / analysis2.combo) }}
             </td>
           </tr>
           <tr>
@@ -113,17 +115,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                大跨排次数：{{ result.multiSpan }}<br>
-                组合数：{{ result.combo }}
+                大跨排次数：{{ analysis1.multiSpan }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.multiSpan / result.combo) }}
+              {{ formatPercentButZero(analysis1.multiSpan / analysis1.combo) }}
             </td>
             <td>
               <TopTooltip>
-                大跨排次数：{{ result2.multiSpan }}<br>
-                组合数：{{ result2.combo }}
+                大跨排次数：{{ analysis2.multiSpan }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.multiSpan / result2.combo) }}
+              {{ formatPercentButZero(analysis2.multiSpan / analysis2.combo) }}
             </td>
           </tr>
           <tr>
@@ -132,17 +134,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                错手次数：{{ result.longFD }}<br>
-                组合数：{{ result.combo }}
+                错手次数：{{ analysis1.longFD }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.longFD / result.combo) }}
+              {{ formatPercentButZero(analysis1.longFD / analysis1.combo) }}
             </td>
             <td>
               <TopTooltip>
-                错手次数：{{ result2.longFD }}<br>
-                组合数：{{ result2.combo }}
+                错手次数：{{ analysis2.longFD }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.longFD / result2.combo) }}
+              {{ formatPercentButZero(analysis2.longFD / analysis2.combo) }}
             </td>
           </tr>
           <tr>
@@ -151,17 +153,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                小指干扰次数：{{ result.littleFD }}<br>
-                组合数：{{ result.combo }}
+                小指干扰次数：{{ analysis1.littleFD }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.littleFD / result.combo) }}
+              {{ formatPercentButZero(analysis1.littleFD / analysis1.combo) }}
             </td>
             <td>
               <TopTooltip>
-                小指干扰次数：{{ result2.littleFD }}<br>
-                组合数：{{ result2.combo }}
+                小指干扰次数：{{ analysis2.littleFD }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.littleFD / result2.combo) }}
+              {{ formatPercentButZero(analysis2.littleFD / analysis2.combo) }}
             </td>
           </tr>
           <tr>
@@ -170,17 +172,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                二连击次数：{{ result.double }}<br>
-                组合数：{{ result.combo }}
+                二连击次数：{{ analysis1.double }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.double / result.combo) }}
+              {{ formatPercentButZero(analysis1.double / analysis1.combo) }}
             </td>
             <td>
               <TopTooltip>
-                二连击次数：{{ result2.double }}<br>
-                组合数：{{ result2.combo }}
+                二连击次数：{{ analysis2.double }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.double / result2.combo) }}
+              {{ formatPercentButZero(analysis2.double / analysis2.combo) }}
             </td>
           </tr>
           <tr>
@@ -189,17 +191,17 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                同指组合次数：{{ result.sameFingers }}<br>
-                组合数：{{ result.combo }}
+                同指组合次数：{{ analysis1.sameFingers }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.sameFingers / (result.combo)) }}
+              {{ formatPercentButZero(analysis1.sameFingers / (analysis1.combo)) }}
             </td>
             <td>
               <TopTooltip>
-                同指组合次数：{{ result2.sameFingers }}<br>
-                组合数：{{ result2.combo }}
+                同指组合次数：{{ analysis2.sameFingers }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.sameFingers / (result2.combo)) }}
+              {{ formatPercentButZero(analysis2.sameFingers / (analysis2.combo)) }}
             </td>
           </tr>
           <tr>
@@ -208,19 +210,19 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
             </td>
             <td>
               <TopTooltip>
-                先左手再右手的组合次数：{{ result.leftRight }}<br>
-                先右手再左手的组合次数：{{ result.rightLeft }}<br>
-                组合数：{{ result.combo }}
+                先左手再右手的组合次数：{{ analysis1.leftRight }}<br>
+                先右手再左手的组合次数：{{ analysis1.rightLeft }}<br>
+                组合数：{{ analysis1.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result.diffHand / result.combo) }}
+              {{ formatPercentButZero(analysis1.diffHand / analysis1.combo) }}
             </td>
             <td>
               <TopTooltip>
-                先左手再右手的组合次数：{{ result2.leftRight }}<br>
-                先右手再左手的组合次数：{{ result2.rightLeft }}<br>
-                组合数：{{ result2.combo }}
+                先左手再右手的组合次数：{{ analysis2.leftRight }}<br>
+                先右手再左手的组合次数：{{ analysis2.rightLeft }}<br>
+                组合数：{{ analysis2.combo }}
               </TopTooltip>
-              {{ formatPercentButZero(result2.diffHand / result2.combo) }}
+              {{ formatPercentButZero(analysis2.diffHand / analysis2.combo) }}
             </td>
           </tr>
         </tbody>
@@ -233,12 +235,12 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           title="各手指击键数"
           :labels="['大拇指', '左手小指', '左手无名指', '左手中指', '左手食指', '右手食指', '右手中指', '右手无名指', '右手小指']"
           :datasets="[{
-                        label: mabiao!.name!,
-                        data: splice(result.finDist, 5, 2, []),
+                        label: allInfo.mb.mb.name!,
+                        data: splice(analysis1.finDist, 5, 2, []),
                       },
                       {
-                        label: mabiao2!.name!,
-                        data: splice(result2.finDist, 5, 2, []),
+                        label: allInfo.mb2.mb.name!,
+                        data: splice(analysis2.finDist, 5, 2, []),
                       }]"
         />
       </div>
@@ -250,15 +252,15 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
   <div class="row q-gutter-lg justify-center">
     <div class="col-12 col-sm-5">
       <div class="text-center">
-        {{ mabiao?.name }}
+        {{ allInfo.mb.mb.name }}
       </div>
       <div class="column no-wrap content-center">
         <div v-for="line of keyboard" :key="line" class="col row">
           <template v-for="k in line" :key="k">
-            <div class="col text-center non-selectable" :style="{ backgroundColor: `rgba(239,68,68,${result.keysDist[k] * 20 / result.keys})` }">
+            <div class="col text-center non-selectable" :style="{ backgroundColor: `rgba(239,68,68,${analysis1.keysDist[k] * 20 / analysis1.keys})` }">
               <TopTooltip>
-                按键 <kbd v-text="k" /> 按下 {{ result.keysDist[k] }} 次<br>
-                占比 {{ formatPercentButZero(result.keysDist[k] / result.keys) }}
+                按键 <kbd v-text="k" /> 按下 {{ analysis1.keysDist[k] }} 次<br>
+                占比 {{ formatPercentButZero(analysis1.keysDist[k] / analysis1.keys) }}
               </TopTooltip>
               <kbd>{{ k }}</kbd>
             </div>
@@ -270,11 +272,11 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           <div class="col-3" />
           <div
             class="col text-center"
-            :style="{ backgroundColor: `rgba(239,68,68,${result.keysDist[' '] * 10 / result.keys})` }"
+            :style="{ backgroundColor: `rgba(239,68,68,${analysis1.keysDist[' '] * 10 / analysis1.keys})` }"
           >
             <TopTooltip>
-              空格键按下 {{ result.keysDist[' '] }} 次<br>
-              占比 {{ formatPercentButZero(result.keysDist[' '] / result.keys) }}
+              空格键按下 {{ analysis1.keysDist[' '] }} 次<br>
+              占比 {{ formatPercentButZero(analysis1.keysDist[' '] / analysis1.keys) }}
             </TopTooltip>
             空格
           </div>
@@ -284,15 +286,15 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
     </div>
     <div class="col-12 col-sm-5">
       <div class="text-center">
-        {{ mabiao2?.name }}
+        {{ allInfo.mb2.mb.name }}
       </div>
       <div class="column no-wrap content-center">
         <div v-for="line of keyboard" :key="line" class="col row">
           <template v-for="k in line" :key="k">
-            <div class="col text-center non-selectable" :style="{ backgroundColor: `rgba(239,68,68,${result2.keysDist[k] * 20 / result2.keys})` }">
+            <div class="col text-center non-selectable" :style="{ backgroundColor: `rgba(239,68,68,${analysis2.keysDist[k] * 20 / analysis2.keys})` }">
               <TopTooltip>
-                按键 <kbd v-text="k" /> 按下 {{ result2.keysDist[k] }} 次<br>
-                占比 {{ formatPercentButZero(result2.keysDist[k] / result2.keys) }}
+                按键 <kbd v-text="k" /> 按下 {{ analysis2.keysDist[k] }} 次<br>
+                占比 {{ formatPercentButZero(analysis2.keysDist[k] / analysis2.keys) }}
               </TopTooltip>
               <kbd>{{ k }}</kbd>
             </div>
@@ -304,11 +306,11 @@ const keyboard = ['1234567890', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
           <div class="col-3" />
           <div
             class="col text-center"
-            :style="{ backgroundColor: `rgba(239,68,68,${result2.keysDist[' '] * 10 / result2.keys})` }"
+            :style="{ backgroundColor: `rgba(239,68,68,${analysis2.keysDist[' '] * 10 / analysis2.keys})` }"
           >
             <TopTooltip>
-              空格键按下 {{ result2.keysDist[' '] }} 次<br>
-              占比 {{ formatPercentButZero(result2.keysDist[' '] / result2.keys) }}
+              空格键按下 {{ analysis2.keysDist[' '] }} 次<br>
+              占比 {{ formatPercentButZero(analysis2.keysDist[' '] / analysis2.keys) }}
             </TopTooltip>
             空格
           </div>

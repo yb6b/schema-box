@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import type { Mabiao } from 'libs/schema'
 
-import { computed, defineAsyncComponent, onErrorCaptured, onMounted, shallowRef } from 'vue'
+import { computed, defineAsyncComponent, onErrorCaptured, shallowRef } from 'vue'
 import { mdiCog, mdiHelpCircle } from '@quasar/extras/mdi-v7'
 
 import OnlyTitlebarLayout from 'layouts/OnlyTitlebarLayout.vue'
-import { RawFile } from 'src/libs/platforms/rawFile'
 
 import { useQuasar } from 'quasar'
 import SchemaCard from './SchemaCard.vue'

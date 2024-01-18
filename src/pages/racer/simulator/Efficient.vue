@@ -2,18 +2,23 @@
 import TopTooltip from 'components/custom/TopTooltip.vue'
 import BarChart from 'components/custom/BarChart.vue'
 import { formatFloat, formatTimeSpan } from 'libs/utils/format'
-import { inject } from 'vue'
+import { computed } from 'vue'
 import { makeLabelAndDatas } from './utils'
+import type { AllSimulatorInfo } from './inject'
 import { jMabiao, jMabiao2, jResult, jResult2 } from './inject'
 
-const mabiao = inject(jMabiao)!
-const result = inject(jResult)!
-const mabiao2 = inject(jMabiao2)!
-const result2 = inject(jResult2)!
+const props = defineProps<{
+  allInfo: AllSimulatorInfo
+}>()
 
-const wordsDistLabelAndDatas = makeLabelAndDatas([result.wordsDist, result2.wordsDist], '字词', '单字')
-const codeLenLabelAndDatas = makeLabelAndDatas([result.codeLenDist, result2.codeLenDist], '码')
-const collisionLabelAndDatas = makeLabelAndDatas([result.collisionDist, result2.collisionDist], '重', '首选')
+const result = computed(() => props.allInfo.mb.analysis)
+const result2 = computed(() => props.allInfo.mb2.analysis)
+const mabiao = computed(() => props.allInfo.mb.mb)
+const mabiao2 = computed(() => props.allInfo.mb2.mb)
+
+const wordsDistLabelAndDatas = makeLabelAndDatas([result.value.wordsDist, result2.value.wordsDist], '字词', '单字')
+const codeLenLabelAndDatas = makeLabelAndDatas([result.value.codeLenDist, result2.value.codeLenDist], '码')
+const collisionLabelAndDatas = makeLabelAndDatas([result.value.collisionDist, result2.value.collisionDist], '重', '首选')
 </script>
 
 <template>
