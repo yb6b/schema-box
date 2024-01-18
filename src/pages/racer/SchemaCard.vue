@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, shallowRef, toValue, watchEffect } from 'vue'
+import { defineAsyncComponent, shallowRef, toValue, watch } from 'vue'
 import { mdiPlusBoxOutline, mdiScale, mdiTextBoxEditOutline, mdiTrashCanOutline } from '@quasar/extras/mdi-v7'
 import LoadFile from 'components/loadFile/LoadFile.vue'
 import { RawFile } from 'src/libs/platforms/rawFile'
@@ -20,6 +20,10 @@ const openEvaluateDialog = shallowRef(false)
 
 const dataRef = shallowRef<Mabiao | null>(null)
 
+watch(dataRef, () => {
+  emits('value', dataRef.value)
+})
+
 function onDrop(e: DragEvent) {
   const f = e.dataTransfer?.files[0]
   if (!f)
@@ -28,14 +32,12 @@ function onDrop(e: DragEvent) {
   detectAndFillMabiao(raw).then((mb) => {
     mb.name = removeFileNameExt(raw.name)
     dataRef.value = mb
-    emits('value', mb)
   }).catch((r) => { $q.notify({ type: 'negative', message: r.message }) })
 }
 
 async function onGetNewSchema(mb: Mabiao) {
   // loadFile 组件内部已经推断过了
   dataRef.value = mb
-  emits('value', mb)
   openDialog.value = false
 }
 </script>

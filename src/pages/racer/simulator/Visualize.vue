@@ -10,7 +10,6 @@ import AnalysisProgress from './Progress.vue'
 import Feeling from './Feeling.vue'
 import Efficient from './Efficient.vue'
 import type { AllSimulatorInfo, ArticleInfo } from './inject'
-import { jAllInfo, jArticle, jMabiao, jMabiao2, jResult, jResult2 } from './inject'
 
 const p = defineProps<{
   article: ArticleInfo

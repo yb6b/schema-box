@@ -5,7 +5,6 @@ import { formatFloat, formatTimeSpan } from 'libs/utils/format'
 import { computed } from 'vue'
 import { makeLabelAndDatas } from './utils'
 import type { AllSimulatorInfo } from './inject'
-import { jMabiao, jMabiao2, jResult, jResult2 } from './inject'
 
 const props = defineProps<{
   allInfo: AllSimulatorInfo

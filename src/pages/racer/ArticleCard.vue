@@ -100,7 +100,7 @@ const wrapInSchema = computed(() => {
     <LoadFile
       :preset="wrapInSchema"
       @value="v => {
-        articleData.txt = v.txt !
+        articleData.txt = v.txt!
         articleData.name = v.name!
         openArticle = false
       }"

@@ -46,7 +46,7 @@ export async function simulateSchemasAbortable(opt: SimulateSchemasAbortableProp
   const mbLen = dictItems.length
 
   opt.alreadyCount.value = 0
-  const timesBetweenCheck = 300
+  const timesBetweenCheck = 600
 
   // 添加字典树
   const tree: UniqueTrieTree = new Map()
