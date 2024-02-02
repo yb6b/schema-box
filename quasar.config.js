@@ -10,7 +10,9 @@
 
 const path = require('node:path')
 const { configure } = require('quasar/wrappers')
+const { version } = require('./package.json')
 
+const CdnMode = process.argv.at(-1) === 'cdnmode'
 const resolve = p => path.resolve(__dirname, p)
 
 module.exports = configure((ctx) => {
@@ -56,7 +58,7 @@ module.exports = configure((ctx) => {
         chain.resolve.alias.set('libs', resolve('./src/libs'))
       },
 
-      // publicPath: '/',
+      publicPath: CdnMode ? `https://registry.npmmirror.com/schema-box/${version}/files/dist/spa/` : '',
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).
@@ -113,6 +115,7 @@ module.exports = configure((ctx) => {
     },
 
     vendor: {
+      disable: true,
       remove: ['.*vueuse.*', '@quasar', 'remeda'],
     },
 
