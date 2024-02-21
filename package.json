@@ -22,8 +22,8 @@
   },
   "scripts": {
     "dev": "quasar dev",
-    "build": "quasar build -m spa cdnmode && node ./scripts/cdn.cjs",
-    "build2": "quasar build -m spa",
+    "build:cdn": "quasar build -m spa cdnmode && node ./scripts/cdn.cjs",
+    "build": "quasar build -m spa",
     "test": "vitest --globals"
   },
   "dependencies": {

@@ -24,7 +24,8 @@ export async function validatePlatRime(raw: RawFile) {
   const txt = await raw.getText()
   if (txt.startsWith('# Rime dictionary'))
     return true
-  if (txt.match(/^.*\n---.*\n\.\.\./is))
+  // 第一行可能注释，也可能直接开始 ---
+  if (txt.match(/^.*\n?---.*\n\.\.\./is))
     return true
   return false
 }
@@ -40,7 +41,7 @@ export async function loadPlatRime(raw: RawFile) {
     codeAhead: false,
     raw,
   }
-  const match = txt.match(/^(.*\n---(.*)\n\.\.\.)(.*)/is)
+  const match = txt.match(/^(.*\n?---(.*)\n\.\.\.)(.*)/is)
 
   if (match && match[2]) {
     // 转换yaml对象
