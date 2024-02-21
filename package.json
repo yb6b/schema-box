@@ -24,7 +24,9 @@
     "dev": "quasar dev",
     "build:cdn": "quasar build -m spa cdnmode && node ./scripts/cdn.cjs",
     "build": "quasar build -m spa",
-    "test": "vitest --globals"
+    "test": "vitest --globals",
+    "publish": "PowerShell -File .\\scripts\\publish.ps1 -NoProfile -NoLogo"
+
   },
   "dependencies": {
     "@quasar/extras": "^1.16.9",

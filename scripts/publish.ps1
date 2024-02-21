@@ -9,6 +9,7 @@ git commit -m "release version $vs"
 git push
 nrm use npm
 npm publish
+rm ./public/index.html -Force
 Write-Host "打包本地文件"
 pnpm build
 7z a -t7z ".\dist\schema-box-$vs.7z" .\dist\spa\* -mmt -mx=9 -r

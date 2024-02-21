@@ -75,7 +75,7 @@ export function hanziMapFromMb(mb: Mabiao, hanzi: Iterable<string>, shortCode = 
 /** 合并多个计算结果 */
 export function zipEvaluationItems<T extends EvaluateLineHanzi | EvaluateLineWords>(items: T[]): T {
   const len = items.length
-  if (len < 2)
+  if (len === 1)
     return items[0]
   const rs = zipObjects(items)
   rs.start = items[0].start
