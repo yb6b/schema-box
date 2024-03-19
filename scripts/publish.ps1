@@ -1,7 +1,7 @@
 bump patch
 $v = gc .\package.json -Encoding UTF8 | ConvertFrom-Json
 $vs = $v.version
-Write-Host "推送远程"
+Write-Host "pushing" 
 pnpm build:cdn
 mv ./dist/spa/index.html ./public/index.html -Force
 git add .
@@ -10,6 +10,6 @@ git push
 nrm use npm
 npm publish
 rm ./public/index.html -Force
-Write-Host "打包本地文件"
+Write-Host "packing"
 pnpm build
-7z a -t7z ".\dist\schema-box-$vs.7z" .\dist\spa\* -mmt -mx=9 -r
+7z a -t7z '.\dist\schema-box-$vs.7z' '.\dist\spa\*' -mmt -mx=9 -r

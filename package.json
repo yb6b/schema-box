@@ -1,6 +1,6 @@
 {
   "name": "schema-box",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "分析制作汉字形码方案。",
   "productName": "形码盒子",
   "author": "yb6b <seetxx@qq.com>",
@@ -26,7 +26,6 @@
     "build": "quasar build -m spa",
     "test": "vitest --globals",
     "pub": "PowerShell -File .\\scripts\\publish.ps1 -NoProfile -NoLogo"
-
   },
   "dependencies": {
     "@quasar/extras": "^1.16.9",
