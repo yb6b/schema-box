@@ -25,7 +25,7 @@
     "build:cdn": "quasar build -m spa cdnmode && node ./scripts/cdn.cjs",
     "build": "quasar build -m spa",
     "test": "vitest --globals",
-    "publish": "PowerShell -File .\\scripts\\publish.ps1 -NoProfile -NoLogo"
+    "pub": "PowerShell -File .\\scripts\\publish.ps1 -NoProfile -NoLogo"
 
   },
   "dependencies": {
