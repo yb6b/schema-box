@@ -19,28 +19,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      # - name: Setup PNPM
-      #   uses: pnpm/action-setup@v2
-      #   with:
-      #     version: 8
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 20
-      #     cache: pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: pnpm
 
-      # - name: Install dependencies
-      #   run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-      # - name: Build
-      #   run: pnpm run build
+      - name: Build
+        run: pnpm run build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.GHPAGES }}
-          publish_dir: ./public
+          publish_dir: ./dist/spa
           external_repository: yb6b/yb6b.github.com
           exclude_assets: '.github, manifest.json, popup.html, popup.js'
           enable_jekyll: false
