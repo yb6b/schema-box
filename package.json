@@ -1,5 +1,6 @@
 {
   "name": "schema-box",
+  "type": "module",
   "version": "0.0.5",
   "private": true,
   "description": "分析制作汉字形码方案。",
@@ -22,34 +23,36 @@
     "pnpm": ">=8"
   },
   "scripts": {
-    "dev": "quasar dev",
-    "build": "quasar build -m spa",
+    "dev": "rspack serve",
+    "build": "rspack build",
     "test": "vitest --globals"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.9",
-    "@vueuse/core": "^10.7.2",
-    "chart.js": "^4.4.1",
-    "core-js": "^3.33.1",
+    "@vueuse/core": "^10.9.0",
+    "chart.js": "^4.4.2",
+    "core-js": "^3.36.1",
     "detect-file-encoding-and-language": "^2.4.0",
     "iconv-lite": "^0.6.3",
     "js-yaml": "^4.1.0",
-    "nanoid": "^5.0.4",
+    "nanoid": "^5.0.6",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
-    "quasar": "^2.14.3",
-    "remeda": "^1.40.0",
-    "vue": "^3.4.15",
+    "quasar": "^2.15.1",
+    "remeda": "^1.56.0",
+    "vue": "^3.4.21",
     "vue-chartjs": "^5.3.0",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "1.0.0-beta.27",
-    "@quasar/app-webpack": "^3.12.1",
-    "@types/node": "^20.8.7",
-    "eslint": "^8.54.0",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.2"
+    "@antfu/eslint-config": "2.9.0",
+    "@rspack/cli": "^0.5.8",
+    "@types/node": "^20.11.30",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0",
+    "vue-cli-plugin-quasar": "^5.0.2",
+    "vue-loader": "^17.4.2"
   },
   "browserslist": [
     "Edge >= 93",
