@@ -12,8 +12,8 @@
     "url": "https://github.com/yb6b/schema-box"
   },
   "keywords": [
-    "cdn",
-    "quasar"
+    "quasar",
+    "chinese"
   ],
   "files": [
     "dist"
@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "rspack serve",
     "build": "rspack build",
-    "test": "vitest --globals"
+    "test": "vitest"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.11",
@@ -49,6 +49,7 @@
     "@rspack/cli": "^0.6.0",
     "@types/node": "^20.11.30",
     "eslint": "^9.0.0",
+    "happy-dom": "^14.7.1",
     "typescript": "^5.4.3",
     "vitest": "^1.4.0",
     "vue-cli-plugin-quasar": "^5.0.2",
