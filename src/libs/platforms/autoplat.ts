@@ -6,12 +6,12 @@
  * 一行可以有多个词条
  */
 
-import type { Mabiao } from 'libs/schema'
-import { checkCodes, getCodeToWordsDict, validateCodes } from 'libs/schema'
 import { genEachLine, genEachLineJump } from '../utils'
 
-import type { RawFile } from './rawFile'
+import type { RawFile } from './raw-file'
 import { FormatError } from './index'
+import { checkCodes, getCodeToWordsDict, validateCodes } from '@/libs/schema'
+import type { Mabiao } from '@/libs/schema'
 
 type SplitSpace = ' ' | '\t'
 interface AutoFormat {

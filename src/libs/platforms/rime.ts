@@ -1,11 +1,10 @@
-import { type Mabiao, checkCodes, getMabiaoHeader } from 'libs/schema'
-
 // @ts-expect-error special import of js-yaml
 import { load } from 'js-yaml'
 import { genEachLineJump } from '../utils'
 
-import type { RawFile } from './rawFile'
+import type { RawFile } from './raw-file'
 import { FormatError } from './index'
+import { type Mabiao, checkCodes, getMabiaoHeader } from '@/libs/schema'
 
 export interface MbRime extends Mabiao {
   plat: 'rime'

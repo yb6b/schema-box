@@ -1,9 +1,9 @@
 /**
  * 获取码表的数据
  */
-import type { Mabiao, MabiaoItem } from 'libs/schema'
-import { getCodeToWordsDict } from 'libs/schema'
-import { isOneChar } from 'libs/utils'
+import type { Mabiao, MabiaoItem } from '@/libs/schema'
+import { getCodeToWordsDict } from '@/libs/schema'
+import { isOneChar } from '@/libs/utils'
 
 export function isHanzi(wd: string) {
   const re = /\p{Ideo}/gu

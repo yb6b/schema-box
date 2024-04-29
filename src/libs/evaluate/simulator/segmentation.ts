@@ -4,7 +4,7 @@
  */
 
 import { PUNCTUATIONS } from '../../schema/keys'
-import type { TrieTreeValue, UniqueTrieTree } from './uniqueTrieTree'
+import type { TrieTreeValue, UniqueTrieTree } from './unique-trie-tree'
 
 /**
  * 按照字典树切文章，要预处理文章中的控制字符

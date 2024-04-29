@@ -1,11 +1,11 @@
-import type { Mabiao } from 'libs/schema'
-import { getMaxCodeLen, getMaxWordsLen, getSelectKeys } from 'libs/schema'
 import type { ShallowRef } from 'vue'
-import type { UniqueTrieTree } from './uniqueTrieTree'
-import { treeAdd } from './uniqueTrieTree'
-import { CollisionCounter } from './collisionCounter'
+import type { UniqueTrieTree } from './unique-trie-tree'
+import { treeAdd } from './unique-trie-tree'
+import { CollisionCounter } from './collision-counter'
 import { Segment } from './segmentation'
-import { AnalysisResult } from './analysisResult'
+import { AnalysisResult } from './analysis-result'
+import { getMaxCodeLen, getMaxWordsLen, getSelectKeys } from '@/libs/schema'
+import type { Mabiao } from '@/libs/schema'
 
 export function simulateSchema(mb: Mabiao, article: string) {
   const tree: UniqueTrieTree = new Map()

@@ -1,5 +1,5 @@
 import type { QTableProps } from 'quasar'
-import { formatFloat } from 'libs/utils'
+import { formatFloat } from '@/libs/utils'
 
 type TableCollumn = Exclude<QTableProps['columns'], undefined>
 const lackCollumns: TableCollumn = [

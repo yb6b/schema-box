@@ -1,6 +1,6 @@
 import type { InjectionKey, ShallowRef } from 'vue'
-import type { Mabiao } from 'libs/schema'
-import type { FullAnalysisResult } from 'libs/evaluate/simulator/analysisResult'
+import type { Mabiao } from '@/libs/schema'
+import type { FullAnalysisResult } from '@/libs/evaluate/simulator/analysis-result'
 
 export interface ArticleInfo {
   name: string

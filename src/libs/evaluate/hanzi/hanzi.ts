@@ -1,14 +1,14 @@
 /** 根据字频表数据测评, 即科学形码测评系统 */
 
-import { getKeysSet } from 'libs/schema'
-import type { Mabiao } from 'libs/schema'
-import { freqToRelativeFreq, intersectionBetweenSets, objectKeysToSet, pickObject } from 'libs/utils'
-import { comboFeelData } from '../feelData'
-import { fingerLoad } from '../feelData/fingerLoad'
+import { comboFeelData } from '../feeling-data'
+import { fingerLoad } from '../feeling-data/finger-load'
 import type { FreqMatrix, HanziMap } from './share'
 import { calcEq, getTotalUsage, hanziMapFromMb, keys46Set, parseFreqTsv } from './share'
+import { freqToRelativeFreq, intersectionBetweenSets, objectKeysToSet, pickObject } from '@/libs/utils'
+import type { Mabiao } from '@/libs/schema'
+import { getKeysSet } from '@/libs/schema'
 
-export const presetHanziFreq = (await import('./hanziFreq')).default
+export const presetHanziFreq = (await import('./hanzi-freq')).default
 
 export function quickEvaluateHanzi(mb: Mabiao, tsv?: string) {
   const freq_tsv = parseFreqTsv(tsv ?? presetHanziFreq).slice(0, 6000)

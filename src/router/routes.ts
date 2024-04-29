@@ -4,11 +4,11 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     alias: '/racer',
-    component: () => import('pages/racer/RacerPage.vue'),
+    component: () => import('@/pages/racer/racer-page.vue'),
   },
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('@/pages/error-not-found.vue'),
   },
 ]
 

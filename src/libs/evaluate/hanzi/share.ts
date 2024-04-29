@@ -1,12 +1,12 @@
 /** 字频统计和词频统计公用的方法 */
 
-import { parseTsv, zipObjects } from 'libs/utils'
-import type { Mabiao, MabiaoItem } from 'libs/schema'
-import { KEYS } from '../feelData/combo'
-import { CollisionCounter } from '../simulator/collisionCounter'
-import { comboFeelData } from '../feelData'
+import { KEYS } from '../feeling-data/combo'
+import { CollisionCounter } from '../simulator/collision-counter'
+import { comboFeelData } from '../feeling-data'
 import type { EvaluateLineHanzi } from './hanzi'
 import type { EvaluateLineWords } from './words'
+import type { Mabiao, MabiaoItem } from '@/libs/schema'
+import { parseTsv, zipObjects } from '@/libs/utils'
 
 export function getTotalUsage(evaluateResult: EvaluateLineHanzi[] | EvaluateLineWords[]) {
   const totalUsage = { ...evaluateResult[0].usage }
@@ -29,7 +29,7 @@ export function parseFreqTsv(tsv: string): FreqMatrix {
   return matrix.map(v => [v[0], Number.parseInt(v[1])])
 }
 
-export type HanziMap = Map<string, { item: MabiaoItem; collision: number }>
+export type HanziMap = Map<string, { item: MabiaoItem, collision: number }>
 /**
  * 提取码表中的单字数据
  * @param mb 从哪个码表里提取单字数据

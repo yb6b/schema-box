@@ -99,7 +99,7 @@ const config = {
       {
         test: /\.ts$/,
         resolve: {
-          fullySpecified: false
+          fullySpecified: false,
         },
         use: [swcLoader],
       },
@@ -109,13 +109,6 @@ const config = {
     alias: {
       'app': resolvePath('./'),
       '@': resolvePath('./src'),
-      'src': resolvePath('./src'),
-      'components': resolvePath('./src/components'),
-      'layouts': resolvePath('./src/layouts'),
-      'pages': resolvePath('./src/pages'),
-      'assets': resolvePath('./src/assets'),
-      'stores': resolvePath('./src/stores'),
-      'libs': resolvePath('./src/libs'),
     },
     extensions: ['.ts', '.mjs', '.js', '.json'],
   },

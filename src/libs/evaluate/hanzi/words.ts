@@ -1,13 +1,13 @@
-import type { Mabiao } from 'libs/schema'
-import { freqToRelativeFreq } from 'src/libs/utils'
-import { CollisionCounter } from '../simulator/collisionCounter'
-import { comboFeelData } from '../feelData'
+import { CollisionCounter } from '../simulator/collision-counter'
+import { comboFeelData } from '../feeling-data'
 import type { FreqMatrix, HanziMap } from './share'
 import { calcEq, getTotalUsage, hanziMapFromMb, keys46Set, parseFreqTsv } from './share'
 import type { EvaluateBaseItem } from './hanzi'
+import { freqToRelativeFreq } from '@/libs/utils'
+import type { Mabiao } from '@/libs/schema'
 
 /** 默认的词频表 */
-export const presetWordsFreq = (await import('./wordsFreq')).default
+export const presetWordsFreq = (await import('./words-freq')).default
 
 /** 测评一个码表的组词性能 */
 export function quickEvaluateWords(mb: Mabiao) {
@@ -169,7 +169,7 @@ function makeCodeUnderWubi(hanzimap: HanziMap, words: string): string {
     if (!cd2)
       return ''
     return (cd1.item[1].slice(0, 2)
-          + cd2.item[1].slice(0, 2))
+      + cd2.item[1].slice(0, 2))
   }
   // 3 字词
   if (wordsArray.length === 3) {
@@ -183,8 +183,8 @@ function makeCodeUnderWubi(hanzimap: HanziMap, words: string): string {
     if (!cd3)
       return ''
     return (cd1.item[1].slice(0, 2)
-          + cd2.item[1][0]
-          + cd3.item[1][0])
+      + cd2.item[1][0]
+      + cd3.item[1][0])
   }
   // 多字词
   const cd1 = hanzimap.get(wordsArray[0])
@@ -200,7 +200,7 @@ function makeCodeUnderWubi(hanzimap: HanziMap, words: string): string {
   if (!cd4)
     return ''
   return (cd1.item[1][0]
-        + cd2.item[1][0]
-        + cd3.item[1][0]
-        + cd4.item[1][0])
+    + cd2.item[1][0]
+    + cd3.item[1][0]
+    + cd4.item[1][0])
 }

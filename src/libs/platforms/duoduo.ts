@@ -1,6 +1,6 @@
 import { type Mabiao, checkCodes, getMabiaoHeader, validateCodes } from '../schema'
 import { genEachLineJump } from '../utils'
-import type { RawFile } from './rawFile'
+import type { RawFile } from './raw-file'
 import { FormatError } from './index'
 
 interface DuoduoMeta {

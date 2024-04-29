@@ -12,15 +12,7 @@
     "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["./src/*"],
-      "app/*": ["*"],
-      "src/*": ["src/*"],
-      "libs/*": ["src/libs/*"],
-      "components/*": ["src/components/*"],
-      "layouts/*": ["src/layouts/*"],
-      "pages/*": ["src/pages/*"],
-      "assets/*": ["src/assets/*"],
-      "boot/*": ["src/boot/*"],
-      "stores/*": ["src/stores/*"]
+      "app/*": ["./"]
     },
     "resolveJsonModule": true,
     "types": ["vitest/globals"],

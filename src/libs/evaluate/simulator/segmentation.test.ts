@@ -1,6 +1,6 @@
-import type { MabiaoItem } from 'libs/schema'
 import { Segment } from './segmentation'
-import { createTree, treeAdd } from './uniqueTrieTree'
+import { createTree, treeAdd } from './unique-trie-tree'
+import type { MabiaoItem } from '@/libs/schema'
 
 const v: MabiaoItem[] = [
   ['不', 'aa', 1],
