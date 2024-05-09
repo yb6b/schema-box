@@ -25,7 +25,8 @@
   "scripts": {
     "dev": "rspack serve",
     "build": "rspack build",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint . --fix"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.11",
